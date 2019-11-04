@@ -33,7 +33,10 @@ namespace QueueReciverService.Data
             }
         }
 
-        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Personproject>().HasKey(pp => new { pp.ProjectId, pp.PersonId });
+        }
 
     }
 }

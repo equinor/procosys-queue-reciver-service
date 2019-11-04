@@ -63,7 +63,6 @@ namespace QueueReciverService
 
                // var person = db.Persons.Find(45890);
 
-
                 isSuccess = await accessService.HandleRequest(accessInfo);
             }
 
