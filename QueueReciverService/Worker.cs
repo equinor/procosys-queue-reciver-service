@@ -11,6 +11,7 @@ using QueueReciverService.Services;
 using Microsoft.Extensions.DependencyInjection;
 using QueueReciverService.Data;
 using System.Net;
+using Microsoft.Extensions.Configuration;
 
 namespace QueueReciverService
 {
@@ -24,15 +25,15 @@ namespace QueueReciverService
 
         private readonly ILogger<Worker> _logger;
         private bool isRegistered;
+        public IConfiguration Configuration { get; }
 
-        public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory)
+        public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory, IConfiguration configuration)
         {
             _logger = logger;
-           
+            Configuration = configuration;
             _scopeFactory = scopeFactory;
-            _queueClient = new QueueClient(
-           "Endpoint=sb://procosys-auth-servicebus-dev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Mtu+89IS5elAd30pzGC1CfpwduNRSpPuVBySU/dVCIQ="
-           ,QUEUE_NAME);
+            var connectionString = Configuration["ServiceBusConnectionString"];
+            _queueClient = new QueueClient(connectionString, QUEUE_NAME);
             _queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
         }
 
@@ -44,28 +45,25 @@ namespace QueueReciverService
                 MaxConcurrentCalls = 1,
                 AutoComplete = false
             };
-
             _queueClient.RegisterMessageHandler(ProccessMessagesAsync, messageHandlerOptions);
-
             isRegistered = true;
         }
 
         private async Task ProccessMessagesAsync(Message message, CancellationToken token)
         {
-            var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
+            var accessInfo = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(message.Body));
 
             _logger.LogInformation($"Proccessing message : {accessInfo}");
-            bool isSuccess;
+            bool isSuccess= true;
 
             using(var scope = _scopeFactory.CreateScope())
             {
-                 var accessService = scope.ServiceProvider.GetRequiredService<IAccessService>();
+                 //var accessService = scope.ServiceProvider.GetRequiredService<IAccessService>();
 
                // var person = db.Persons.Find(45890);
 
-                isSuccess = await accessService.HandleRequest(accessInfo);
+               // isSuccess = await accessService.HandleRequest(accessInfo);
             }
-
 
             if (isSuccess)
             {

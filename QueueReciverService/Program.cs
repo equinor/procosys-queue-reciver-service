@@ -34,7 +34,8 @@ namespace QueueReciverService
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddDbContext<ApplicationDbContext>();
-                    services.AddScoped<IPersonRepository, PersonRepository>();
+                    services.AddTransient<IPersonRepository, PersonRepository>();
+                    services.AddTransient<IProjectService, ProjectService>();
                     services.AddScoped<IAccessService, AccessService>();
                     services.AddHostedService<Worker>();
                 });
