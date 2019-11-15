@@ -7,9 +7,9 @@ namespace QueueReciverService.Repositories
     {
         Task<Person> FindByUserOid(string userOid);
         Task<Person> FindByUserEmail(string userEmail);
-        Task<Person> FindByUserName(string userName);
+        Task<Person> FindByUsername(string userName);
         Task<Person> AddPerson(Person person);
-        void Update(Person person);
+        Task Update(Person person);
         Task<bool> SaveChangesAsync();
     }
 }

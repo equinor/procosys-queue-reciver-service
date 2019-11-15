@@ -25,7 +25,7 @@ namespace QueueReciverService.Repositories
            return _context.Persons.SingleOrDefaultAsync(person => person.Email.Equals(userEmail));
         }
 
-        public Task<Person> FindByUserName(string userName)
+        public Task<Person> FindByUsername(string userName)
         {
             throw new System.NotImplementedException();
         }
@@ -40,7 +40,7 @@ namespace QueueReciverService.Repositories
           return await _context.SaveChangesAsync() > 0;
         }
 
-        public void Update(Person person)
+        public async Task Update(Person person)
         {
              _context.Update(person);
         }

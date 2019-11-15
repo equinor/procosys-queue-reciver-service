@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using QueueReciverService.Data;
 using System.Net;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace QueueReciverService
 {
@@ -49,20 +50,14 @@ namespace QueueReciverService
 
         private async Task ProccessMessagesAsync(Message message, CancellationToken token)
         {
-            //var forTest = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(message.Body));
-            //_logger.LogInformation($"Proccessing message : {forTest}");
-            bool isSuccess= true;
-
+            bool isSuccess;
             var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
-            _logger.LogInformation($"Proccessing message : {accessInfo}");
+            _logger.LogInformation($"Proccessing message : { accessInfo }");
 
-            using(var scope = _scopeFactory.CreateScope())
+            using (var scope = _scopeFactory.CreateScope())
             {
-                 //var accessService = scope.ServiceProvider.GetRequiredService<IAccessService>();
-
-               // var person = db.Persons.Find(45890);
-
-                isSuccess = await _accessService.HandleRequest(accessInfo);
+                var accessService = scope.ServiceProvider.GetRequiredService<IAccessService>();
+                isSuccess = await accessService.HandleRequest(accessInfo);
             }
 
             if (isSuccess)

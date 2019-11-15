@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using QueueReciverService.Models;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace QueueReciverService.Services
 {
@@ -25,61 +26,44 @@ namespace QueueReciverService.Services
 
         public async ValueTask<bool> HandleRequest(AccessInfo accessInfo)
         {
+            var asyncResult = accessInfo.Members.Select(async member => member.ShouldRemove
+                 ? await HandleRemoveAccess(member, accessInfo.PlantOid)
+                 : await HandleGiveAccess(member, accessInfo.PlantOid));
 
+            var result = await Task.WhenAll(asyncResult);
+            return result.Aggregate((a, b) => a && b);
+        }
 
+        private async ValueTask<bool> HandleRemoveAccess(Member member, string plantOid)
+        {
 
+            var person = await _personService.FindOrCreate(member.UserOid, false);
 
-
-
-            Person person = await _personService.FindByOid(accessInfo.UserOid);
-            
-            //TODO too many ifs else, refactor
-
-            if(person == null)
+            if (person == null)
             {
-                Person graphPerson = await _graphService.GetPersonByOid(accessInfo.UserOid);
-
-                 person = await _personService.FindByEmail(graphPerson.Email) 
-                    ?? await _personService.FindByUsername(graphPerson.UserName);
-
-                
-                if (person == null)
-                {
-                    //TODO log
-                    if (accessInfo.ShouldRemove)
-                    {
-                        _logger.LogInformation("Trying to remove access from person that doesn't exist in the db");
-                        //*need to return true so message gets removed from queue*//
-                        return true; 
-                    }
-
-                    _logger.LogInformation($"Person with oid {accessInfo.UserOid} not found in database, creating person");
-                    person = await _personService.Add(graphPerson);
-                }
-                else
-                {
-                    person.Oid = accessInfo.UserOid;
-                    await  _personService.Update(person);
-                }
-
-                var success = await _personService.SaveChangesAsync();
-
-                if (!success)
-                {
-                    _logger.LogError($"Unable to add person with oid: {accessInfo.UserOid} to db");
-                    return false;
-                }
+                _logger.LogInformation($"Person with oid: {member.UserOid}, not found in database, no access to remove.");
+                return true;
             }
 
-            if (accessInfo.ShouldRemove)
+            _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantOid}");
+            return await _projectService.GiveAccessToPlant(person.Oid, plantOid);
+
+        }
+    
+
+       private async ValueTask<bool> HandleGiveAccess(Member member, string plantOid) {
+
+            var person = await _personService.FindOrCreate(member.UserOid, true);
+
+            if (person == null)
             {
-                _logger.LogInformation($"Removing access for person with id: {person.Id}, to plant {accessInfo.PlantOid}");
-               return await _projectService.RemoveAccessToPlant(person.Oid, accessInfo.PlantOid);
+                _logger.LogInformation($"Something went wrong,not able to find or create person with oid {member.UserOid}");
+                return false;
             }
-          
-                _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {accessInfo.PlantOid}");
-               return await _projectService.GiveAccessToPlant(person.Oid, accessInfo.PlantOid);
+                _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantOid}");
+               return await _projectService.GiveAccessToPlant(person.Oid, plantOid);
 
         }
     }
 }
+
