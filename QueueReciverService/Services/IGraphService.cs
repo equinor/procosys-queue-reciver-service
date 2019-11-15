@@ -1,7 +1,7 @@
-﻿using QueueReciverService.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using QueueReceiverService.Models;
 
-namespace QueueReciverService.Services
+namespace QueueReceiverService.Services
 {
     public interface IGraphService
     {

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using QueueReciverService.Models;
+using QueueReceiverService.Models;
 
-namespace QueueReciverService.Services
+namespace QueueReceiverService.Services
 {
     public interface IPersonService
     {
@@ -12,6 +12,6 @@ namespace QueueReciverService.Services
         //Task<bool> SaveChangesAsync();
         //Task<Person> FindByEmail(string email);
         //Task<Person> FindByUsername(string username);
-        Task<Person> FindOrCreate(string userOid, bool shouldCreate);
+        ValueTask<(Person, bool)> FindOrCreate(string userOid, bool shouldCreate);
     }
 }

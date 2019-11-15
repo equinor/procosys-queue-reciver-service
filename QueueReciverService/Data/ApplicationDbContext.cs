@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using QueueReciverService.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using QueueReceiverService.Models;
 
-namespace QueueReciverService.Data
+namespace QueueReceiverService.Data
 {
     public class ApplicationDbContext : DbContext
     {

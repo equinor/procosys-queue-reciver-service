@@ -1,8 +1,7 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace QueueReciverService.Models
+namespace QueueReceiverService.Models
 {
     [Table("PERSONPROJECT")]
     public class Personproject

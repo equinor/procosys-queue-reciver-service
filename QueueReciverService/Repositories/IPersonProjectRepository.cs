@@ -1,4 +1,4 @@
-﻿namespace QueueReciverService.Repositories
+﻿namespace QueueReceiverService.Repositories
 {
     public interface IPersonProjectRepository
     {

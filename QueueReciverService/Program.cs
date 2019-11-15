@@ -2,11 +2,11 @@ using System.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using QueueReciverService.Data;
-using QueueReciverService.Repositories;
-using QueueReciverService.Services;
+using QueueReceiverService.Data;
+using QueueReceiverService.Repositories;
+using QueueReceiverService.Services;
 
-namespace QueueReciverService
+namespace QueueReceiverService
 {
     public class Program
     {
@@ -19,7 +19,7 @@ namespace QueueReciverService
 
         public static void Main(string[] args)
         {
-            WebProxy proxy = new WebProxy("http://www-proxy.statoil.no:80");
+            var proxy = new WebProxy("http://www-proxy.statoil.no:80");
             WebRequest.DefaultWebProxy = proxy;
             var builder = new ConfigurationBuilder();
 

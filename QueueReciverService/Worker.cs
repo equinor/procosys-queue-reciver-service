@@ -1,30 +1,26 @@
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Azure.ServiceBus;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
-using System.Text;
-using QueueReciverService.Models;
-using QueueReciverService.Services;
-using Microsoft.Extensions.DependencyInjection;
-using QueueReciverService.Data;
-using System.Net;
-using Microsoft.Extensions.Configuration;
-using System.Linq;
+using QueueReceiverService.Models;
+using QueueReceiverService.Services;
 
-namespace QueueReciverService
+namespace QueueReceiverService
 {
     public class Worker : BackgroundService
     {
-        private readonly IAccessService _accessService;
         private readonly QueueClient _queueClient;
-        private const string QUEUE_NAME = "updateuseraccessdev";
+        private const string QueueName = "updateuseraccessdev";
         private readonly IServiceScopeFactory _scopeFactory;
 
         private readonly ILogger<Worker> _logger;
-        private bool isRegistered;
+        private bool _isRegistered;
         public IConfiguration Configuration { get; }
 
         public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory, IConfiguration configuration)
@@ -33,26 +29,26 @@ namespace QueueReciverService
             Configuration = configuration;
             _scopeFactory = scopeFactory;
             var connectionString = Configuration["ServiceBusConnectionString"];
-            _queueClient = new QueueClient(connectionString, QUEUE_NAME);
+            _queueClient = new QueueClient(connectionString, QueueName);
             _queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
         }
 
-        public void RegisterOnMessageHandlerAndReceiveMessages()
+        private void RegisterOnMessageHandlerAndReceiveMessages()
         {
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
             {
                 MaxConcurrentCalls = 1,
                 AutoComplete = false
             };
-            _queueClient.RegisterMessageHandler(ProccessMessagesAsync, messageHandlerOptions);
-            isRegistered = true;
+            _queueClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
+            _isRegistered = true;
         }
 
-        private async Task ProccessMessagesAsync(Message message, CancellationToken token)
+        private async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
             bool isSuccess;
             var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
-            _logger.LogInformation($"Proccessing message : { accessInfo }");
+            _logger.LogInformation($"Processing message : { accessInfo }");
 
             using (var scope = _scopeFactory.CreateScope())
             {
@@ -87,11 +83,10 @@ namespace QueueReciverService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (!isRegistered)
+                if (!_isRegistered)
                 {
                     RegisterOnMessageHandlerAndReceiveMessages();
                 }
-
 
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(10000, stoppingToken);

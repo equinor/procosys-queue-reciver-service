@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace QueueReciverService.Services
+namespace QueueReceiverService.Services
 {
     public class ProjectService : IProjectService
     {

@@ -1,8 +1,8 @@
-﻿using QueueReciverService.Models;
-using QueueReciverService.Repositories;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using QueueReceiverService.Models;
+using QueueReceiverService.Repositories;
 
-namespace QueueReciverService.Services
+namespace QueueReceiverService.Services
 {
     public class PersonService : IPersonService
     {
@@ -14,42 +14,36 @@ namespace QueueReciverService.Services
             _graphService = graphService;
         }
 
-        
-
-        public async Task<Person> FindOrCreate(string userOid, bool shouldCreate)
+        public async ValueTask<(Person,bool)> FindOrCreate(string userOid, bool shouldCreate)
         {
-            Person person = await _personRepository.FindByUserOid(userOid);
+            var person = await _personRepository.FindByUserOid(userOid);
 
-            if (person == null)
+            if (person != null)
             {
-                Person graphPerson = await _graphService.GetPersonByOid(userOid);
-                person = await _personRepository.FindByUserEmail(graphPerson.Email)
-                   ?? await _personRepository.FindByUsername(graphPerson.UserName);
+                return (person,true);
+            }
 
-                if (person == null && shouldCreate)
-                {
+            var graphPerson = await _graphService.GetPersonByOid(userOid);
+
+            person = await _personRepository.FindByUserEmail(graphPerson.Email)
+                     ?? await _personRepository.FindByUsername(graphPerson.UserName);
+
+            switch (person)
+            {
+                case null when !shouldCreate:
+                    return (null, false);
+                case null:
                     person = await _personRepository.AddPerson(graphPerson);
-                }
-                else if(person == null)
-                {
-                    return null;
-                }
-                else
-                {
+                    break;
+                default:
                     person.Oid = userOid;
                     await _personRepository.Update(person);
-                }
-                var success = await _personRepository.SaveChangesAsync();
-
-                if (!success)
-                {
-                   // _logger.LogError($"Unable to add person with oid: {member.UserOid} to db");
-                   //todo throw exception/complex return?
-                    return null;
-                }
-
+                    break;
             }
-            return person;
+
+            var success = await _personRepository.SaveChangesAsync();
+
+            return (person,success);
         }
 
     }

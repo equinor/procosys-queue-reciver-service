@@ -1,7 +1,7 @@
-﻿using QueueReciverService.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using QueueReceiverService.Models;
 
-namespace QueueReciverService.Repositories
+namespace QueueReceiverService.Repositories
 {
     public interface IPersonRepository
     {
