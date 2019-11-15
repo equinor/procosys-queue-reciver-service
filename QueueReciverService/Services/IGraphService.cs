@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace QueueReciverService.Services
 {
-    public interface IAccessService
+    public interface IGraphService
     {
-        ValueTask<bool> HandleRequest(AccessInfo accessInfo);
+        Task<Person> GetPersonByOid(string userOid);
     }
 }

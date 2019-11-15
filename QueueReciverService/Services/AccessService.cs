@@ -1,53 +1,68 @@
 ﻿using System.Threading.Tasks;
 using QueueReciverService.Models;
-using QueueReciverService.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace QueueReciverService.Services
 {
     public class AccessService : IAccessService
     {
-        private readonly IPersonRepository _personRepository;
+        private readonly IPersonService _personService;
         private readonly IProjectService _projectService;
+        private readonly IGraphService _graphService;
         private readonly ILogger<AccessService> _logger;
 
         public AccessService(
-            IPersonRepository personRepository,
+            IPersonService personService,
             IProjectService projectService,
+            IGraphService graphService,
             ILogger<AccessService> logger)
         {
-            _personRepository = personRepository;
+            _personService = personService;
             _projectService = projectService;
+            _graphService = graphService;
             _logger = logger;
         }
 
-        public async Task<bool> HandleRequest(AccessInfo accessInfo)
+        public async ValueTask<bool> HandleRequest(AccessInfo accessInfo)
         {
-            //TODO Possibly do some mapping from group to plant
-            //groupId, userID, remove/add
 
 
 
 
 
-            Person person = await _personRepository.FindByUserOid(accessInfo.UserOid) ??
-               await FindByEmailOrUserNameAndUpdateOid(accessInfo);
 
-            if (person == null && accessInfo.ShouldRemove)
+            Person person = await _personService.FindByOid(accessInfo.UserOid);
+            
+            //TODO too many ifs else, refactor
+
+            if(person == null)
             {
-                _logger.LogInformation("Trying to remove access from person that doesn't exist");
-                return await Task.FromResult(true);
-            }
+                Person graphPerson = await _graphService.GetPersonByOid(accessInfo.UserOid);
 
-            if (person == null && !accessInfo.ShouldRemove)
-            {
-                _logger.LogInformation($"Person with oid {accessInfo.UserOid} not found in database, creating person");
+                 person = await _personService.FindByEmail(graphPerson.Email) 
+                    ?? await _personService.FindByUsername(graphPerson.UserName);
 
-                // var person = await _graphService.GetUserInfo(accessInfo.UserOid)
-
-                person = await _personRepository.AddPerson(person);
                 
-                var success =  await _personRepository.SaveChangesAsync();
+                if (person == null)
+                {
+                    //TODO log
+                    if (accessInfo.ShouldRemove)
+                    {
+                        _logger.LogInformation("Trying to remove access from person that doesn't exist in the db");
+                        //*need to return true so message gets removed from queue*//
+                        return true; 
+                    }
+
+                    _logger.LogInformation($"Person with oid {accessInfo.UserOid} not found in database, creating person");
+                    person = await _personService.Add(graphPerson);
+                }
+                else
+                {
+                    person.Oid = accessInfo.UserOid;
+                    await  _personService.Update(person);
+                }
+
+                var success = await _personService.SaveChangesAsync();
 
                 if (!success)
                 {
@@ -58,57 +73,13 @@ namespace QueueReciverService.Services
 
             if (accessInfo.ShouldRemove)
             {
+                _logger.LogInformation($"Removing access for person with id: {person.Id}, to plant {accessInfo.PlantOid}");
+               return await _projectService.RemoveAccessToPlant(person.Oid, accessInfo.PlantOid);
+            }
+          
                 _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {accessInfo.PlantOid}");
-                _projectService.GiveAccessToPlant(person.Id, accessInfo.PlantOid);
-            }
+               return await _projectService.GiveAccessToPlant(person.Oid, accessInfo.PlantOid);
 
-            _logger.LogInformation($"Removing access for person with id: {person.Id}, to plant {accessInfo.PlantOid}");
-            _projectService.RemoveAccessToPlant(person.Id, accessInfo.PlantOid);
-
-
-
-
-            //Check for give or remove access
-
-            //Give access
-
-            //find person by oid
-            //if no person with that oid, check for person via email/shortname 
-            //if found by email/shortname, add oid to person
-
-            //if person not found by oid or email/shortname, insert person
-
-            //update person_projects, give access to all projects for given plant
-
-            //Remove access
-            //find person by oid
-
-            //if not found, check by email/shortname?? -*uncertain*-
-            //if person doesn't exist, do nothing(return success?)
-
-            //find all person projects for given plant
-            //Update person_projects, remove all for given plant.
-
-            //return success
-
-            throw new System.NotImplementedException();
-        }
-
-        private async Task<Person> FindByEmailOrUserNameAndUpdateOid(AccessInfo accessInfo)
-        {
-            //TODO call graph api with oid and find username and email.
-
-            var person =  await _personRepository.FindByUserEmail("email")
-                ?? await _personRepository.FindByUserName("userName");
-
-            if(person != null)
-            {
-                _logger.LogInformation($"Adding Oid {accessInfo.UserOid} to user with id = {person.Id}");
-                person.Oid = accessInfo.UserOid;
-                _personRepository.Update(person);
-                await _personRepository.SaveChangesAsync();
-            }
-            return person;
         }
     }
 }

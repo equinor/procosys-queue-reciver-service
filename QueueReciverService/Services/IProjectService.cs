@@ -1,8 +1,10 @@
-﻿namespace QueueReciverService.Services
+﻿using System.Threading.Tasks;
+
+namespace QueueReciverService.Services
 {
     public interface IProjectService
     {
-        void GiveAccessToPlant(int id, string plantId);
-        void RemoveAccessToPlant(int id, string plantId);
+        ValueTask<bool> GiveAccessToPlant(string oid, string plantId);
+        ValueTask<bool> RemoveAccessToPlant(string id, string plantId);
     }
 }

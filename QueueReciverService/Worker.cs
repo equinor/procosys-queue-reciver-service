@@ -21,7 +21,6 @@ namespace QueueReciverService
         private readonly QueueClient _queueClient;
         private const string QUEUE_NAME = "updateuseraccessdev";
         private readonly IServiceScopeFactory _scopeFactory;
-     
 
         private readonly ILogger<Worker> _logger;
         private bool isRegistered;
@@ -37,7 +36,6 @@ namespace QueueReciverService
             _queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
         }
 
-
         public void RegisterOnMessageHandlerAndReceiveMessages()
         {
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
@@ -51,10 +49,12 @@ namespace QueueReciverService
 
         private async Task ProccessMessagesAsync(Message message, CancellationToken token)
         {
-            var accessInfo = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(message.Body));
-
-            _logger.LogInformation($"Proccessing message : {accessInfo}");
+            //var forTest = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(message.Body));
+            //_logger.LogInformation($"Proccessing message : {forTest}");
             bool isSuccess= true;
+
+            var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
+            _logger.LogInformation($"Proccessing message : {accessInfo}");
 
             using(var scope = _scopeFactory.CreateScope())
             {
@@ -62,7 +62,7 @@ namespace QueueReciverService
 
                // var person = db.Persons.Find(45890);
 
-               // isSuccess = await accessService.HandleRequest(accessInfo);
+                isSuccess = await _accessService.HandleRequest(accessInfo);
             }
 
             if (isSuccess)
@@ -87,8 +87,6 @@ namespace QueueReciverService
         {
             await _queueClient.CloseAsync();
         }
-
-
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
