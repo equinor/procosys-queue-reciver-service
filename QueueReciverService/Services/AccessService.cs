@@ -26,7 +26,6 @@ namespace QueueReceiverService.Services
 
         public async ValueTask<bool> HandleRequest(AccessInfo accessInfo)
         {
-
             var groupExistsInDb = await _plantService.Exists(accessInfo.PlantOid);
 
             if (!groupExistsInDb)
@@ -35,14 +34,18 @@ namespace QueueReceiverService.Services
                 return false;
             }
 
+            var resultTasks = accessInfo.Members.Select(async member =>
+            {
+                if (member.ShouldRemove)
+                {
+                    return await RemoveAccess(member, accessInfo.PlantOid);
+                }
+                return await GiveAccess(member, accessInfo.PlantOid);
+            });
 
-            var resultTasks = accessInfo.Members.Select(async member => member.ShouldRemove
-                ? await RemoveAccess(member, accessInfo.PlantOid)
-                : await GiveAccess(member, accessInfo.PlantOid));
-
-            
             bool[]  results = await Task.WhenAll(resultTasks);
             return results.Aggregate((a, b) => a && b);
+            
         }
 
         private async ValueTask<bool> RemoveAccess(Member member, string plantOid)
@@ -56,12 +59,12 @@ namespace QueueReceiverService.Services
             }
 
             _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantOid}");
-            return await _projectService.GiveAccessToPlant(person.Oid, plantOid);
+            return await _projectService.RemoveAccessToPlant(person.Oid, plantOid);
         }
     
 
-       private async ValueTask<bool> GiveAccess(Member member, string plantOid) {
-
+       private async ValueTask<bool> GiveAccess(Member member, string plantOid) 
+       {
             var (person, success) = await _personService.FindOrCreate(member.UserOid, true);
 
             if (!success)
@@ -71,7 +74,7 @@ namespace QueueReceiverService.Services
 
             _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantOid}");
             return await _projectService.GiveAccessToPlant(person.Oid, plantOid);
-        }
+       }
     }
 }
 

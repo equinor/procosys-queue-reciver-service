@@ -22,17 +22,20 @@ namespace QueueReceiverService.Repositories
 
         public Task<Person> FindByUserEmail(string userEmail)
         {
-           return _context.Persons.SingleOrDefaultAsync(person => person.Email.Equals(userEmail));
+           return _context.Persons
+                .SingleOrDefaultAsync(person => person.Email.Equals(userEmail));
         }
 
         public Task<Person> FindByUsername(string userName)
         {
-            throw new System.NotImplementedException();
+            return _context.Persons
+                .SingleOrDefaultAsync(person => person.UserName.Equals(userName));
         }
 
         public Task<Person> FindByUserOid(string userOid)
         {
-            return _context.Persons.SingleOrDefaultAsync(person => person.Oid.Equals(userOid));
+            return _context.Persons
+                .SingleOrDefaultAsync(person => person.Oid.Equals(userOid));
         }
 
         public async Task<bool> SaveChangesAsync()
