@@ -14,36 +14,42 @@ namespace QueueReceiverService.Services
             _graphService = graphService;
         }
 
-        public async ValueTask<(Person,bool)> FindOrCreate(string userOid, bool shouldCreate)
+        public async ValueTask<(Person person, bool success)> FindOrCreate(string userOid, bool shouldCreate = true)
         {
             var person = await _personRepository.FindByUserOid(userOid);
 
             if (person != null)
             {
-                return (person,true);
+                return (person, success: true);
             }
 
-            var graphPerson = await _graphService.GetPersonByOid(userOid);
+            var adPerson = await _graphService.GetPersonByOid(userOid);
 
-            person = await _personRepository.FindByUserEmail(graphPerson.Email)
-                     ?? await _personRepository.FindByUsername(graphPerson.UserName);
+            person = await _personRepository.FindByUserEmail(adPerson.Email)
+                     ?? await _personRepository.FindByUsername(adPerson.UserName);
 
             switch (person)
             {
                 case null when !shouldCreate:
-                    return (null, false);
+                    return (person: null, success: true);
                 case null:
-                    person = await _personRepository.AddPerson(graphPerson);
+                    person = await _personRepository.AddPerson(
+                    new Person
+                    {
+                        Oid = adPerson.Oid,
+                        Email = adPerson.Email,
+                        UserName = adPerson.UserName
+                    });
                     break;
                 default:
                     person.Oid = userOid;
-                    await _personRepository.Update(person);
+                    _personRepository.Update(person);
                     break;
             }
 
             var success = await _personRepository.SaveChangesAsync();
 
-            return (person,success);
+            return (person, success);
         }
 
     }

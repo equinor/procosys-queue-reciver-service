@@ -1,14 +1,14 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using QueueReceiverService.Models;
 using QueueReceiverService.Services;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace QueueReciverServiceTest
 {
+    [TestClass]
     public class AccessServiceTests
     {
         private readonly Mock<IPersonService> _personService;
@@ -23,7 +23,6 @@ namespace QueueReciverServiceTest
             _logger = new Mock<ILogger<AccessService>>();
         }
 
-        [Fact]
         public async Task HandleRequest_returns_false_if_plant_doesnt_existAsync()
         {
             //Arrange
@@ -37,10 +36,10 @@ namespace QueueReciverServiceTest
             var result = await service.HandleRequest(accessInfo);
 
             //Assert
-            Assert.False(result);
+            Assert.IsFalse(result);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task HandleRequest_returns_true_when_successfully_removing_access()
         {
             //Arrange
@@ -61,7 +60,7 @@ namespace QueueReciverServiceTest
             var accessInfo = new AccessInfo
             {
                 PlantOid = plantOidThatExists,
-                Members =new List<Member>
+                Members = new List<Member>
                 {
                     new Member
                     {
@@ -74,7 +73,8 @@ namespace QueueReciverServiceTest
             var result = await accessService.HandleRequest(accessInfo);
 
             //Assert
-            Assert.True(result);
+            Assert.IsTrue(result);
         }
     }
 }
+

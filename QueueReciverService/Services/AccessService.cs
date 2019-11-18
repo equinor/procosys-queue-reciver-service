@@ -50,13 +50,19 @@ namespace QueueReceiverService.Services
 
         private async ValueTask<bool> RemoveAccess(Member member, string plantOid)
         {
-            var (person, success) = await _personService.FindOrCreate(member.UserOid, false);
+            var (person, success) = await _personService.FindOrCreate(member.UserOid, shouldCreate : false);
 
             if (!success)
+            {
+                return false;
+            }
+
+            if (success && person == null)
             {
                 _logger.LogInformation($"Person with oid: {member.UserOid}, not found in database, no access to remove.");
                 return true;
             }
+
 
             _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantOid}");
             return await _projectService.RemoveAccessToPlant(person.Oid, plantOid);
@@ -65,7 +71,7 @@ namespace QueueReceiverService.Services
 
        private async ValueTask<bool> GiveAccess(Member member, string plantOid) 
        {
-            var (person, success) = await _personService.FindOrCreate(member.UserOid, true);
+            var (person, success) = await _personService.FindOrCreate(member.UserOid);
 
             if (!success)
             {

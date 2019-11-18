@@ -43,7 +43,7 @@ namespace QueueReceiverService.Repositories
           return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task Update(Person person)
+        public void Update(Person person)
         {
              _context.Update(person);
         }

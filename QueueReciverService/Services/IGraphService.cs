@@ -5,6 +5,6 @@ namespace QueueReceiverService.Services
 {
     public interface IGraphService
     {
-        Task<Person> GetPersonByOid(string userOid);
+        Task<AdPerson> GetPersonByOid(string userOid);
     }
 }
