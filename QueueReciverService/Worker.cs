@@ -3,7 +3,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -43,7 +42,10 @@ namespace QueueReceiverService
             var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
             _logger.LogInformation($"Processing message : { accessInfo }");
 
-            /*Using scoped because Worker is singleton */
+            /**
+             * Injecting here because Worker is singleton.
+             * It not possible initiate scoped dependiences from a constructor of a singleton  
+            **/
             using (var scope = _scopeFactory.CreateScope())
             {
                 var accessService = scope.ServiceProvider.GetRequiredService<IAccessService>();
@@ -54,6 +56,10 @@ namespace QueueReceiverService
             {
                 await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
                 _logger.LogInformation($"Message completed successfully");
+            }
+            else
+            {
+                _logger.LogInformation($"Something went wrong trying to process the message, not completing");
             }
         }
 
@@ -69,8 +75,6 @@ namespace QueueReceiverService
             return Task.CompletedTask;
         }
 
-  
-
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
@@ -78,7 +82,6 @@ namespace QueueReceiverService
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(10000, stoppingToken);
             }
-
             await _queueClient.CloseAsync();
         }
     }

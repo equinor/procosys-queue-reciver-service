@@ -4,23 +4,21 @@ namespace QueueReceiverService.Services
 {
     public class ProjectService : IProjectService
     {
-        public void GiveAccessToPlant(int id, string plantId)
+        public Task<bool> GiveAccessToPlant(string personOid, string plantOid)
         {
+            //Get all projects in plant
+            //Get all persons projects
+            //Update personProjects with projects from plant
+            //Save
             throw new System.NotImplementedException();
         }
 
-        public Task<bool> GiveAccessToPlant(string oid, string plantId)
+        public Task<bool> RemoveAccessToPlant(string personOid, string plantOid)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public void RemoveAccessToPlant(int id, string plantId)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<bool> RemoveAccessToPlant(string id, string plantId)
-        {
+            //Get all person projects for user
+            //Update persons project and remove all projects belonging to plant
+            //Update personProjects with projects from plant
+            //Save
             throw new System.NotImplementedException();
         }
     }

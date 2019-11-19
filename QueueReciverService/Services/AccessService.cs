@@ -30,8 +30,8 @@ namespace QueueReceiverService.Services
 
             if (!groupExistsInDb)
             {
-                //for now ignore all messages coming from groups we don't care about'
-                return false;
+                _logger.LogInformation($"Group not relevant, returning success to remove message from queue");
+                return true;
             }
 
             if(accessInfo.Members == null)
@@ -51,7 +51,6 @@ namespace QueueReceiverService.Services
 
             bool[]  results = await Task.WhenAll(resultTasks);
             return results.Aggregate((a, b) => a && b);
-            
         }
 
         private async ValueTask<bool> RemoveAccess(Member member, string plantOid)
@@ -63,7 +62,7 @@ namespace QueueReceiverService.Services
                 return false;
             }
 
-            if (success && person == null)
+            if (person == null)
             {
                 _logger.LogInformation($"Person with oid: {member.UserOid}, not found in database, no access to remove.");
                 return success;
@@ -79,6 +78,7 @@ namespace QueueReceiverService.Services
 
             if (!success)
             {
+
                 return false;
             }
 
