@@ -14,7 +14,7 @@ namespace QueueReceiverService.Services
             _graphService = graphService;
         }
 
-        public async ValueTask<(Person person, bool success)> FindOrCreate(string userOid, bool shouldCreate = true)
+        public async ValueTask<(Person person, bool success)> FindOrCreate(string userOid, bool shouldNotCreate = false)
         {
             var person = await _personRepository.FindByUserOid(userOid);
 
@@ -26,11 +26,11 @@ namespace QueueReceiverService.Services
             var adPerson = await _graphService.GetPersonByOid(userOid);
 
             person = await _personRepository.FindByUserEmail(adPerson.Email)
-                     ?? await _personRepository.FindByUsername(adPerson.UserName);
+                     ?? await _personRepository.FindByUsername(adPerson.Username);
 
             switch (person)
             {
-                case null when !shouldCreate:
+                case null when shouldNotCreate:
                     return (person: null, success: true);
                 case null:
                     person = await _personRepository.AddPerson(
@@ -38,7 +38,7 @@ namespace QueueReceiverService.Services
                     {
                         Oid = adPerson.Oid,
                         Email = adPerson.Email,
-                        UserName = adPerson.UserName
+                        UserName = adPerson.Username
                     });
                     break;
                 default:

@@ -4,7 +4,7 @@ namespace QueueReceiverService.Services
 {
     public interface IProjectService
     {
-        ValueTask<bool> GiveAccessToPlant(string oid, string plantId);
-        ValueTask<bool> RemoveAccessToPlant(string id, string plantId);
+        Task<bool> GiveAccessToPlant(string oid, string plantId);
+        Task<bool> RemoveAccessToPlant(string id, string plantId);
     }
 }

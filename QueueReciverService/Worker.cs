@@ -15,22 +15,16 @@ namespace QueueReceiverService
 {
     public class Worker : BackgroundService
     {
-        private readonly QueueClient _queueClient;
-        private const string QueueName = "updateuseraccessdev";
+        private readonly IQueueClient _queueClient;
         private readonly IServiceScopeFactory _scopeFactory;
-
         private readonly ILogger<Worker> _logger;
-        private bool _isRegistered;
-        public IConfiguration Configuration { get; }
 
-        public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory, IConfiguration configuration)
+        public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory, IQueueClient queueClient)
         {
             _logger = logger;
-            Configuration = configuration;
             _scopeFactory = scopeFactory;
-            var connectionString = Configuration["ServiceBusConnectionString"];
-            _queueClient = new QueueClient(connectionString, QueueName);
-            _queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
+            _queueClient = queueClient;
+            RegisterOnMessageHandlerAndReceiveMessages();
         }
 
         private void RegisterOnMessageHandlerAndReceiveMessages()
@@ -41,7 +35,6 @@ namespace QueueReceiverService
                 AutoComplete = false
             };
             _queueClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
-            _isRegistered = true;
         }
 
         private async Task ProcessMessagesAsync(Message message, CancellationToken token)
@@ -50,6 +43,7 @@ namespace QueueReceiverService
             var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
             _logger.LogInformation($"Processing message : { accessInfo }");
 
+            /*Using scoped because Worker is singleton */
             using (var scope = _scopeFactory.CreateScope())
             {
                 var accessService = scope.ServiceProvider.GetRequiredService<IAccessService>();
@@ -59,6 +53,7 @@ namespace QueueReceiverService
             if (isSuccess)
             {
                 await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
+                _logger.LogInformation($"Message completed successfully");
             }
         }
 
@@ -74,23 +69,17 @@ namespace QueueReceiverService
             return Task.CompletedTask;
         }
 
-        public async Task CloseQueueAsync()
-        {
-            await _queueClient.CloseAsync();
-        }
+  
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (!_isRegistered)
-                {
-                    RegisterOnMessageHandlerAndReceiveMessages();
-                }
-
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(10000, stoppingToken);
             }
+
+            await _queueClient.CloseAsync();
         }
     }
 }

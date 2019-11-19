@@ -34,6 +34,12 @@ namespace QueueReceiverService.Services
                 return false;
             }
 
+            if(accessInfo.Members == null)
+            {
+                //irrelevant
+                return true;
+            }
+
             var resultTasks = accessInfo.Members.Select(async member =>
             {
                 if (member.ShouldRemove)
@@ -50,7 +56,7 @@ namespace QueueReceiverService.Services
 
         private async ValueTask<bool> RemoveAccess(Member member, string plantOid)
         {
-            var (person, success) = await _personService.FindOrCreate(member.UserOid, shouldCreate : false);
+            var (person, success) = await _personService.FindOrCreate(member.UserOid, shouldNotCreate: true);
 
             if (!success)
             {
@@ -60,14 +66,12 @@ namespace QueueReceiverService.Services
             if (success && person == null)
             {
                 _logger.LogInformation($"Person with oid: {member.UserOid}, not found in database, no access to remove.");
-                return true;
+                return success;
             }
-
 
             _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantOid}");
             return await _projectService.RemoveAccessToPlant(person.Oid, plantOid);
         }
-    
 
        private async ValueTask<bool> GiveAccess(Member member, string plantOid) 
        {

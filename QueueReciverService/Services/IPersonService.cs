@@ -5,6 +5,6 @@ namespace QueueReceiverService.Services
 {
     public interface IPersonService
     {
-        ValueTask<(Person person, bool success)> FindOrCreate(string userOid, bool shouldCreate=true);
+        ValueTask<(Person person, bool success)> FindOrCreate(string userOid, bool shouldNotCreate=false);
     }
 }

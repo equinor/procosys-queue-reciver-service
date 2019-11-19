@@ -19,6 +19,5 @@ namespace QueueReceiverService.Models
 
         [JsonProperty("remove")]
         public bool ShouldRemove { get; set; }
-
     }
 }

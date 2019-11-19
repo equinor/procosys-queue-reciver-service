@@ -9,7 +9,7 @@ namespace QueueReceiverService.Services
             throw new System.NotImplementedException();
         }
 
-        public ValueTask<bool> GiveAccessToPlant(string oid, string plantId)
+        public Task<bool> GiveAccessToPlant(string oid, string plantId)
         {
             throw new System.NotImplementedException();
         }
@@ -19,7 +19,7 @@ namespace QueueReceiverService.Services
             throw new System.NotImplementedException();
         }
 
-        public ValueTask<bool> RemoveAccessToPlant(string id, string plantId)
+        public Task<bool> RemoveAccessToPlant(string id, string plantId)
         {
             throw new System.NotImplementedException();
         }

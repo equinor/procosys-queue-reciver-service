@@ -1,4 +1,6 @@
+using System.IO;
 using System.Net;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,23 +23,39 @@ namespace QueueReceiverService
         {
             var proxy = new WebProxy("http://www-proxy.statoil.no:80");
             WebRequest.DefaultWebProxy = proxy;
-            var builder = new ConfigurationBuilder();
-
-            builder.AddUserSecrets<Program>();
 
             CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            
-                .ConfigureServices((hostContext, services) =>
+            .ConfigureAppConfiguration((hostingContext,config) => 
+            {
+                var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            })
+            .ConfigureServices((hostContext, services) =>
+            {
+                services.AddDbContext<ApplicationDbContext>();
+                services.AddHostedService<Worker>();
+
+            services.AddSingleton<IQueueClient>(sp =>
                 {
-                    services.AddDbContext<ApplicationDbContext>();
-                    services.AddTransient<IPersonRepository, PersonRepository>();
-                    services.AddTransient<IProjectService, ProjectService>();
-                    services.AddScoped<IAccessService, AccessService>();
-                    services.AddHostedService<Worker>();
+                    var config = sp.GetRequiredService<IConfiguration>();
+                    var connString = config["ServiceBusConnectionString"];
+                    var queueName = "updateuseraccessdev";//config[""];
+                    var queueClient = new QueueClient(connString,queueName);
+                    queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
+                    return queueClient;
                 });
+
+                services.AddTransient<IAccessService, AccessService>();
+                services.AddTransient<IPlantService, PlantService>();
+                services.AddTransient<IPersonRepository, PersonRepository>();
+                services.AddTransient<IGraphService, GraphService>();
+                services.AddTransient<IPersonService, PersonService>();
+                services.AddTransient<IProjectService, ProjectService>();
+            });
     }
 }

@@ -51,7 +51,7 @@ namespace QueueReciverServiceTests
                                 new AdPerson
                                 {
                                     Oid = SomeOid,
-                                    UserName = someUsername,
+                                    Username = someUsername,
                                     Email = "anyEmail"
                                 }));
 
@@ -66,6 +66,88 @@ namespace QueueReciverServiceTests
 
             //Assert
             Assert.AreEqual(SomeId, person.Id);
+            Assert.IsTrue(success);
+        }
+
+        [TestMethod]
+        public async Task FindOrCreate_can_find_by_email()
+        {
+            //Arrange
+            const int SomeId = 1;
+            const string someEmail = "someEmail";
+            const string SomeOid = "someOid";
+
+            _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
+                .Returns(Task.FromResult(
+                                new AdPerson
+                                {
+                                    Oid = SomeOid,
+                                    Username = "anyUsername",
+                                    Email = someEmail
+                                }));
+
+            _personRepository.Setup(personService => personService.FindByUserEmail(someEmail))
+                    .Returns(Task.FromResult(new Person { Id = SomeId, Email = someEmail }));
+            _personRepository.Setup(personService => personService.SaveChangesAsync()).Returns(Task.FromResult(true));
+
+            var service = new PersonService(_personRepository.Object, _graphService.Object);
+
+            //Act
+            var (person, success) = await service.FindOrCreate(SomeOid);
+
+            //Assert
+            Assert.AreEqual(SomeId, person.Id);
+            Assert.IsTrue(success);
+        }
+
+
+        [TestMethod]
+        public async Task FindOrCreate_returns_failure_if_save_fails()
+        {
+            //Arrange
+            const string SomeOid = "someOid";
+
+            _personRepository.Setup(personService => personService.SaveChangesAsync()).Returns(Task.FromResult(false));
+
+            var service = new PersonService(_personRepository.Object, _graphService.Object);
+            _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
+             .Returns(Task.FromResult(
+                             new AdPerson
+                             {
+                                 Oid = SomeOid,
+                                 Username = "anyUserName",
+                                 Email = "anyEmail"
+                             }));
+
+
+            //Act
+            var (person, success) = await service.FindOrCreate(SomeOid);
+
+            //Assert
+            Assert.IsFalse(success);
+        }
+
+
+        [TestMethod]
+        public async Task FindOrCreate_returns_null_and_success_if_shouldNotCreate()
+        {
+            //Arrange
+            const string SomeOid = "someOid";
+            _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
+            .Returns(Task.FromResult(
+                            new AdPerson
+                            {
+                                Oid = SomeOid,
+                                Username = "anyUserName",
+                                Email = "anyEmail"
+                            }));
+
+            var service = new PersonService(_personRepository.Object, _graphService.Object);
+
+            //Act
+            var (person, success) = await service.FindOrCreate(SomeOid, shouldNotCreate: true);
+
+            Assert.IsNull(person);
             Assert.IsTrue(success);
         }
     }
