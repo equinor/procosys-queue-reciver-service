@@ -6,7 +6,7 @@ using QueueReceiverService.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace QueueReciverServiceTest
+namespace QueueReciverServiceTest.Services
 {
     [TestClass]
     public class AccessServiceTests
@@ -34,15 +34,15 @@ namespace QueueReciverServiceTest
         {
             //Arrange
             var plantOidThatDoesntExists = "SomePlantThatDoesNotExist";
-            _plantService.Setup(plantService => plantService.Exists(plantOidThatDoesntExists)).Returns(Task.FromResult(false));
-
+            _plantService.Setup(plantService => plantService.Exists(plantOidThatDoesntExists))
+                .Returns(Task.FromResult(false));
             var accessInfo = new AccessInfo { PlantOid = plantOidThatDoesntExists, Members = null };
 
             //Act
             var result = await service.HandleRequest(accessInfo);
 
             //Assert
-            Assert.IsFalse(result);
+            Assert.IsTrue(result);
         }
 
         [TestMethod]
@@ -52,7 +52,8 @@ namespace QueueReciverServiceTest
             const bool ShouldNotCreate = true;
             const string someOid = "someOid";
             const string plantOidThatExists = "SomePlantThatExist";
-            _plantService.Setup(plantService => plantService.Exists(plantOidThatExists)).Returns(Task.FromResult(true));
+            _plantService.Setup(plantService => plantService.Exists(plantOidThatExists))
+                .Returns(Task.FromResult(true));
             _personService.Setup(personService => personService.FindOrCreate(someOid, ShouldNotCreate))
                 .Returns(new ValueTask<(Person, bool)>((new Person { Id = 1, Oid = someOid }, true)));
             _projectService.Setup(projectService => projectService.RemoveAccessToPlant(someOid, plantOidThatExists))
@@ -78,10 +79,10 @@ namespace QueueReciverServiceTest
         public async Task HandleRequest_returns_true_when_removing_access_for_user_not_in_db()
         {
             //Arrange
-            _plantService.Setup(plantService => plantService.Exists(It.IsAny<string>())).Returns(Task.FromResult(true));
-
+            _plantService.Setup(plantService => plantService.Exists(It.IsAny<string>()))
+                .Returns(Task.FromResult(true));
             _personService.Setup(personService => personService.FindOrCreate(It.IsAny<string>(), true))
-               .Returns(new ValueTask<(Person, bool)>((null, true)));
+                .Returns(new ValueTask<(Person, bool)>((null, true)));
 
             var accessInfo = new AccessInfo
             {

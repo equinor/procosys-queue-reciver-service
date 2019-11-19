@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueueReceiverService", "Que
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueueReciverServiceTests", "QueueReciverServiceTests\QueueReciverServiceTests.csproj", "{F15B7545-559E-4419-B34B-1C18C1F4C114}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueueReceiverServiceTests", "QueueReceiverServiceTests\QueueReceiverServiceTests.csproj", "{43CECE1D-346F-4BA4-B62E-7FFECD1F0A50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F15B7545-559E-4419-B34B-1C18C1F4C114}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F15B7545-559E-4419-B34B-1C18C1F4C114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F15B7545-559E-4419-B34B-1C18C1F4C114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43CECE1D-346F-4BA4-B62E-7FFECD1F0A50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43CECE1D-346F-4BA4-B62E-7FFECD1F0A50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43CECE1D-346F-4BA4-B62E-7FFECD1F0A50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43CECE1D-346F-4BA4-B62E-7FFECD1F0A50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
