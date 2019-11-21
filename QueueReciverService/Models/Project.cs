@@ -8,14 +8,13 @@ namespace QueueReceiverService.Models
     {
         [Column("PROJECT_ID")]
         public long ProjectId { get; set; }
-                 
+
         [Column("PROJECTSCHEMA")]
-        public string PlantId { get; set;}
+        public string PlantId { get; set; } = null!;
 
         [Column("ISVOIDED")]
         public bool IsVoided { get; set; }
 
-        [ForeignKey("PlantId")]
-        public virtual Plant Plant { get; set; }
+        public virtual Plant? Plant { get; set; }
     }
 }

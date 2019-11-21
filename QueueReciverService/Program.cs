@@ -29,7 +29,7 @@ namespace QueueReceiverService
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((hostingContext,config) => 
+            .ConfigureAppConfiguration((hostingContext, config) =>
             {
                 var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -40,15 +40,15 @@ namespace QueueReceiverService
                 services.AddDbContext<ApplicationDbContext>();
                 services.AddHostedService<Worker>();
 
-            services.AddSingleton<IQueueClient>(sp =>
-                {
-                    var config = sp.GetRequiredService<IConfiguration>();
-                    var connString = config["ServiceBusConnectionString"];
-                    var queueName = "updateuseraccessdev";//config[""];
-                    var queueClient = new QueueClient(connString,queueName);
-                    queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
-                    return queueClient;
-                });
+                services.AddSingleton<IQueueClient>(sp =>
+                    {
+                        var config = sp.GetRequiredService<IConfiguration>();
+                        var connString = config["ServiceBusConnectionString"];
+                        var queueName = "updateuseraccessdev";//config[""];
+                    var queueClient = new QueueClient(connString, queueName);
+                        queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
+                        return queueClient;
+                    });
 
                 services.AddTransient<IAccessService, AccessService>();
                 services.AddTransient<IPlantService, PlantService>();

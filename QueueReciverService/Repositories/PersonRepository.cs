@@ -18,14 +18,14 @@ namespace QueueReceiverService.Repositories
 
         public async Task<Person> AddPerson(Person person)
         {
-           await _persons.AddAsync(person);
-           return person;
+            await _persons.AddAsync(person);
+            return person;
         }
 
         public Task<Person> FindByUserEmail(string userEmail)
         {
-           return _persons
-                .SingleOrDefaultAsync(person => userEmail.Equals(person.Email));
+            return _persons
+                 .SingleOrDefaultAsync(person => userEmail.Equals(person.Email));
         }
 
         public Task<Person> FindByUsername(string userName)
@@ -42,12 +42,12 @@ namespace QueueReceiverService.Repositories
 
         public async Task<int> SaveChangesAsync()
         {
-          return await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
         }
 
         public void Update(Person person)
         {
-             _context.Update(person);
+            _context.Update(person);
         }
     }
 }

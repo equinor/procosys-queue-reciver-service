@@ -30,13 +30,8 @@ namespace QueueReceiverService.Services
 
         public async Task RemoveAccessToPlant(long personId, string plantId)
         {
-             _personProjectRepository.RemovePersonProjects(plantId, personId);
-             await _personProjectRepository.SaveChangesAsync();
-
-          //  List<Project> projects = await _projectRepository.GetProjectsByPlant(plantId);
-            //projects.ForEach(project
-            //    =>  _personProjectRepository.RemoveIfExists(personId, project.ProjectId));
-
+            _personProjectRepository.RemovePersonProjects(plantId, personId);
+            await _personProjectRepository.SaveChangesAsync();
         }
     }
 }

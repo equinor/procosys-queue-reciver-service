@@ -18,7 +18,9 @@ namespace QueueReceiverService.Repositories
 
         public Task<List<Project>> GetProjectsByPlant(string plantId)
         {
-            return context.Projects.Where(project => project.PlantId.Equals(plantId) && project.IsVoided)
+            return context.Projects
+                .Where(project => project.PlantId.Equals(plantId)
+                    && project.IsVoided)
                 .ToListAsync();
         }
     }

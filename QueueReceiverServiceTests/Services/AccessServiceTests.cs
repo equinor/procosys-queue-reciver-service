@@ -24,9 +24,9 @@ namespace QueueReciverServiceTest.Services
             _plantService = new Mock<IPlantService>();
             _logger = new Mock<ILogger<AccessService>>();
             _service = new AccessService(
-                _personService.Object, 
+                _personService.Object,
                 _projectService.Object,
-                _plantService.Object, 
+                _plantService.Object,
                 _logger.Object);
         }
 
@@ -37,10 +37,10 @@ namespace QueueReciverServiceTest.Services
             const string plantOidThatDoesntExists = "SomePlantThatDoesNotExist";
             _plantService.Setup(plantService => plantService.Exists(plantOidThatDoesntExists))
                 .Returns(Task.FromResult(false));
-            var accessInfo = new AccessInfo { PlantOid = plantOidThatDoesntExists, Members = null };
+            var accessInfo = new AccessInfo(plantOidThatDoesntExists, new List<Member>());
 
             //Act
-             await _service.HandleRequest(accessInfo);
+            await _service.HandleRequest(accessInfo);
 
             //Assert
             _plantService.Verify(_ => _.GetPlantId(plantOidThatDoesntExists), Times.Once);
@@ -62,21 +62,17 @@ namespace QueueReciverServiceTest.Services
             _projectService.Setup(projectService => projectService.RemoveAccessToPlant(somePersonId, plantOidThatExists))
                 .Returns(Task.FromResult(true));
 
-            var accessInfo = new AccessInfo
-            {
-                PlantOid = plantOidThatExists,
-                Members = new List<Member>
+            var accessInfo = new AccessInfo(plantOidThatExists, new List<Member>
                 {
-                    new Member{ UserOid = someOid, ShouldRemove = true}
-                }
-            };
+                    new Member(someOid, true)
+                });
 
             //Act
-             await _service.HandleRequest(accessInfo);
+            await _service.HandleRequest(accessInfo);
 
             //Assert
-            _personService.Verify(_=> _.FindByOid(someOid), Times.Once);
-            _projectService.Verify(_=> _.RemoveAccessToPlant(somePersonId,It.IsAny<string>()), Times.Once);
+            _personService.Verify(_ => _.FindByOid(someOid), Times.Once);
+            _projectService.Verify(_ => _.RemoveAccessToPlant(somePersonId, It.IsAny<string>()), Times.Once);
         }
 
         [TestMethod]
@@ -85,15 +81,11 @@ namespace QueueReciverServiceTest.Services
             //Arrange
             _plantService.Setup(plantService => plantService.Exists(It.IsAny<string>()))
                 .Returns(Task.FromResult(true));
-        
-            var accessInfo = new AccessInfo
-            {
-                PlantOid = "anyPlantOid",
-                Members = new List<Member>
-                {
-                    new Member{ UserOid = "anyOid", ShouldRemove = true }
-                }
-            };
+
+            var accessInfo = new AccessInfo(
+                "anyPlantOid",
+                new List<Member> { new Member("anyOid", true) }
+                );
 
             //Act
             await _service.HandleRequest(accessInfo);
@@ -118,15 +110,12 @@ namespace QueueReciverServiceTest.Services
                 projectService.GiveProjectAccessToPlant(It.IsAny<long>(), It.IsAny<string>()))
                     .Returns(Task.CompletedTask);
 
-            var accessInfo = new AccessInfo
-            {
-                PlantOid = "anyPlantOid",
-                Members = new List<Member>
+            var accessInfo = new AccessInfo("anyPlantOid", new List<Member>
                 {
-                    new Member { UserOid = "oid1", ShouldRemove = false },
-                    new Member { UserOid = "oid2", ShouldRemove = false }
-                }
-            };
+                    new Member("oid1", false),
+                    new Member ("oid2", false),
+                });
+
 
             //Act
             await _service.HandleRequest(accessInfo);

@@ -17,6 +17,6 @@ namespace QueueReceiverService.Models
         [Column("PERSON_ID")]
         public long PersonId { get; set; }
 
-        public virtual Project Project {get; set; }
-   }
+        public virtual Project? Project { get; set; }
+    }
 }

@@ -77,7 +77,7 @@ namespace QueueReciverServiceTests.Services
                 .Returns(Task.FromResult(1));
 
             //Act
-            var person= await _service.FindOrCreate(SomeOid);
+            var person = await _service.FindOrCreate(SomeOid);
 
             //Assert
             Assert.AreEqual(SomeId, person.Id);
@@ -92,7 +92,7 @@ namespace QueueReciverServiceTests.Services
                 .Returns(Task.FromResult(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
 
             //Act
-            var person  = await _service.FindByOid(SomeOid);
+            var person = await _service.FindByOid(SomeOid);
 
             Assert.IsNull(person);
         }

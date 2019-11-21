@@ -26,7 +26,7 @@ namespace QueueReceiverService.Services
             var adPerson = await _graphService.GetPersonByOid(userOid);
             person = await FindUseByEmailOrUserName(adPerson);
 
-            if(person != null)
+            if (person != null)
             {
                 person.Oid = adPerson.Oid;
                 _personRepository.Update(person);
@@ -48,7 +48,7 @@ namespace QueueReceiverService.Services
 
             person = await FindUseByEmailOrUserName(adPerson);
 
-            if(person == null)
+            if (person == null)
             {
                 person = await _personRepository.AddPerson(
                                     new Person

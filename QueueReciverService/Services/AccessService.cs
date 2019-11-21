@@ -57,8 +57,10 @@ namespace QueueReceiverService.Services
         {
             Person? person = await _personService.FindByOid(member.UserOid);
 
-            if(person == null)
+            if (person == null)
             {
+                _logger.LogInformation($"Person doesn't exist in db so there is no reson to remove access," +
+                    $" removing message from queue");
                 return;
             }
             _logger.LogInformation($"Removing access for person with id: {person.Id}, to plant {plantId}");

@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using QueueReceiverService.Models;
@@ -14,19 +12,21 @@ namespace QueueReceiverService.Data
             new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider()
         });
 
-        public IConfiguration Configuration { get; }
-
-        public virtual DbSet<Person> Persons { get; set; }
-        public virtual DbSet<PersonProject> Personprojects { get; set; }
-        public virtual DbSet<Project> Projects { get; set; }
-
-        public virtual DbSet<Plant> Plants { get; set; }
-
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration)
-            : base(options)
+        : base(options)
         {
             Configuration = configuration;
         }
+
+        public IConfiguration Configuration { get; }
+
+        public virtual DbSet<Person> Persons { get; set; } = null!;
+        public virtual DbSet<PersonProject> Personprojects { get; set; } = null!;
+        public virtual DbSet<Project> Projects { get; set; } = null!;
+
+        public virtual DbSet<Plant> Plants { get; set; } = null!;
+
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -43,9 +43,9 @@ namespace QueueReceiverService.Data
             modelBuilder.Entity<PersonProject>()
                 .HasKey(pp => new { pp.ProjectId, pp.PersonId });
             modelBuilder.Entity<PersonProject>()
-                .HasOne(pp=> pp.Project)
+                .HasOne(pp => pp.Project)
                 .WithMany()
-                .HasForeignKey(pp=> pp.ProjectId);
+                .HasForeignKey(pp => pp.ProjectId);
 
             modelBuilder.Entity<Project>()
                 .HasOne(project => project.Plant)

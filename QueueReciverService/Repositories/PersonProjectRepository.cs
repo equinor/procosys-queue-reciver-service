@@ -32,8 +32,8 @@ namespace QueueReceiverService.Repositories
         public void RemovePersonProjects(string plantId, long personId)
         {
             var personProjects = _personProjects
-                .Include(pp=> pp.Project)
-                .ThenInclude(project=> project.Plant)
+                .Include(pp => pp.Project!)
+                .ThenInclude(project => project.Plant)
                 .Where(pp => pp.Project != null
                     && plantId.Equals(pp.Project.PlantId)
                     && personId == pp.PersonId);
@@ -56,6 +56,5 @@ namespace QueueReceiverService.Repositories
         {
             return await _context.SaveChangesAsync();
         }
-
     }
 }
