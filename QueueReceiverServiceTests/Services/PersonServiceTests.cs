@@ -84,7 +84,7 @@ namespace QueueReciverServiceTests.Services
         }
 
         [TestMethod]
-        public async Task FindOrCreate_returns_null_if_no_person_in_db_and_shouldNotCreate()
+        public async Task FindByOid_returns_null_if_no_person_in_db()
         {
             //Arrange
             const string SomeOid = "someOid";
@@ -92,7 +92,7 @@ namespace QueueReciverServiceTests.Services
                 .Returns(Task.FromResult(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
 
             //Act
-            var person  = await _service.FindOrCreate(SomeOid, shouldRemove: true);
+            var person  = await _service.FindByOid(SomeOid);
 
             Assert.IsNull(person);
         }

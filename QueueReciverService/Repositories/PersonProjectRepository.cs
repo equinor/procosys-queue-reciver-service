@@ -19,37 +19,37 @@ namespace QueueReceiverService.Repositories
             _context = context;
         }
 
-        public async Task<int> AddIfNotExists(long personId, long projectId)
+        public async Task AddIfNotExists(long personId, long projectId)
         {
             var personProject = _personProjects.Find(personId, projectId);
-            int dbOpperations = 0;
 
             if (personProject == null)
             {
                 await _personProjects.AddAsync(new PersonProject(personId, projectId));
-                dbOpperations++;
             }
-            return dbOpperations;
-
         }
 
-        public Task<List<PersonProject>> GetPersonProjects(string plantId, int personId)
+        public void RemovePersonProjects(string plantId, long personId)
         {
-            return _personProjects
-                .Where(pp => plantId.Equals(pp.Project.PlantId) && personId == pp.PersonId)
-                .ToListAsync();
+            var personProjects = _personProjects
+                .Include(pp=> pp.Project)
+                .ThenInclude(project=> project.Plant)
+                .Where(pp => pp.Project != null
+                    && plantId.Equals(pp.Project.PlantId)
+                    && personId == pp.PersonId);
+
+            var toSee = personProjects.ToList();
+
+            _personProjects.RemoveRange(personProjects);
         }
 
-        public int RemoveIfExists(long personId, long projectId)
+        public void RemoveIfExists(long personId, long projectId)
         {
             var personProject = _personProjects.Find(personId, projectId);
-            int dbOpperations = 0;
             if (personProject != null)
             {
                 _personProjects.Remove(personProject);
-                dbOpperations++;
             }
-            return dbOpperations;
         }
 
         public async Task<int> SaveChangesAsync()

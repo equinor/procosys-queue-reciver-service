@@ -17,6 +17,7 @@ namespace QueueReceiverService.Services
             _config = config;
             _logger = logger;
         }
+
         public async Task<AdPerson> GetPersonByOid(string userOid)
         {
             AuthenticationResult auth = await GetAccessToken();
@@ -30,14 +31,7 @@ namespace QueueReceiverService.Services
                       }));
 
             var user = await graphClient.Users[userOid].Request().GetAsync();
-
-            if(user == null)
-            {
-                _logger.LogError($"User with oid {userOid} was not found when querying graph api. returning null");
-                return null;
-            }
-
-            var adPerson = new AdPerson(user.Id, user.UserPrincipalName?.ToUpper(), user.Mail);
+            var adPerson = new AdPerson(user.Id, user.UserPrincipalName.ToUpper(), user.Mail);
 
             return adPerson;
         }

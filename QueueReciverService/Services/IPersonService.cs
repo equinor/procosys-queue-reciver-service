@@ -5,6 +5,7 @@ namespace QueueReceiverService.Services
 {
     public interface IPersonService
     {
-        Task<Person> FindOrCreate(string userOid, bool shouldRemove=false);
+        Task<Person?> FindByOid(string userOid);
+        Task<Person> FindOrCreate(string userOid);
     }
 }

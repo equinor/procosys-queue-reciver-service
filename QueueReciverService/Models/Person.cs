@@ -8,10 +8,10 @@ namespace QueueReceiverService.Models
         [Column("PERSON_ID")]
         public long Id { get; set; }
         [Column("AZURE_OID")]
-        public string Oid { get; set; }
+        public string? Oid { get; set; }
         [Column("USERNAME")]
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
         [Column("EMAILADDRESS")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
     }
 }

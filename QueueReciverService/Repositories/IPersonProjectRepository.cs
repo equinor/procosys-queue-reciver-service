@@ -2,13 +2,15 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using QueueReceiverService.Data;
+using QueueReceiverService.Models;
 
 namespace QueueReceiverService.Repositories
 {
     public interface IPersonProjectRepository
     {
-        Task<int> AddIfNotExists(long personId, long id);
+        Task AddIfNotExists(long personId, long id);
         Task<int> SaveChangesAsync();
-        int RemoveIfExists(long personId, long projectId);
+        void RemoveIfExists(long personId, long projectId);
+        void RemovePersonProjects(string plantId, long personId);
     }
 }

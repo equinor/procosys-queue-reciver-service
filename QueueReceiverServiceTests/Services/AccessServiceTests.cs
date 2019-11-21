@@ -44,22 +44,21 @@ namespace QueueReciverServiceTest.Services
 
             //Assert
             _plantService.Verify(_ => _.GetPlantId(plantOidThatDoesntExists), Times.Once);
-            _personService.Verify(_ => _.FindOrCreate(It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
+            _personService.Verify(_ => _.FindOrCreate(It.IsAny<string>()), Times.Never);
         }
 
         [TestMethod]
         public async Task HandleRequest_successfully_removes_access()
         {
             //Arrange
-            const bool ShouldNotCreate = true;
             const string someOid = "someOid";
             const long somePersonId = 12;
             const string somePlantId = "testPlant";
             const string plantOidThatExists = "SomePlantThatExist";
             _plantService.Setup(plantService => plantService.GetPlantId(plantOidThatExists))
                 .Returns(Task.FromResult(somePlantId));
-            _personService.Setup(personService => personService.FindOrCreate(someOid, ShouldNotCreate))
-                .Returns(Task.FromResult(new Person { Id = 1, Oid = someOid }));
+            _personService.Setup(personService => personService.FindByOid(someOid))
+                .Returns(Task.FromResult(new Person { Id = somePersonId, Oid = someOid }));
             _projectService.Setup(projectService => projectService.RemoveAccessToPlant(somePersonId, plantOidThatExists))
                 .Returns(Task.FromResult(true));
 
@@ -76,7 +75,7 @@ namespace QueueReciverServiceTest.Services
              await _service.HandleRequest(accessInfo);
 
             //Assert
-            _personService.Verify(_=> _.FindOrCreate(someOid, false), Times.Once);
+            _personService.Verify(_=> _.FindByOid(someOid), Times.Once);
             _projectService.Verify(_=> _.RemoveAccessToPlant(somePersonId,It.IsAny<string>()), Times.Once);
         }
 
@@ -104,19 +103,20 @@ namespace QueueReciverServiceTest.Services
         }
 
         [TestMethod]
-        public async Task HandleRequest_returns_false_if_any_member_fails()
+        public async Task HandleRequest_exits_when_exception_thrown()
         {
             //Arrange
             var person1 = new Person { Id = 1, Oid = "oid1" };
 
             _plantService.Setup(plantService => plantService.GetPlantId(It.IsAny<string>()))
                 .Returns(Task.FromResult("somePlantId"));
-            _personService.Setup(personService => personService.FindOrCreate("oid1", false))
+            _personService.Setup(personService => personService.FindOrCreate("oid1"))
                 .Returns(Task.FromResult(person1));
-            _personService.Setup(personService => personService.FindOrCreate("oid2", false))
+            _personService.Setup(personService => personService.FindOrCreate("oid2"))
                 .Throws(new Exception("Any Exception"));
-            _projectService.Setup(projectService => projectService.GiveProjectAccessToPlant(It.IsAny<long>(), It.IsAny<string>()))
-                .Returns(Task.CompletedTask);
+            _projectService.Setup(projectService =>
+                projectService.GiveProjectAccessToPlant(It.IsAny<long>(), It.IsAny<string>()))
+                    .Returns(Task.CompletedTask);
 
             var accessInfo = new AccessInfo
             {
@@ -133,9 +133,7 @@ namespace QueueReciverServiceTest.Services
 
             //Assert
             _projectService.Verify(_ =>
-                _.GiveProjectAccessToPlant(It.IsAny<long>(), It.IsAny<string>()), Times.Never);
-            _projectService.Verify(_ =>
-                _.RemoveAccessToPlant(It.IsAny<long>(), It.IsAny<string>()), Times.Never);
+                _.GiveProjectAccessToPlant(It.IsAny<long>(), "oid2"), Times.Never);
         }
     }
 }

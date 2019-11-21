@@ -55,20 +55,20 @@ namespace QueueReceiverService.Services
 
         private async Task RemoveAccess(Member member, string plantId)
         {
-            Person person = await _personService.FindOrCreate(member.UserOid, shouldRemove: true);
-            _logger.LogInformation($"Removing access for person with id: {person.Id}, to plant {plantId}");
+            Person? person = await _personService.FindByOid(member.UserOid);
 
             if(person == null)
             {
                 return;
             }
-
+            _logger.LogInformation($"Removing access for person with id: {person.Id}, to plant {plantId}");
             await _projectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
         private async Task GiveAccess(Member member, string plantId)
         {
             Person person = await _personService.FindOrCreate(member.UserOid);
+
             _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantId}");
             await _projectService.GiveProjectAccessToPlant(person.Id, plantId);
         }

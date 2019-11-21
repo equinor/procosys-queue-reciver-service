@@ -25,19 +25,19 @@ namespace QueueReceiverService.Repositories
         public Task<Person> FindByUserEmail(string userEmail)
         {
            return _persons
-                .SingleOrDefaultAsync(person => person.Email.Equals(userEmail));
+                .SingleOrDefaultAsync(person => userEmail.Equals(person.Email));
         }
 
         public Task<Person> FindByUsername(string userName)
         {
             return _persons
-                .SingleOrDefaultAsync(person => person.UserName.Equals(userName));
+                .SingleOrDefaultAsync(person => userName.Equals(person.UserName));
         }
 
         public Task<Person> FindByUserOid(string userOid)
         {
             return _persons
-                .SingleOrDefaultAsync(person => person.Oid.Equals(userOid));
+                .SingleOrDefaultAsync(person => userOid.Equals(person.Oid));
         }
 
         public async Task<int> SaveChangesAsync()
