@@ -38,16 +38,12 @@ namespace QueueReceiverService.Services
         public async Task<Person> FindOrCreate(string userOid)
         {
             var person = await _personRepository.FindByUserOid(userOid);
-
             if (person != null)
             {
                 return person;
             }
-
             var adPerson = await _graphService.GetPersonByOid(userOid);
-
             person = await FindUseByEmailOrUserName(adPerson);
-
             if (person == null)
             {
                 person = await _personRepository.AddPerson(

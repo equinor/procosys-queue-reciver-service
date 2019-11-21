@@ -45,7 +45,7 @@ namespace QueueReceiverService
                         var config = sp.GetRequiredService<IConfiguration>();
                         var connString = config["ServiceBusConnectionString"];
                         var queueName = "updateuseraccessdev";//config[""];
-                    var queueClient = new QueueClient(connString, queueName);
+                        var queueClient = new QueueClient(connString, queueName);
                         queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
                         return queueClient;
                     });

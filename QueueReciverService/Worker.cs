@@ -18,7 +18,9 @@ namespace QueueReceiverService
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<Worker> _logger;
 
-        public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory, IQueueClient queueClient)
+        public Worker(ILogger<Worker> logger,
+            IServiceScopeFactory scopeFactory, 
+            IQueueClient queueClient)
         {
             _logger = logger;
             _scopeFactory = scopeFactory;
