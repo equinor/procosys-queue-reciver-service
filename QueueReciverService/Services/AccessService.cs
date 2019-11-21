@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using QueueReceiverService.Models;
@@ -24,67 +25,58 @@ namespace QueueReceiverService.Services
             _logger = logger;
         }
 
-        public async ValueTask<bool> HandleRequest(AccessInfo accessInfo)
+        public async Task HandleRequest(AccessInfo accessInfo)
         {
-            var groupExistsInDb = await _plantService.Exists(accessInfo.PlantOid);
+            string plantId = await _plantService.GetPlantId(accessInfo.PlantOid);
 
-            if (!groupExistsInDb)
+            if (plantId == null)
             {
-                _logger.LogInformation($"Group not relevant, returning success to remove message from queue");
-                return true;
+                _logger.LogInformation($"Group not relevant, removing message from queue");
+                return;
             }
 
-            if(accessInfo.Members == null)
+            if (MessageHasNoRelevantData(accessInfo))
             {
-                //irrelevant
-                return true;
+                return;
             }
 
-            var resultTasks = accessInfo.Members.Select(async member =>
+            accessInfo.Members.AsParallel().ForAll(async member =>
             {
                 if (member.ShouldRemove)
                 {
-                    return await RemoveAccess(member, accessInfo.PlantOid);
+                    await RemoveAccess(member, plantId);
                 }
-                return await GiveAccess(member, accessInfo.PlantOid);
+                else
+                {
+                    await GiveAccess(member, plantId);
+                }
             });
-
-            bool[]  results = await Task.WhenAll(resultTasks);
-            return results.Aggregate((a, b) => a && b);
         }
 
-        private async ValueTask<bool> RemoveAccess(Member member, string plantOid)
+        private async Task RemoveAccess(Member member, string plantId)
         {
-            var (person, success) = await _personService.FindOrCreate(member.UserOid, shouldNotCreate: true);
+            Person person = await _personService.FindOrCreate(member.UserOid, shouldRemove: true);
+            _logger.LogInformation($"Removing access for person with id: {person.Id}, to plant {plantId}");
 
-            if (!success)
+            if(person == null)
             {
-                return false;
+                return;
             }
 
-            if (person == null)
-            {
-                _logger.LogInformation($"Person with oid: {member.UserOid}, not found in database, no access to remove.");
-                return success;
-            }
-
-            _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantOid}");
-            return await _projectService.RemoveAccessToPlant(person.Oid, plantOid);
+            await _projectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
-       private async ValueTask<bool> GiveAccess(Member member, string plantOid) 
-       {
-            var (person, success) = await _personService.FindOrCreate(member.UserOid);
+        private async Task GiveAccess(Member member, string plantId)
+        {
+            Person person = await _personService.FindOrCreate(member.UserOid);
+            _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantId}");
+            await _projectService.GiveProjectAccessToPlant(person.Id, plantId);
+        }
 
-            if (!success)
-            {
-
-                return false;
-            }
-
-            _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantOid}");
-            return await _projectService.GiveAccessToPlant(person.Oid, plantOid);
-       }
+        private static bool MessageHasNoRelevantData(AccessInfo accessInfo)
+        {
+            return accessInfo.Members == null;
+        }
     }
 }
 

@@ -10,6 +10,6 @@ namespace QueueReceiverService.Repositories
         Task<Person> FindByUsername(string userName);
         Task<Person> AddPerson(Person person);
         void Update(Person person);
-        Task<bool> SaveChangesAsync();
+        Task<int> SaveChangesAsync();
     }
 }

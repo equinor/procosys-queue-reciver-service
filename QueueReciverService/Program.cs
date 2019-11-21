@@ -56,6 +56,9 @@ namespace QueueReceiverService
                 services.AddTransient<IGraphService, GraphService>();
                 services.AddTransient<IPersonService, PersonService>();
                 services.AddTransient<IProjectService, ProjectService>();
+                services.AddTransient<IPersonProjectRepository, PersonProjectRepository>();
+                services.AddTransient<IPlantRepository, PlantRepository>();
+                services.AddTransient<IProjectRepository, ProjectRepository>();
             });
     }
 }

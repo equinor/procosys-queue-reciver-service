@@ -6,7 +6,7 @@ namespace QueueReceiverService.Models
     public class Person
     {
         [Column("PERSON_ID")]
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Column("AZURE_OID")]
         public string Oid { get; set; }
         [Column("USERNAME")]

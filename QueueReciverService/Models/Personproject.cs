@@ -1,24 +1,22 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QueueReceiverService.Models
 {
     [Table("PERSONPROJECT")]
-    public class Personproject
+    public class PersonProject
     {
+        public PersonProject(long personId, long projectId)
+        {
+            ProjectId = projectId;
+            PersonId = personId;
+        }
+
         [Column("PROJECT_ID")]
-        public int ProjectId { get; set; }
+        public long ProjectId { get; set; }
 
         [Column("PERSON_ID")]
-        public int PersonId { get; set; }
-        public DateTime? Updatedat { get; set; }
-        public int? UpdatedbyId { get; set; }
-        public DateTime Createdat { get; set; }
-        public int CreatedbyId { get; set; }
-        public string Isvoided { get; set; }
-        public string IsDefaultProject { get; set; }
-        public string ShowInLogin { get; set; }
-        public DateTime LastUpdated { get; set; }
-        public string LastUpdatedbyuser { get; set; }
-    }
+        public long PersonId { get; set; }
+
+        public virtual Project Project {get; set; }
+   }
 }

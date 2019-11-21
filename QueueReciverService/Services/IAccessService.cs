@@ -5,6 +5,6 @@ namespace QueueReceiverService.Services
 {
     public interface IAccessService
     {
-        ValueTask<bool> HandleRequest(AccessInfo accessInfo);
+        Task HandleRequest(AccessInfo accessInfo);
     }
 }

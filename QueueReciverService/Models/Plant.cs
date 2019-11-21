@@ -13,6 +13,5 @@ namespace QueueReceiverService.Models
 
         [Column("INTERNALGROUPID")]
         public string InternalGroupId { get; set; }
-
     }
 }

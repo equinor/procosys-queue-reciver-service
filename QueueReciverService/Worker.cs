@@ -38,7 +38,6 @@ namespace QueueReceiverService
 
         private async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
-            bool isSuccess;
             var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
             _logger.LogInformation($"Processing message : { accessInfo }");
 
@@ -49,18 +48,11 @@ namespace QueueReceiverService
             using (var scope = _scopeFactory.CreateScope())
             {
                 var accessService = scope.ServiceProvider.GetRequiredService<IAccessService>();
-                isSuccess = await accessService.HandleRequest(accessInfo);
+                await accessService.HandleRequest(accessInfo);
             }
 
-            if (isSuccess)
-            {
-                await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
-                _logger.LogInformation($"Message completed successfully");
-            }
-            else
-            {
-                _logger.LogInformation($"Something went wrong trying to process the message, not completing");
-            }
+            await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
+            _logger.LogInformation($"Message completed successfully");
         }
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)

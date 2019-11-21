@@ -9,13 +9,15 @@ namespace QueueReceiverService.Data
     {
         public static readonly LoggerFactory _myLoggerFactory =
         new LoggerFactory(new[] {
-        new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider()
+            new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider()
         });
 
         public IConfiguration Configuration { get; }
 
         public virtual DbSet<Person> Persons { get; set; }
-        public virtual DbSet<Personproject> Personproject { get; set; }
+        public virtual DbSet<PersonProject> Personprojects { get; set; }
+
+        public virtual DbSet<Plant> Plants { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration)
             : base(options)
@@ -35,8 +37,7 @@ namespace QueueReceiverService.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Personproject>().HasKey(pp => new { pp.ProjectId, pp.PersonId });
+            modelBuilder.Entity<PersonProject>().HasKey(pp => new { pp.ProjectId, pp.PersonId });
         }
-
     }
 }

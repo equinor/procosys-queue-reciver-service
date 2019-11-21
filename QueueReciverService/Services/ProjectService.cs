@@ -1,25 +1,39 @@
-﻿using System.Threading.Tasks;
+﻿using QueueReceiverService.Models;
+using QueueReceiverService.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace QueueReceiverService.Services
 {
     public class ProjectService : IProjectService
     {
-        public Task<bool> GiveAccessToPlant(string personOid, string plantOid)
+        private readonly IPersonProjectRepository _personProjectRepository;
+        private readonly IProjectRepository _projectRepository;
+
+        public ProjectService(
+            IPersonProjectRepository personProjectRepository,
+            IProjectRepository projectRepository)
         {
-            //Get all projects in plant
-            //Get all persons projects
-            //Update personProjects with projects from plant
-            //Save
-            throw new System.NotImplementedException();
+            _personProjectRepository = personProjectRepository;
+            _projectRepository = projectRepository;
         }
 
-        public Task<bool> RemoveAccessToPlant(string personOid, string plantOid)
+        public async Task GiveProjectAccessToPlant(long personId, string plantId)
         {
-            //Get all person projects for user
-            //Update persons project and remove all projects belonging to plant
-            //Update personProjects with projects from plant
-            //Save
-            throw new System.NotImplementedException();
+            List<Project> projects = await _projectRepository.GetProjectsByPlant(plantId);
+            projects.ForEach(async project
+                => await _personProjectRepository.AddIfNotExists(personId, project.ProjectId));
+
+            await _personProjectRepository.SaveChangesAsync();
+        }
+
+        public async Task RemoveAccessToPlant(long personId, string plantId)
+        {
+            List<Project> projects = await _projectRepository.GetProjectsByPlant(plantId);
+            projects.ForEach(project
+                =>  _personProjectRepository.RemoveIfExists(personId, project.ProjectId));
+
+            await _personProjectRepository.SaveChangesAsync();
         }
     }
 }
