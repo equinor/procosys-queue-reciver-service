@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>dotnet-QueueReciverService-07627E4F-C4B5-47B4-AF2D-E17B095E695C</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models2\**" />
+    <Content Remove="Models2\**" />
+    <EmbeddedResource Remove="Models2\**" />
+    <None Remove="Models2\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="2.19.50" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.50" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\QueueReceiver.Infrastructure\QueueReceiver.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
