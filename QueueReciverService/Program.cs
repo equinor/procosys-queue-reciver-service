@@ -50,15 +50,15 @@ namespace QueueReceiverService
                         return queueClient;
                     });
 
-                services.AddTransient<IAccessService, AccessService>();
-                services.AddTransient<IPlantService, PlantService>();
-                services.AddTransient<IPersonRepository, PersonRepository>();
-                services.AddTransient<IGraphService, GraphService>();
-                services.AddTransient<IPersonService, PersonService>();
-                services.AddTransient<IProjectService, ProjectService>();
-                services.AddTransient<IPersonProjectRepository, PersonProjectRepository>();
-                services.AddTransient<IPlantRepository, PlantRepository>();
-                services.AddTransient<IProjectRepository, ProjectRepository>();
+                services.AddScoped<IAccessService, AccessService>();
+                services.AddScoped<IPlantService, PlantService>();
+                services.AddScoped<IPersonRepository, PersonRepository>();
+                services.AddScoped<IGraphService, GraphService>();
+                services.AddScoped<IPersonService, PersonService>();
+                services.AddScoped<IProjectService, ProjectService>();
+                services.AddScoped<IPersonProjectRepository, PersonProjectRepository>();
+                services.AddScoped<IPlantRepository, PlantRepository>();
+                services.AddScoped<IProjectRepository, ProjectRepository>();
             });
     }
 }

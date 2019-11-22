@@ -26,8 +26,6 @@ namespace QueueReceiverService.Data
 
         public virtual DbSet<Plant> Plants { get; set; } = null!;
 
-
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

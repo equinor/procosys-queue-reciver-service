@@ -13,5 +13,10 @@ namespace QueueReceiverService.Models
         public string? UserName { get; set; }
         [Column("EMAILADDRESS")]
         public string? Email { get; set; }
+        [Column("FIRSTNAME")]
+        public string? FirstName { get; set; }
+        [Column("LASTNAME")]
+        public string? LastName { get; set; }
+
     }
 }

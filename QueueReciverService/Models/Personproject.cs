@@ -17,6 +17,9 @@ namespace QueueReceiverService.Models
         [Column("PERSON_ID")]
         public long PersonId { get; set; }
 
+        [Column("CREATED_BY")]
+        public long CreatedById { get; set; }
+
         public virtual Project? Project { get; set; }
     }
 }

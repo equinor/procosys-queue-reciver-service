@@ -51,7 +51,9 @@ namespace QueueReceiverService.Services
                                     {
                                         Oid = adPerson.Oid,
                                         Email = adPerson.Email,
-                                        UserName = adPerson.Username
+                                        UserName = adPerson.Username,
+                                        FirstName = adPerson.GivenName,
+                                        LastName = adPerson.Surname
                                     });
             }
             await _personRepository.SaveChangesAsync();

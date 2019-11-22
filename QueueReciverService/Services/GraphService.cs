@@ -31,7 +31,11 @@ namespace QueueReceiverService.Services
                       }));
 
             var user = await graphClient.Users[userOid].Request().GetAsync();
-            var adPerson = new AdPerson(user.Id, user.UserPrincipalName.ToUpper(), user.Mail);
+            var adPerson = new AdPerson(user.Id, user.UserPrincipalName.ToUpper(), user.Mail)
+            {
+                GivenName = user.GivenName,
+                Surname = user.Surname
+            };
 
             return adPerson;
         }
