@@ -1,4 +1,3 @@
-using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,8 +22,7 @@ namespace QueueReceiverService
 
         public static void Main(string[] args)
         {
-            var proxy = new WebProxy("http://www-proxy.statoil.no:80");
-            WebRequest.DefaultWebProxy = proxy;
+            WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80"); //TODO move this to infrastructure and add as variable
 
             CreateHostBuilder(args).Build().Run();
         }

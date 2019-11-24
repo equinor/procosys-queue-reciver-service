@@ -4,6 +4,7 @@ namespace QueueReceiver.Core.Interfaces
 {
     public interface IEntryPointService
     {
-        Task ExcecuteAsync();
+        Task InitializeQueue();
+        Task DisposeQueue();
     }
 }
