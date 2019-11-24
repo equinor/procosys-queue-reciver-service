@@ -40,8 +40,6 @@ namespace QueueReceiver.Infrastructure.Repositories
                     && plantId.Equals(pp.Project.PlantId)
                     && personId == pp.PersonId);
 
-            var toSee = personProjects.ToList();
-
             _personProjects.RemoveRange(personProjects);
         }
 
