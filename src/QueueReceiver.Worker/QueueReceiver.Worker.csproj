@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <UserSecretsId>dotnet-QueueReciverService-07627E4F-C4B5-47B4-AF2D-E17B095E695C</UserSecretsId>
+    <UserSecretsId>dotnet-QueueReceiverService-07627E4F-C4B5-47B4-AF2D-E17B095E695C</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>

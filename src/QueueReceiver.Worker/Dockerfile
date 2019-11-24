@@ -3,16 +3,16 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0-buster AS build
 WORKDIR /src
-COPY ["src/QueueReciver.Worker/QueueReciver.Worker.csproj", "src/QueueReciver.Worker/"]
-RUN dotnet restore "src/QueueReciver.Worker/QueueReciver.Worker.csproj"
+COPY ["src/QueueReceiver.Worker/QueueReceiver.Worker.csproj", "src/QueueReceiver.Worker/"]
+RUN dotnet restore "src/QueueReceiver.Worker/QueueReceiver.Worker.csproj"
 COPY . .
-WORKDIR "/src/src/src/QueueReciver.Worker"
-RUN dotnet build "QueueReciver.Worker.csproj" -c Release -o /app/build
+WORKDIR "/src/src/QueueReceiver.Worker"
+RUN dotnet build "QueueReceiver.Worker.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "QueueReciver.Worker.csproj" -c Release -o /app/publish
+RUN dotnet publish "QueueReceiver.Worker.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "QueueReciver.Worker.dll"]
+ENTRYPOINT ["dotnet", "QueueReceiver.Worker.dll"]
