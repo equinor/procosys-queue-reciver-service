@@ -11,11 +11,13 @@ namespace QueueReceiver.Infrastructure.Repositories
     {
         private readonly DbSet<PersonProject> _personProjects;
         private readonly ApplicationDbContext _context;
+        private readonly DbContextSettings _settings;
 
-        public PersonProjectRepository(ApplicationDbContext context)
+        public PersonProjectRepository(ApplicationDbContext context, DbContextSettings settings)
         {
             _personProjects = context.Personprojects;
             _context = context;
+            _settings = settings;
         }
 
         public async Task AddIfNotExists(long personId, long projectId)
@@ -24,7 +26,8 @@ namespace QueueReceiver.Infrastructure.Repositories
 
             if (personProject == null)
             {
-                await _personProjects.AddAsync(new PersonProject(personId, projectId));
+                var createdById = _settings.PersonProjectCreatedId;
+                await _personProjects.AddAsync(new PersonProject(personId, projectId,createdById));
             }
         }
 

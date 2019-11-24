@@ -5,10 +5,11 @@ namespace QueueReceiver.Core.Models
     [Table("PERSONPROJECT")]
     public class PersonProject
     {
-        public PersonProject(long personId, long projectId)
+        public PersonProject(long personId, long projectId,long createdById)
         {
             ProjectId = projectId;
             PersonId = personId;
+            CreatedById = createdById;
         }
 
         [Column("PROJECT_ID")]

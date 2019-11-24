@@ -5,14 +5,10 @@ namespace QueueReceiver.Infrastructure.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        private readonly DbContextSettings settings;
-
         public ApplicationDbContext(
-            DbContextOptions<ApplicationDbContext> options,
-            DbContextSettings dbContextSettings
+            DbContextOptions<ApplicationDbContext> options
         ): base(options)
         {
-            settings = dbContextSettings;
         }
 
         public virtual DbSet<Person> Persons { get; set; } = null!;
@@ -24,10 +20,6 @@ namespace QueueReceiver.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<PersonProject>()
-                .Property(pp => pp.CreatedById)
-                .HasDefaultValue(settings.PersonProjectCreatedId);
 
             modelBuilder.Entity<PersonProject>()
                 .HasKey(pp => new { pp.ProjectId, pp.PersonId });
@@ -46,7 +38,5 @@ namespace QueueReceiver.Infrastructure.Data
                 b => b ? 'Y' : 'N',
                 c => c.Equals('Y'));
         }
-
-
     }
 }
