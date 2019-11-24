@@ -22,7 +22,7 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task AddIfNotExists(long personId, long projectId)
         {
-            var personProject = _personProjects.Find(personId, projectId);
+            var personProject = _personProjects.Find(projectId, personId); //TODO add as Type to avoid wrong order
 
             if (personProject == null)
             {
