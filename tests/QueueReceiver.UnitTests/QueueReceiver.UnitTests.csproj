@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -23,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\QueueReceiver.Core\QueueReceiver.Core.csproj" />
-    <ProjectReference Include="..\..\QueueReceiver.Infrastructure\QueueReceiver.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\QueueReceiver.Core\QueueReceiver.Core.csproj" />
+    <ProjectReference Include="..\..\src\QueueReceiver.Infrastructure\QueueReceiver.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

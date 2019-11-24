@@ -17,15 +17,17 @@ namespace QueueReceiverService
         private readonly IQueueClient _queueClient;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<Worker> _logger;
-
+        private readonly IEntryPointService entryPointService;
         public Worker(ILogger<Worker> logger,
             IServiceScopeFactory scopeFactory,
-            IQueueClient queueClient)
+            IQueueClient queueClient, 
+            IEntryPointService entryPointService)
         {
             _logger = logger;
             _scopeFactory = scopeFactory;
             _queueClient = queueClient;
             RegisterOnMessageHandlerAndReceiveMessages();
+            this.entryPointService = entryPointService;
         }
 
         private void RegisterOnMessageHandlerAndReceiveMessages()
@@ -47,11 +49,14 @@ namespace QueueReceiverService
              * Injecting here because Worker is singleton.
              * It not possible initiate scoped dependiences from a constructor of a singleton  
             **/
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var accessService = scope.ServiceProvider.GetRequiredService<IAccessService>();
-                await accessService.HandleRequest(accessInfo);
-            }
+            using var scope = _scopeFactory.CreateScope();
+                var accessService =
+                    scope.ServiceProvider
+                        .GetRequiredService<IAccessService>();
+
+            await accessService.HandleRequest(accessInfo);
+            //TODO figure out exception handleing
+            //TODO consider moving all logic out of this project
 
             await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
             _logger.LogInformation($"Message completed successfully");
@@ -68,12 +73,17 @@ namespace QueueReceiverService
             return Task.CompletedTask;
         }
 
+        public async override Task StartAsync(CancellationToken cancellationToken) 
+        {
+            await entryPointService.ExcecuteAsync();
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(10000, stoppingToken);
+                await Task.Delay(100000000, stoppingToken);
             }
             await _queueClient.CloseAsync();
         }

@@ -2,6 +2,8 @@ using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using QueueReceiver.Core.Interfaces;
+using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
 using QueueReceiver.Infrastructure.Data;
@@ -37,6 +39,8 @@ namespace QueueReceiverService
             })
             .ConfigureServices((hostContext, services) =>
             {
+                services.AddSingleton<IEntryPointService, EntryPointService>();
+
                 services.AddDbContext(hostContext.Configuration);
                 services.AddQueueClient(hostContext.Configuration);
                 services.AddRepositories();

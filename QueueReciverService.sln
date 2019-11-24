@@ -8,9 +8,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueueReceiver.UnitTests", "tests\QueueReceiver.UnitTests\QueueReceiver.UnitTests.csproj", "{43CECE1D-346F-4BA4-B62E-7FFECD1F0A50}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{61B6D8C6-F591-426F-B858-9C826A32433D}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BC65202D-64E0-4603-B335-8E5F36C67431}"
 EndProject
