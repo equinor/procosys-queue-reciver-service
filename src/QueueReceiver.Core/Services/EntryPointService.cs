@@ -17,11 +17,11 @@ namespace QueueReceiver.Core.Services
         private readonly ILogger<EntryPointService> _logger;
 
         public EntryPointService(IQueueClient queueClient,
-            IServiceScopeFactory scopeFactory,
+            IServiceLocator serviceLocator,
             ILogger<EntryPointService> logger)
         {
             _queueClient = queueClient;
-            _scopeFactory = scopeFactory;
+            _scopeFactory = serviceLocator;
             _logger = logger;
         }
 
