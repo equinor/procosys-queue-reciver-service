@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueueReceiver.Infrastructur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueueReceiver.Core", "src\QueueReceiver.Core\QueueReceiver.Core.csproj", "{5848828B-3998-44A2-A2F8-31525CA4E4C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueueReceiver.CoreTests", "src\QueueReceiver.CoreTests\QueueReceiver.CoreTests.csproj", "{837AEA3B-F318-49FD-B353-1502EA572463}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,10 +37,6 @@ Global
 		{5848828B-3998-44A2-A2F8-31525CA4E4C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5848828B-3998-44A2-A2F8-31525CA4E4C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5848828B-3998-44A2-A2F8-31525CA4E4C8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{837AEA3B-F318-49FD-B353-1502EA572463}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{837AEA3B-F318-49FD-B353-1502EA572463}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{837AEA3B-F318-49FD-B353-1502EA572463}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{837AEA3B-F318-49FD-B353-1502EA572463}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

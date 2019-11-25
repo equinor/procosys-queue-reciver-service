@@ -13,7 +13,7 @@ namespace QueueReceiver.Core.Services
     public class EntryPointService : IEntryPointService
     {
         private readonly IQueueClient _queueClient;
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IServiceLocator _scopeFactory;
         private readonly ILogger<EntryPointService> _logger;
 
         public EntryPointService(IQueueClient queueClient,
@@ -33,7 +33,7 @@ namespace QueueReceiver.Core.Services
 
         public async Task DisposeQueue()
         {
-          await _queueClient.CloseAsync();
+            await _queueClient.CloseAsync();
         }
 
         private void RegisterOnMessageHandlerAndReceiveMessages()
@@ -64,7 +64,7 @@ namespace QueueReceiver.Core.Services
 
             //TODO consider moving to its own class, to be able to test, 
             //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock
-            string lockToken = message.SystemProperties.LockToken; 
+            string lockToken = message.SystemProperties.LockToken;
             await _queueClient.CompleteAsync(lockToken);
             _logger.LogInformation($"Message completed successfully");
         }
