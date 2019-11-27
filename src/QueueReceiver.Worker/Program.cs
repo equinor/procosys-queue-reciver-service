@@ -24,7 +24,6 @@ namespace QueueReceiverService
         public static void Main(string[] args)
         {
             WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80"); //TODO move this to infrastructure and add as variable
-
             CreateHostBuilder(args).Build().Run();
         }
 

@@ -35,12 +35,14 @@ namespace QueueReceiver.Core.Services
                 if(personProject == null)
                 {
                     await _personProjectRepository.AddAsync(projectId, personId);
+                    //TODO PersonProjectHistory
                     updated = true;
                 }
                 else if (personProject.IsVoided)
                 {
                     personProject.IsVoided = false;
                     _personProjectRepository.Update(personProject);
+                    //TODO PersonProjectHistory
                     updated = true;
                 }
             });
