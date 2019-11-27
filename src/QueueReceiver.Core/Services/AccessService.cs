@@ -62,7 +62,7 @@ namespace QueueReceiver.Core.Services
             if (person == null)
             {
                 _logger.LogInformation($"Person doesn't exist in db so there is no reson to remove access," +
-                    $" removing message from queue");
+                    " removing message from queue");
                 return;
             }
             _logger.LogInformation($"Removing access for person with id: {person.Id}, to plant {plantId}");
