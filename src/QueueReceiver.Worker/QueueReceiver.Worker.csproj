@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>dotnet-QueueReceiverService-07627E4F-C4B5-47B4-AF2D-E17B095E695C</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models2\**" />
+    <Content Remove="Models2\**" />
+    <EmbeddedResource Remove="Models2\**" />
+    <None Remove="Models2\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\QueueReceiver.Core\QueueReceiver.Core.csproj" />
+    <ProjectReference Include="..\QueueReceiver.Infrastructure\QueueReceiver.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

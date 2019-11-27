@@ -1,0 +1,13 @@
+version: "3.7"
+
+services: 
+  web:
+    build: 
+      dockerfile: ./src/QueueReceiver.Worker/Dockerfile
+      context: .
+      args:
+        - HTTP_PROXY=http://www-proxy.statoil.no:80 
+        - HTTPS_PROXY=http://www-proxy.statoil.no:80
+    ports:
+      - "5000:5000"
+      - "5001:5001"
