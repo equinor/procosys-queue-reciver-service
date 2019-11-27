@@ -28,7 +28,7 @@ namespace QueueReceiver.Infrastructure
             services.AddSingleton<IQueueClient>(_ =>
             {
                 var connString = configuration["ServiceBusConnectionString"];
-                var queueName = "updateuseraccessdev";//config[""];
+                var queueName = "updateuseraccessdev";//TODO config[""];
                 var queueClient = new QueueClient(connString, queueName);
                 queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
                 return queueClient;
@@ -41,11 +41,12 @@ namespace QueueReceiver.Infrastructure
             services.AddScoped<IPersonProjectRepository, PersonProjectRepository>();
             services.AddScoped<IPlantRepository, PlantRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
+            services.AddScoped<IUserGroupRepository, UserGroupRepository>();
+            services.AddScoped<IPersonUserGroupRepository, PersonUserGroupRepository>();
         }
 
         public static void AddServices(this IServiceCollection services)
         {
-            
             services.AddScoped<IAccessService, AccessService>();
             services.AddScoped<IPlantService, PlantService>();
             services.AddScoped<IGraphService, GraphService>();

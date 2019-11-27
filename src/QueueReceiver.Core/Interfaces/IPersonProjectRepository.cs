@@ -1,12 +1,14 @@
 ﻿using System.Threading.Tasks;
+using QueueReceiver.Core.Models;
 
 namespace QueueReceiver.Core.Interfaces
 {
     public interface IPersonProjectRepository
     {
-        Task AddIfNotExists(long personId, long id);
         Task<int> SaveChangesAsync();
-        void RemoveIfExists(long personId, long projectId);
-        void RemovePersonProjects(string plantId, long personId);
+        void VoidPersonProjects(string plantId, long personId);
+        void Update(PersonProject personProject);
+        Task AddAsync(long projectId, long personId);
+        Task<PersonProject> GetAsync(long personId, long projectId);
     }
 }

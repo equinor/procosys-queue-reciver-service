@@ -28,7 +28,7 @@
 
             public IServiceScope CreateScope()
             {
-                return _scope ?? (_scope = _factory.CreateScope());
+                return  _factory.CreateScope();
             }
 
             public void Dispose()

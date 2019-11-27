@@ -5,7 +5,7 @@ namespace QueueReceiver.Core.Models
     [Table("PERSONPROJECT")]
     public class PersonProject
     {
-        public PersonProject(long personId, long projectId,long createdById)
+        public PersonProject(long projectId, long personId, long createdById)
         {
             ProjectId = projectId;
             PersonId = personId;
@@ -20,6 +20,9 @@ namespace QueueReceiver.Core.Models
 
         [Column("CREATEDBY_ID")]
         public long CreatedById { get; set; }
+
+        [Column("ISVOIDED")]
+        public bool IsVoided { get; set; }
 
         public virtual Project? Project { get; set; }
     }

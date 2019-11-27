@@ -60,7 +60,7 @@ namespace QueueReceiver.Core.Services
                 scope.ServiceProvider
                     .GetRequiredService<IAccessService>();
 
-            await accessService.HandleRequest(accessInfo); //TODO figure out exception handling.
+            await accessService.HandleRequest(accessInfo);
 
             //TODO consider moving to its own class, to be able to test, 
             //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock

@@ -26,7 +26,7 @@ namespace QueueReceiverService
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(100000000, stoppingToken);
+                await Task.Delay(10000000, stoppingToken);
             }
 
             await entryPointService.DisposeQueue();

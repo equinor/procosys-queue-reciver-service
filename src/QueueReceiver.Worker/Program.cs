@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Services;
+using QueueReceiver.Core.Services.CleanArchitecture.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
 using QueueReceiver.Infrastructure.Data;
@@ -38,6 +39,7 @@ namespace QueueReceiverService
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton<IEntryPointService, EntryPointService>();
+                services.AddSingleton<IServiceLocator, ServiceLocator>();
 
                 services.AddDbContext(hostContext.Configuration);
                 services.AddQueueClient(hostContext.Configuration);

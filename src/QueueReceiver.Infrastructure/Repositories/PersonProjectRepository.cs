@@ -20,41 +20,38 @@ namespace QueueReceiver.Infrastructure.Repositories
             _settings = settings;
         }
 
-        public async Task AddIfNotExists(long personId, long projectId)
+        public async Task AddAsync(long projectId, long personId)
         {
-            var personProject = _personProjects.Find(projectId, personId); //TODO add as Type to avoid wrong order
-
-            if (personProject == null)
-            {
-                var createdById = _settings.PersonProjectCreatedId;
-                await _personProjects.AddAsync(new PersonProject(personId, projectId,createdById));
-            }
+            var createdById = _settings.PersonProjectCreatedId;
+            var personProject = new PersonProject(projectId, personId, createdById);
+            await _personProjects.AddAsync(personProject);
         }
 
-        public void RemovePersonProjects(string plantId, long personId)
+        public void VoidPersonProjects(string plantId, long personId)
         {
             var personProjects = _personProjects
                 .Include(pp => pp.Project!)
                 .ThenInclude(project => project.Plant)
-                .Where(pp => pp.Project != null
-                    && plantId.Equals(pp.Project.PlantId)
+                .Where(pp => plantId.Equals(pp.Project!.PlantId)
                     && personId == pp.PersonId);
 
-            _personProjects.RemoveRange(personProjects);
-        }
-
-        public void RemoveIfExists(long personId, long projectId)
-        {
-            var personProject = _personProjects.Find(personId, projectId);
-            if (personProject != null)
-            {
-                _personProjects.Remove(personProject);
-            }
+            personProjects.ForEachAsync(pp => pp.IsVoided = true);
+            _personProjects.UpdateRange(personProjects);
         }
 
         public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();
+        }
+
+        public async Task<PersonProject> GetAsync(long projectId, long personId)
+        {
+            return await _personProjects.FindAsync(projectId, personId);
+        }
+
+        public void Update(PersonProject personProject)
+        {
+            _personProjects.Update(personProject);
         }
     }
 }
