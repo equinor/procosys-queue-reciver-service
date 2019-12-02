@@ -30,7 +30,7 @@ stages:
       displayName: 'dotnet test $(buildConfiguration)'
       inputs:
         command: test
-        projects: '**/*tests/*.csproj'
+        projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
     
     - task: DotNetCoreCLI@2
@@ -49,18 +49,10 @@ stages:
         packDirectory: '$(Build.ArtifactStagingDirectory)/packages/prereleases'
         arguments: '--configuration $(buildConfiguration)'
     
-    - task: DotNetCoreCLI@2
-      displayName: 'Create NuGet Package - Release Version'
-      inputs:
-        command: publish
-        publishWebProjects: True
-        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-        zipAfterPublish: True
-    
     - task: PublishBuildArtifacts@1
       inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: 'queueReciever'
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)/packages'
+        artifactName: 'packages'
   
 - stage: 'PublishPrereleaseNuGetPackage'
   displayName: 'Publish Prerelease NuGet Package'
@@ -72,6 +64,11 @@ stages:
       vmImage: 'ubuntu-latest'
     
     steps:
+    - checkout: none
+
+    - download: current
+      artifact: 'packages'
+
     - task: NuGetAuthenticate@0
       displayName: 'NuGet Authenticate'
   
