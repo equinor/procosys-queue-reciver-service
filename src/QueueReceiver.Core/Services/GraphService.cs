@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using QueueReceiver.Core.Interfaces;
@@ -13,12 +12,12 @@ namespace QueueReceiver.Core.Services
     public class GraphService : IGraphService
     {
         private readonly GraphSettings settings;
-        private readonly ILogger<GraphService> _logger;
+        private readonly ILogger<GraphService> log;
 
         public GraphService(GraphSettings graphSettings, ILogger<GraphService> logger)
         {
             settings = graphSettings;
-            _logger = logger;
+            log = logger;
         }
 
         public async Task<AdPerson> GetPersonByOid(string userOid)
@@ -45,10 +44,9 @@ namespace QueueReceiver.Core.Services
         private async Task<AuthenticationResult> GetAccessToken()
         {
             var authority = settings.Authority;
-            //["AzureAd:Authority"];
-            var graphUrl = settings.GraphUrl;//_config["GraphUrl"];
-            var clientId = settings.ClientId;// _config["AzureAd:ClientId"];
-            var clientSecret = settings.ClientSecret;// _config["Azure:ClientSecret"];
+            var graphUrl = settings.GraphUrl;
+            var clientId = settings.ClientId;
+            var clientSecret = settings.ClientSecret;
             var authContext = new AuthenticationContext(authority);
 
             ClientCredential clientCred = new ClientCredential(clientId, clientSecret);

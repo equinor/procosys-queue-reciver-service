@@ -35,8 +35,8 @@ namespace QueueReceiver.UnitTests.Core.Services
         {
             //Arrange
             const string plantOidThatDoesntExists = "SomePlantThatDoesNotExist";
-            _plantService.Setup(plantService => plantService.Exists(plantOidThatDoesntExists))
-                .Returns(Task.FromResult(false));
+            _plantService.Setup(plantService => plantService.GetPlantId(plantOidThatDoesntExists))
+                .Returns(Task.FromResult<string?>(null));
             var accessInfo = new AccessInfo(plantOidThatDoesntExists, new List<Member>());
 
             //Act
@@ -56,9 +56,9 @@ namespace QueueReceiver.UnitTests.Core.Services
             const string somePlantId = "testPlant";
             const string plantOidThatExists = "SomePlantThatExist";
             _plantService.Setup(plantService => plantService.GetPlantId(plantOidThatExists))
-                .Returns(Task.FromResult(somePlantId));
+                .Returns(Task.FromResult(somePlantId)!);
             _personService.Setup(personService => personService.FindByOid(someOid))
-                .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid }));
+                .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
             _projectService.Setup(projectService => projectService.RemoveAccessToPlant(somePersonId, plantOidThatExists))
                 .Returns(Task.FromResult(true));
 
@@ -79,8 +79,8 @@ namespace QueueReceiver.UnitTests.Core.Services
         public async Task HandleRequest_returns_early_when_removing_access_for_user_not_in_db()
         {
             //Arrange
-            _plantService.Setup(plantService => plantService.Exists(It.IsAny<string>()))
-                .Returns(Task.FromResult(true));
+            _plantService.Setup(plantService => plantService.GetPlantId(It.IsAny<string>()))
+                .Returns(Task.FromResult<string?>("anyPlantOid"));
 
             var accessInfo = new AccessInfo(
                 "anyPlantOid",

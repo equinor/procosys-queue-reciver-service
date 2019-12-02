@@ -27,7 +27,7 @@ namespace QueueReceiver.Core.Services
 
         public async Task HandleRequest(AccessInfo accessInfo)
         {
-            string plantId = await _plantService.GetPlantId(accessInfo.PlantOid);
+            string? plantId = await _plantService.GetPlantId(accessInfo.PlantOid);
 
             if (plantId == null)
             {
