@@ -77,5 +77,5 @@ stages:
       inputs:
         command: push
         packagesToPush: '$(Pipeline.Workspace)/packages/prereleases/*.nupkg'
-        publishVstsFeed: 'https://statoildeveloper.pkgs.visualstudio.com/_packaging/ProCoSysOfficial/nuget/v3/index.json'
+        publishVstsFeed: 'https://pkgs.dev.azure.com/statoildeveloper/_packaging/ProCoSysOfficial/nuget/v3/index.json'
         allowPackageConflicts: true
