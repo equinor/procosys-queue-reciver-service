@@ -48,34 +48,12 @@ stages:
         buildProperties: 'VersionSuffix="$(Build.BuildNumber)"'
         packDirectory: '$(Build.ArtifactStagingDirectory)/packages/prereleases'
         arguments: '--configuration $(buildConfiguration)'
-    
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)/packages'
-        artifactName: 'packages'
-  
-- stage: 'PublishPrereleaseNuGetPackage'
-  displayName: 'Publish Prerelease NuGet Package'
-  dependsOn: 'Build'
-  condition: succeeded()
-  jobs:
-  - job:
-    pool:
-      vmImage: 'ubuntu-latest'
-    
-    steps:
-    - checkout: none
 
-    - download: current
-      artifact: 'packages'
-
-    - task: NuGetAuthenticate@0
-      displayName: 'NuGet Authenticate'
-  
     - task: DotNetCoreCLI@2
-      displayName: 'NuGet push'
+      displayName: 'NuGet push prerelease'
       inputs:
         command: push
+        feedsToUse: 'select'
         packagesToPush: '$(Pipeline.Workspace)/packages/prereleases/*.nupkg'
-        publishVstsFeed: 'https://pkgs.dev.azure.com/statoildeveloper/_packaging/ProCoSysOfficial/nuget/v3/index.json'
+        publishVstsFeed: 'ProCoSysOfficial'
         allowPackageConflicts: true
