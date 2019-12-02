@@ -10,7 +10,7 @@ using QueueReceiver.Infrastructure.Data;
 using System.IO;
 using System.Net;
 
-namespace QueueReceiverService
+namespace QueueReceiver.Worker
 {
     public class Program
     {
