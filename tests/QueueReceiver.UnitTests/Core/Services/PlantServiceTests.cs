@@ -31,6 +31,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             //Act
             var result = await _plantService.GetPlantId(existingPlantOid);
 
+            //Assert
             Assert.AreEqual(existingPlantId,result);
         }
     }

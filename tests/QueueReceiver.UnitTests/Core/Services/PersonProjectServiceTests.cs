@@ -2,7 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using QueueReceiver.Core.Interfaces;
+using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Services;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.UnitTests.Core.Services
@@ -38,15 +40,17 @@ namespace QueueReceiver.UnitTests.Core.Services
         {
             const string plantId = "somePlantId";
             const long personId = 2;
-            const int amountOfChanges = 3;
+            const long projectId = 15;
             var (service, personProjectRepository,
                 projectRepository, personUserGroupRepository,
                 userGroupRepository) = Factory();
-
+            projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
+                .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
 
             //Act
             await service.GiveProjectAccessToPlant(personId, plantId);
-            Assert.Fail();
+            personProjectRepository.Verify(ppr => ppr.AddAsync(projectId,personId), Times.Once);
+            personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
         }
 
         [TestMethod()]
