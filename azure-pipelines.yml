@@ -37,6 +37,7 @@ stages:
       displayName: 'Create NuGet Package - Release Version'
       inputs:
         command: pack
+        packagesToPack:  '**/*Worker/*.csproj'
         packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
         arguments: '--configuration $(buildConfiguration)'
         nobuild: true
