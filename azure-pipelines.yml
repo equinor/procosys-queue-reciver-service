@@ -49,6 +49,9 @@ stages:
         packDirectory: '$(Build.ArtifactStagingDirectory)/packages/prereleases'
         arguments: '--configuration $(buildConfiguration)'
 
+    - task: NuGetAuthenticate@0
+      displayName: 'NuGet Authenticate'
+
     - task: DotNetCoreCLI@2
       displayName: 'NuGet push prerelease'
       inputs:
