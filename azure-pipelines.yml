@@ -45,6 +45,7 @@ stages:
       displayName: 'Create NuGet Package - Prerelease Version'
       inputs:
         command: pack
+        packagesToPack:  '**/*Worker/*.csproj'
         buildProperties: 'VersionSuffix="$(Build.BuildNumber)"'
         arguments: '--configuration $(buildConfiguration)'
 
