@@ -37,6 +37,7 @@ stages:
 - stage: "Pack"
   displayName: 'Pack NuGet Package'
   dependsOn: 'Build'
+  condition: succeeded()
   jobs:
   - job:
     pool:
@@ -91,18 +92,22 @@ stages:
   dependsOn: 'PublishPreRelease'
   condition: succeeded()
   jobs:
-  - job:
+  - deployment:
+    environment: 'pcs-queue-receiver'
     pool:
       vmImage: $(vmImageName)
-    steps:
-    - task: NuGetAuthenticate@0
-      displayName: 'NuGet Authenticate'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - task: NuGetAuthenticate@0
+              displayName: 'NuGet Authenticate'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'NuGet push prerelease'
-      inputs:
-        command: push
-        feedsToUse: 'select'
-        packagesToPush: '$(Pipeline.Workspace)/packages/prereleases/*.nupkg'
-        publishVstsFeed: 'ProCoSysOfficial'
-        allowPackageConflicts: true
+            - task: DotNetCoreCLI@2
+              displayName: 'NuGet push release'
+              inputs:
+                command: push
+                feedsToUse: 'select'
+                packagesToPush: '$(Pipeline.Workspace)/packages/releases/*.nupkg'
+                publishVstsFeed: 'ProCoSysOfficial'
+                allowPackageConflicts: true
