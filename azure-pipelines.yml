@@ -39,6 +39,7 @@ stages:
   - deployment:
     pool:
       vmImage: $(vmImageName)
+    environment: pcs-queue-receiver
     strategy:
       runOnce:
         deploy:
