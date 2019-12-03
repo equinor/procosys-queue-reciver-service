@@ -52,7 +52,6 @@ stages:
               packagesToPack:  '**/*Worker/*.csproj'
               packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
               arguments: '--configuration $(buildConfiguration)'
-              nobuild: true
               
           - task: DotNetCoreCLI@2
             displayName: 'Create NuGet Package - Prerelease Version'
