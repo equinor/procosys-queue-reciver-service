@@ -7,6 +7,7 @@ namespace QueueReceiver.Core.Services
 {
     public class ProjectService : IProjectService
     {
+        private const string DefaultUserGroup = "READ";
         private readonly IPersonProjectRepository _personProjectRepository;
         private readonly IProjectRepository _projectRepository;
         private readonly IPersonUserGroupRepository _personUserGroupRepository;
@@ -26,13 +27,13 @@ namespace QueueReceiver.Core.Services
 
         public async Task GiveProjectAccessToPlant(long personId, string plantId)
         {
-            List<Project> projects = await _projectRepository.GetParentProjectsByPlant(plantId);
-            bool updated = false;
-            projects.ForEach(async project=>
+            var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
+            var updated = false;
+            projects.ForEach(async project =>
             {
                 var projectId = project.ProjectId;
                 var personProject = await _personProjectRepository.GetAsync(projectId, personId);
-                if(personProject == null)
+                if (personProject == null)
                 {
                     await _personProjectRepository.AddAsync(projectId, personId);
                     //TODO PersonProjectHistory
@@ -49,7 +50,7 @@ namespace QueueReceiver.Core.Services
 
             if (updated)
             {
-                long userGroupId = await _userGroupRepository.FindIdByUserGroupName("READ"); //TODO add env variable
+                var userGroupId = await _userGroupRepository.FindIdByUserGroupName(DefaultUserGroup);
                 await _personUserGroupRepository.AddAsync(userGroupId, plantId, personId);
                 //TODO add default privilege if does not exists
                 await _personProjectRepository.SaveChangesAsync();

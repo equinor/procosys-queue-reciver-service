@@ -15,7 +15,7 @@ namespace QueueReceiver.Core.Models
         public string PlantOid { get; set; }
 
         [JsonProperty("members")]
-        public List<Member> Members { get; set; }
+        public List<Member> Members { get; }
     }
 
     public class Member

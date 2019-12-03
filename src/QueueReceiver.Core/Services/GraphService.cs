@@ -32,6 +32,7 @@ namespace QueueReceiver.Core.Services
                           return Task.FromResult(0);
                       }));
 
+            log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
             var user = await graphClient.Users[userOid].Request().GetAsync();
             var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
             {
@@ -49,7 +50,7 @@ namespace QueueReceiver.Core.Services
             var clientSecret = settings.ClientSecret;
             var authContext = new AuthenticationContext(authority);
 
-            ClientCredential clientCred = new ClientCredential(clientId, clientSecret);
+            var clientCred = new ClientCredential(clientId, clientSecret);
             return await authContext.AcquireTokenAsync(graphUrl, clientCred);
         }
     }
