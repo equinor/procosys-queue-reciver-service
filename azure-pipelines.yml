@@ -34,7 +34,7 @@ stages:
         projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
     
-- stage: "Deploy Nuget Package"
+- stage: "DeployNugetPackage"
   jobs:
   - deployment:
     pool:
