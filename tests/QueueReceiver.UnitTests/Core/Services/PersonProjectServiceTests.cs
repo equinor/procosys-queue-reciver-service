@@ -1,13 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using QueueReceiver.Core.Interfaces;
+using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Services;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.UnitTests.Core.Services
 {
-    [TestClass()]
+    [TestClass]
     public class PersonProjectServiceTests
     {
 
@@ -18,7 +19,6 @@ namespace QueueReceiver.UnitTests.Core.Services
            Mock<IUserGroupRepository>)
            Factory()
         {
-            //var logger = new Mock<ILogger<ProjectService>>();
             var personProjectRepository = new Mock<IPersonProjectRepository>();
             var projectRepository = new Mock<IProjectRepository>();
             var personUserGroupRepository = new Mock<IPersonUserGroupRepository>();
@@ -33,23 +33,25 @@ namespace QueueReceiver.UnitTests.Core.Services
                         personUserGroupRepository, userGroupRepository);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task GiveAccessToPlantTest()
         {
             const string plantId = "somePlantId";
             const long personId = 2;
-            const int amountOfChanges = 3;
+            const long projectId = 15;
             var (service, personProjectRepository,
                 projectRepository, personUserGroupRepository,
                 userGroupRepository) = Factory();
-
+            projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
+                .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
 
             //Act
             await service.GiveProjectAccessToPlant(personId, plantId);
-            Assert.Fail();
+            personProjectRepository.Verify(ppr => ppr.AddAsync(projectId,personId), Times.Once);
+            personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task RemoveAccessToPlantTest()
         {
             const string plantId = "somePlantId";

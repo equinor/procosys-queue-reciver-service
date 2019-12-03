@@ -8,6 +8,11 @@ namespace QueueReceiver.Infrastructure.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options){}
 
+        public ApplicationDbContext()
+        {
+
+        }
+
         public virtual DbSet<Person> Persons { get; set; } = null!;
         public virtual DbSet<PersonProject> Personprojects { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;

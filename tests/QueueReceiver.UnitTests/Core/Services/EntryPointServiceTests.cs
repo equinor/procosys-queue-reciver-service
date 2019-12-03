@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace QueueReceiver.UnitTests.Core.Services
 {
-    [TestClass()] //TODO this class might get rewritten and be better for testing
+    [TestClass] //TODO this class might get rewritten and be better for testing
     public class EntryPointServiceTests 
     {
         private static (EntryPointService,
