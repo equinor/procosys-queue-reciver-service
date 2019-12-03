@@ -37,7 +37,16 @@ stages:
 - stage: "Pack"
   displayName: 'Pack NuGet Package'
   dependsOn: 'Build'
-  condition: succeeded()
+  condition:  |
+   and
+   (
+     succeeded(),
+     or
+     ( 
+       eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+       eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+     )
+    )
   jobs:
   - job:
     pool:
@@ -68,16 +77,7 @@ stages:
 - stage: "PublishPreRelease"
   displayName: 'Publish Prerelease NuGet Package'
   dependsOn: 'Pack'
-  condition:  |
-   and
-   (
-     succeeded(),
-     or
-     ( 
-       eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-      eq(variables['Build.SourceBranch'], 'refs/heads/dev')
-     )
-    )
+  condition: succeeded()
   jobs:
   - job:
     pool:
