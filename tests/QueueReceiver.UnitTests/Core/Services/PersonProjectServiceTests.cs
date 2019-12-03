@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
@@ -20,7 +19,6 @@ namespace QueueReceiver.UnitTests.Core.Services
            Mock<IUserGroupRepository>)
            Factory()
         {
-            //var logger = new Mock<ILogger<ProjectService>>();
             var personProjectRepository = new Mock<IPersonProjectRepository>();
             var projectRepository = new Mock<IProjectRepository>();
             var personUserGroupRepository = new Mock<IPersonUserGroupRepository>();
