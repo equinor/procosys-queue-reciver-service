@@ -62,6 +62,8 @@ stages:
               buildProperties: 'VersionSuffix="$(Build.BuildNumber)"'
               arguments: '--configuration $(buildConfiguration)'
 
+          - powershell: ls $(Build.ArtifactStagingDirectory)/packages/prereleases
+
           - task: NuGetAuthenticate@0
             displayName: 'NuGet Authenticate'
 
