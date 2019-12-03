@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace QueueReceiver.UnitTests.Core.Services
 {
-    [TestClass()]
+    [TestClass]
     public class PersonProjectServiceTests
     {
 
@@ -35,7 +35,7 @@ namespace QueueReceiver.UnitTests.Core.Services
                         personUserGroupRepository, userGroupRepository);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task GiveAccessToPlantTest()
         {
             const string plantId = "somePlantId";
@@ -53,7 +53,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task RemoveAccessToPlantTest()
         {
             const string plantId = "somePlantId";

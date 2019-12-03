@@ -66,7 +66,7 @@ namespace QueueReceiver.Core.Services
         private async Task<Person> FindUserByEmailOrUserName(AdPerson adPerson)
         {
             var person = await _personRepository.FindByUsername(adPerson.Username)
-                 ?? await _personRepository.FindByUserEmail(adPerson.Email);
+                         ?? await _personRepository.FindByUserEmail(adPerson.Email);
 
             return person;
         }
