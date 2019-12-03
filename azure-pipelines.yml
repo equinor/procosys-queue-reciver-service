@@ -8,14 +8,16 @@ trigger:
     include:
       - master
       - dev
+      - pipelines
+
+variables:
+  System.Debug: 'true'
+  vmImageName: 'ubuntu-latest'
+  buildConfiguration: 'Release'
 
 stages:
   
 - stage: "Build"
-  variables:
-    System.Debug: 'true'
-    vmImageName: 'ubuntu-latest'
-    buildConfiguration: 'Release'
   jobs:
   - job:
     pool:
@@ -32,32 +34,41 @@ stages:
         projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
     
-    - task: DotNetCoreCLI@2
-      displayName: 'Create NuGet Package - Release Version'
-      inputs:
-        command: pack
-        packagesToPack:  '**/*Worker/*.csproj'
-        packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
-        arguments: '--configuration $(buildConfiguration)'
-        nobuild: true
-        
-    - task: DotNetCoreCLI@2
-      displayName: 'Create NuGet Package - Prerelease Version'
-      inputs:
-        command: pack
-        packagesToPack:  '**/*Worker/*.csproj'
-        packDirectory: '$(Build.ArtifactStagingDirectory)/packages/prereleases'
-        buildProperties: 'VersionSuffix="$(Build.BuildNumber)"'
-        arguments: '--configuration $(buildConfiguration)'
+- stage: "Deploy Nuget Package"
+  jobs:
+  - deployment:
+    pool:
+      vmImage: $(vmImageName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DotNetCoreCLI@2
+            displayName: 'Create NuGet Package - Release Version'
+            inputs:
+              command: pack
+              packagesToPack:  '**/*Worker/*.csproj'
+              packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
+              arguments: '--configuration $(buildConfiguration)'
+              nobuild: true
+              
+          - task: DotNetCoreCLI@2
+            displayName: 'Create NuGet Package - Prerelease Version'
+            inputs:
+              command: pack
+              packagesToPack:  '**/*Worker/*.csproj'
+              packDirectory: '$(Build.ArtifactStagingDirectory)/packages/prereleases'
+              buildProperties: 'VersionSuffix="$(Build.BuildNumber)"'
+              arguments: '--configuration $(buildConfiguration)'
 
-    - task: NuGetAuthenticate@0
-      displayName: 'NuGet Authenticate'
+          - task: NuGetAuthenticate@0
+            displayName: 'NuGet Authenticate'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'NuGet push prerelease'
-      inputs:
-        command: push
-        feedsToUse: 'select'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/prereleases/*.nupkg'
-        publishVstsFeed: 'ProCoSysOfficial'
-        allowPackageConflicts: true
+          - task: DotNetCoreCLI@2
+            displayName: 'NuGet push prerelease'
+            inputs:
+              command: push
+              feedsToUse: 'select'
+              packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/prereleases/*.nupkg'
+              publishVstsFeed: 'ProCoSysOfficial'
+              allowPackageConflicts: true
