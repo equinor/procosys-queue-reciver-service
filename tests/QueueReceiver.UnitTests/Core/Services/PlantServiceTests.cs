@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QueueReceiver.UnitTests.Core.Services
 {
-    [TestClass()]
+    [TestClass]
     public class PlantServiceTests
     {
         private readonly Mock<IPlantRepository> _mockRepository;
@@ -18,7 +18,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             _plantService = new PlantService(_mockRepository.Object);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task GetPlantIdTest()
         {
             //Arrange
@@ -31,6 +31,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             //Act
             var result = await _plantService.GetPlantId(existingPlantOid);
 
+            //Assert
             Assert.AreEqual(existingPlantId,result);
         }
     }
