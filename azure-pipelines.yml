@@ -59,6 +59,9 @@ stages:
         packDirectory: '$(Build.ArtifactStagingDirectory)/packages/prereleases'
         buildProperties: 'VersionSuffix="$(Build.BuildNumber)"'
         arguments: '--configuration $(buildConfiguration)'
+    
+    - publish: '$(Build.ArtifactStagingDirectory)/packages'
+      artifact: 'packages'
 
     
 - stage: "PublishPreRelease"
