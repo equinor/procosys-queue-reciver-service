@@ -49,7 +49,7 @@ namespace QueueReceiver.Infrastructure.Repositories.Tests
                 }
             };
 
-            var mockSet =  projects.AsQueryable().BuildMockDbSet<Project>();
+            var mockSet =  projects.AsQueryable().BuildMockDbSet();
             var mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(cxt => cxt.Projects).Returns(mockSet.Object);
             var repository = new ProjectRepository(mockContext.Object);
