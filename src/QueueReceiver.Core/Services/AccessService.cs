@@ -3,6 +3,8 @@ using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using QueueReceiver.Core.Properties;
+using System.Globalization;
 
 namespace QueueReceiver.Core.Services
 {
@@ -31,7 +33,7 @@ namespace QueueReceiver.Core.Services
 
             if (plantId == null)
             {
-                _logger.LogInformation("Group not relevant, removing message from queue");
+                _logger.LogInformation(Resources.GroupDoesNotExist);
                 return;
             }
 
@@ -61,11 +63,13 @@ namespace QueueReceiver.Core.Services
 
             if (person == null)
             {
-                _logger.LogInformation("Person doesn't exist in db so there is no reson to remove access," +
-                    " removing message from queue");
+                _logger.LogInformation(Resources.PersonDoesNotExist);
                 return;
             }
-            _logger.LogInformation($"Removing access for person with id: {person.Id}, to plant {plantId}");
+            _logger.LogInformation(string.Format(
+                CultureInfo.InvariantCulture,
+                Resources.RemoveAccess, person.Id, plantId));
+
             await _projectService.RemoveAccessToPlant(person.Id, plantId);
         }
 

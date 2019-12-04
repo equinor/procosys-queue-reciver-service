@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
+using QueueReceiver.Core.Properties;
 
 namespace QueueReceiver.Core.Services
 {
@@ -66,12 +67,12 @@ namespace QueueReceiver.Core.Services
             //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock
             string lockToken = message.SystemProperties.LockToken;
             await _queueClient.CompleteAsync(lockToken);
-            _logger.LogInformation("Message completed successfully");
+            _logger.LogInformation(Resources.MessageSuccess);
         }
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
-            _logger.LogError(exceptionReceivedEventArgs.Exception, "Message handler encountered an exception");
+            _logger.LogError(exceptionReceivedEventArgs.Exception, Resources.MessageHandlerException);
             var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
 
             _logger.LogDebug($"- Endpoint: {context.Endpoint}");
