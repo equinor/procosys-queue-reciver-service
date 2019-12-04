@@ -2,3 +2,12 @@
 
 # RCS1090: Call 'ConfigureAwait(false)'.
 dotnet_diagnostic.RCS1090.severity = none
+
+# CA1062: Validate arguments of public methods
+dotnet_diagnostic.CA1062.severity = none
+
+# CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.CA2007.severity = none
+
+# CA1307: Specify StringComparison
+dotnet_diagnostic.CA1307.severity = silent

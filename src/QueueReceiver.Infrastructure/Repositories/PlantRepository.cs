@@ -17,11 +17,9 @@ namespace QueueReceiver.Infrastructure.Repositories
         }
 
         public Task<string?> GetPlantIdByOid(string plantOid)
-        {
-            return _plants
+            => _plants
                 .Where(plant => plantOid.Equals(plant.InternalGroupId) || plantOid.Equals(plant.AffiliateGroupId))
                 .Select(plant => plant.PlantId)
                 .SingleOrDefaultAsync<string?>();
-        }
     }
 }

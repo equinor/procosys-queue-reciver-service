@@ -52,8 +52,8 @@ namespace QueueReceiver.Core.Services
             _logger.LogInformation($"Processing message : { accessInfo }");
 
             /**
-             * Injecting here because class is singleton.
-             * It not possible inject scoped dependiences from a constructor of a singleton  
+             * Injecting accessService here because class is singleton.
+             * It is not possible inject scoped dependiences from a constructor of a singleton  
             **/
             using var scope = _scopeFactory.CreateScope();
             var accessService =
@@ -66,7 +66,7 @@ namespace QueueReceiver.Core.Services
             //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock
             string lockToken = message.SystemProperties.LockToken;
             await _queueClient.CompleteAsync(lockToken);
-            _logger.LogInformation($"Message completed successfully");
+            _logger.LogInformation("Message completed successfully");
         }
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)

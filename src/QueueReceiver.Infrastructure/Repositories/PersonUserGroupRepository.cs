@@ -7,12 +7,12 @@ namespace QueueReceiver.Infrastructure.Repositories
 {
     public class PersonUserGroupRepository : IPersonUserGroupRepository
     {
-        private readonly ApplicationDbContext context;
+        private readonly ApplicationDbContext _context;
         private readonly DbContextSettings _settings;
 
         public PersonUserGroupRepository(ApplicationDbContext context, DbContextSettings settings)
         {
-            this.context = context;
+            _context = context;
             _settings = settings;
         }
 
@@ -20,7 +20,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         {
             var createdById = _settings.PersonProjectCreatedId;
             var personUserGroup = new PersonUserGroup(personId, userGroupId, plantId, createdById);
-            await context.PersonUserGroups.AddAsync(personUserGroup);
+            await _context.PersonUserGroups.AddAsync(personUserGroup);
         }
     }
 }
