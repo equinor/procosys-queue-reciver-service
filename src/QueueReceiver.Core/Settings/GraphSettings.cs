@@ -1,5 +1,6 @@
 ﻿namespace QueueReceiver.Core.Settings
 {
+#nullable disable
     public class GraphSettings
     {
         public string GraphUrl { get; set; }

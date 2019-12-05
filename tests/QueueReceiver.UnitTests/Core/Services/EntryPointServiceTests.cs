@@ -10,7 +10,6 @@ using QueueReceiver.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.UnitTests.Core.Services
@@ -58,7 +57,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             var (service, queueClient, _, logger, accessService) = Factory();
 
             accessService.Setup(acs => acs.HandleRequest(It.IsAny<AccessInfo>()))
-                .ThrowsAsync(new Exception("!"));
+                .ThrowsAsync(new InternalTestFailureException("!"));
 
             var accessInfo = new AccessInfo("test",
                 new List<Member>
@@ -74,7 +73,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             {
                 await queueClient.SendMessage(message.Object, default);
             }
-            catch (Exception e)
+            catch (InternalTestFailureException e)
             {
                 Assert.AreEqual(e.Message, "!");
             }
