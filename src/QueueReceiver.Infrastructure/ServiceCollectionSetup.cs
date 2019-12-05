@@ -12,16 +12,18 @@ namespace QueueReceiver.Infrastructure
 {
     public static class ServiceCollectionSetup
     {
-        public static readonly LoggerFactory _myLoggerFactory =
+        public static readonly LoggerFactory LoggerFactory =
             new LoggerFactory(new[]
-            { new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider() });
+            {
+                new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider()
+            });
 
-        public static void AddDbContext(this IServiceCollection services, IConfiguration configuration) =>
-         services.AddDbContext<ApplicationDbContext>(options =>
-         {
-             options.UseOracle(configuration["ConnectionString"]);
-             options.UseLoggerFactory(_myLoggerFactory);
-         });
+        public static void AddDbContext(this IServiceCollection services, IConfiguration configuration)
+            => services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseOracle(configuration["ConnectionString"]);
+                options.UseLoggerFactory(LoggerFactory);
+            });
 
         public static void AddQueueClient(this IServiceCollection services, IConfiguration configuration)
         {

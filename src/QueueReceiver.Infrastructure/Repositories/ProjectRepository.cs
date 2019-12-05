@@ -10,16 +10,16 @@ namespace QueueReceiver.Infrastructure.Repositories
 {
     public class ProjectRepository : IProjectRepository
     {
-        private readonly ApplicationDbContext context;
+        private readonly ApplicationDbContext _context;
 
         public ProjectRepository(ApplicationDbContext context)
         {
-            this.context = context;
+            _context = context;
         }
 
         public Task<List<Project>> GetParentProjectsByPlant(string plantId)
         {
-            return context.Projects
+            return _context.Projects
                 .Where(project =>
                     project.ParentProjectId == null
                     && project.PlantId.Equals(plantId)

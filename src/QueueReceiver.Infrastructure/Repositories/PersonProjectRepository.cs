@@ -4,6 +4,7 @@ using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace QueueReceiver.Infrastructure.Repositories
 {
@@ -32,26 +33,20 @@ namespace QueueReceiver.Infrastructure.Repositories
             var personProjects = _personProjects
                 .Include(pp => pp.Project!)
                 .ThenInclude(project => project.Plant)
-                .Where(pp => plantId.Equals(pp.Project!.PlantId)
+                .Where(pp => plantId.Equals(pp.Project!.PlantId, StringComparison.Ordinal)
                     && personId == pp.PersonId);
 
             personProjects.ForEachAsync(pp => pp.IsVoided = true);
             _personProjects.UpdateRange(personProjects);
         }
 
-        public async Task<int> SaveChangesAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
+        public async Task<int> SaveChangesAsync() 
+            => await _context.SaveChangesAsync();
 
-        public async Task<PersonProject> GetAsync(long projectId, long personId)
-        {
-            return await _personProjects.FindAsync(projectId, personId);
-        }
+        public async Task<PersonProject> GetAsync(long projectId, long personId) 
+            => await _personProjects.FindAsync(projectId, personId);
 
-        public void Update(PersonProject personProject)
-        {
-            _personProjects.Update(personProject);
-        }
+        public void Update(PersonProject personProject) 
+            => _personProjects.Update(personProject);
     }
 }

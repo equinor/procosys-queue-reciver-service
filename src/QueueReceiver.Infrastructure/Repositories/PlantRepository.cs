@@ -16,18 +16,10 @@ namespace QueueReceiver.Infrastructure.Repositories
             _plants = context.Plants;
         }
 
-        public Task<bool> Exists(string oid)
-        {
-            return _plants.AnyAsync(plant
-               => oid.Equals(plant.InternalGroupId) || oid.Equals(plant.AffiliateGroupId));
-        }
-
-        public Task<string> GetPlantIdByOid(string plantOid)
-        {
-            return _plants
+        public Task<string?> GetPlantIdByOid(string plantOid)
+            => _plants
                 .Where(plant => plantOid.Equals(plant.InternalGroupId) || plantOid.Equals(plant.AffiliateGroupId))
                 .Select(plant => plant.PlantId)
-                .SingleOrDefaultAsync();
-        }
+                .SingleOrDefaultAsync<string?>();
     }
 }

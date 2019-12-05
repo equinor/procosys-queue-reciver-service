@@ -1,0 +1,122 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  branches:
+    include:
+      - master
+      - dev
+
+variables:
+  System.Debug: 'true'
+  vmImageName: 'ubuntu-latest'
+  buildConfiguration: 'Release'
+
+stages:
+  
+- stage: "Build"
+  jobs:
+  - job:
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - script: dotnet build --configuration $(buildConfiguration)
+      displayName: 'dotnet build $(buildConfiguration)'
+    
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet test $(buildConfiguration)'
+      inputs:
+        command: test
+        projects: '**/*[Tt]ests/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
+ 
+
+- stage: "Pack"
+  displayName: 'Pack NuGet Package'
+  dependsOn: 'Build'
+  condition:  |
+   and
+   (
+     succeeded(),
+     or
+     ( 
+       eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+       eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+     )
+    )
+  jobs:
+  - job:
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - checkout: self  
+    - task: DotNetCoreCLI@2
+      displayName: 'Create NuGet Package - Release Version'
+      inputs:
+        command: pack
+        packagesToPack:  '**/*Worker/*.csproj'
+        packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
+        arguments: '--configuration $(buildConfiguration)'
+              
+    - task: DotNetCoreCLI@2
+      displayName: 'Create NuGet Package - Prerelease Version'
+      inputs:
+        command: pack
+        packagesToPack:  '**/*Worker/*.csproj'
+        packDirectory: '$(Build.ArtifactStagingDirectory)/packages/prereleases'
+        buildProperties: 'VersionSuffix="$(Build.BuildNumber)"'
+        arguments: '--configuration $(buildConfiguration)'
+    
+    - publish: '$(Build.ArtifactStagingDirectory)/packages'
+      artifact: 'packages'
+
+    
+- stage: "PublishPreRelease"
+  displayName: 'Publish Prerelease NuGet Package'
+  dependsOn: 'Pack'
+  condition: succeeded()
+  jobs:
+  - job:
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - checkout: none
+    - download: current
+      artifact: 'packages'
+    - task: DotNetCoreCLI@2
+      displayName: 'NuGet push prerelease'
+      inputs:
+        command: push
+        feedsToUse: 'select'
+        packagesToPush: '$(Pipeline.Workspace)/packages/prereleases/*.nupkg'
+        publishVstsFeed: 'ProCoSysOfficial'
+        allowPackageConflicts: true
+
+
+- stage: "PublishRelease"
+  displayName: 'Publish Release NuGet Package'
+  dependsOn: 'PublishPreRelease'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - deployment:
+    environment: 'pcs-queue-receiver'
+    pool:
+      vmImage: $(vmImageName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - task: NuGetAuthenticate@0
+              displayName: 'NuGet Authenticate'
+
+            - task: DotNetCoreCLI@2
+              displayName: 'NuGet push release'
+              inputs:
+                command: push
+                feedsToUse: 'select'
+                packagesToPush: '$(Pipeline.Workspace)/packages/releases/*.nupkg'
+                publishVstsFeed: 'ProCoSysOfficial'
+                allowPackageConflicts: true

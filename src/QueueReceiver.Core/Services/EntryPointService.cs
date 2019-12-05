@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
+using QueueReceiver.Core.Properties;
 
 namespace QueueReceiver.Core.Services
 {
@@ -52,8 +53,8 @@ namespace QueueReceiver.Core.Services
             _logger.LogInformation($"Processing message : { accessInfo }");
 
             /**
-             * Injecting here because class is singleton.
-             * It not possible inject scoped dependiences from a constructor of a singleton  
+             * Injecting accessService here because class is singleton.
+             * It is not possible inject scoped dependiences from a constructor of a singleton  
             **/
             using var scope = _scopeFactory.CreateScope();
             var accessService =
@@ -66,12 +67,12 @@ namespace QueueReceiver.Core.Services
             //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock
             string lockToken = message.SystemProperties.LockToken;
             await _queueClient.CompleteAsync(lockToken);
-            _logger.LogInformation($"Message completed successfully");
+            _logger.LogInformation(Resources.MessageSuccess);
         }
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
-            _logger.LogError(exceptionReceivedEventArgs.Exception, "Message handler encountered an exception");
+            _logger.LogError(exceptionReceivedEventArgs.Exception, Resources.MessageHandlerException);
             var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
 
             _logger.LogDebug($"- Endpoint: {context.Endpoint}");

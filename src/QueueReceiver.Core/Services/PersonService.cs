@@ -24,7 +24,7 @@ namespace QueueReceiver.Core.Services
                 return person;
             }
             var adPerson = await _graphService.GetPersonByOid(userOid);
-            person = await FindUseByEmailOrUserName(adPerson);
+            person = await FindUserByEmailOrUserName(adPerson);
 
             if (person != null)
             {
@@ -48,7 +48,7 @@ namespace QueueReceiver.Core.Services
              * The section checking if the user already exists can be removed once the 
              * database is fully migrated and all users have an OID
              **/
-            person = await FindUseByEmailOrUserName(adPerson);
+            person = await FindUserByEmailOrUserName(adPerson);
             if (person == null)
             {
                 person = await _personRepository.AddPerson(
@@ -58,15 +58,15 @@ namespace QueueReceiver.Core.Services
                                         FirstName = adPerson.GivenName,
                                         LastName = adPerson.Surname
                                     });
-            }
             await _personRepository.SaveChangesAsync();
+            }
             return person;
         }
 
-        private async Task<Person> FindUseByEmailOrUserName(AdPerson adPerson)
+        private async Task<Person> FindUserByEmailOrUserName(AdPerson adPerson)
         {
             var person = await _personRepository.FindByUsername(adPerson.Username)
-                 ?? await _personRepository.FindByUserEmail(adPerson.Email);
+                         ?? await _personRepository.FindByUserEmail(adPerson.Email);
 
             return person;
         }

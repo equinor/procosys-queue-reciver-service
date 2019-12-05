@@ -12,12 +12,7 @@ namespace QueueReceiver.Core.Services
             _plantRepository = plantRepository;
         }
 
-        public async Task<bool> Exists(string plantOid)
-        {
-            return await _plantRepository.Exists(plantOid);
-        }
-
-        public async Task<string> GetPlantId(string plantOid)
+        public async Task<string?> GetPlantId(string plantOid)
         {
             return await _plantRepository.GetPlantIdByOid(plantOid);
         }

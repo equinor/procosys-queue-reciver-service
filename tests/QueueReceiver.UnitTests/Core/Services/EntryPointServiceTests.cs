@@ -15,10 +15,15 @@ using System.Threading.Tasks;
 
 namespace QueueReceiver.UnitTests.Core.Services
 {
-    [TestClass()]
-    public class EntryPointServiceTests
+    [TestClass] //TODO this class might get rewritten and be better for testing
+    public class EntryPointServiceTests 
     {
-        private static (EntryPointService, TestableQueueClient, Mock<IServiceLocator>, Mock<ILogger<EntryPointService>>, Mock<IAccessService>) Factory()
+        private static (EntryPointService,
+            TestableQueueClient,
+            Mock<IServiceLocator>,
+            Mock<ILogger<EntryPointService>>,
+            Mock<IAccessService>)
+            Factory()
         {
             var logger = new Mock<ILogger<EntryPointService>>();
             var queueClient = new TestableQueueClient();
@@ -73,15 +78,6 @@ namespace QueueReceiver.UnitTests.Core.Services
             {
                 Assert.AreEqual(e.Message, "!");
             }
-
-            
-            
-        }
-
-        [TestMethod()]
-        public void DisposeQueueTest()
-        {
-            Assert.Fail();
         }
     }
 }

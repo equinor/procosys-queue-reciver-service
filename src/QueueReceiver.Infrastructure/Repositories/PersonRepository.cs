@@ -3,6 +3,7 @@ using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
 using System.Threading.Tasks;
+using static System.StringComparison;
 
 namespace QueueReceiver.Infrastructure.Repositories
 {
@@ -23,37 +24,28 @@ namespace QueueReceiver.Infrastructure.Repositories
             return person;
         }
 
-        public Task<Person> FindByUserEmail(string userEmail)
-        {
-            return _persons
-                 .SingleOrDefaultAsync(person => 
-                    userEmail.Equals(person.Email, System.StringComparison.OrdinalIgnoreCase));
-        }
+        public Task<Person> FindByUserEmail(string userEmail) =>
+            _persons.SingleOrDefaultAsync(person =>
+                userEmail.Equals(person.Email, OrdinalIgnoreCase));
 
         public Task<Person> FindByUsername(string userName)
         {
-           var shortname = userName.Substring(0, userName.IndexOf('@'));
-            return _persons
-                .SingleOrDefaultAsync(person =>
-                    userName.Equals(person.UserName, System.StringComparison.OrdinalIgnoreCase)
-                    || shortname.Equals(person.UserName, System.StringComparison.OrdinalIgnoreCase)
+           var shortName = userName.Substring(0, userName.IndexOf('@', OrdinalIgnoreCase));
+           return _persons
+               .SingleOrDefaultAsync(person =>
+                    userName.Equals(person.UserName, OrdinalIgnoreCase)
+                    || shortName.Equals(person.UserName, OrdinalIgnoreCase)
                     );
         }
 
-        public Task<Person> FindByUserOid(string userOid)
-        {
-            return _persons
-                .SingleOrDefaultAsync(person => userOid.Equals(person.Oid));
-        }
+        public Task<Person> FindByUserOid(string userOid) =>
+            _persons.SingleOrDefaultAsync(person => 
+                userOid.Equals(person.Oid, OrdinalIgnoreCase));
 
         public async Task<int> SaveChangesAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
+            => await _context.SaveChangesAsync();
 
         public void Update(Person person)
-        {
-            _context.Update(person);
-        }
+            => _context.Update(person);
     }
 }
