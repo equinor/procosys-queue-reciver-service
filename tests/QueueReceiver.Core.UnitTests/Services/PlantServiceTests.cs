@@ -26,7 +26,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string existingPlantId = "somePlantId";
 
             _mockRepository.Setup(r => r.GetPlantIdByOid(existingPlantOid))
-                .Returns(Task.FromResult(existingPlantId));
+                .Returns(Task.FromResult<string?>(existingPlantId));
 
             //Act
             var result = await _plantService.GetPlantId(existingPlantOid);

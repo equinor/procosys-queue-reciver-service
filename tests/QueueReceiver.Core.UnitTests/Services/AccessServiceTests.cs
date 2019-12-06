@@ -36,7 +36,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             //Arrange
             const string plantOidThatDoesntExists = "SomePlantThatDoesNotExist";
             _plantService.Setup(plantService => plantService.GetPlantId(plantOidThatDoesntExists))
-                .Returns(Task.FromResult<string>(null));
+                .Returns(Task.FromResult<string?>(null));
             var accessInfo = new AccessInfo(plantOidThatDoesntExists, new List<Member>());
 
             //Act
@@ -80,7 +80,7 @@ namespace QueueReceiver.Core.UnitTests.Services
         {
             //Arrange
             _plantService.Setup(plantService => plantService.GetPlantId(It.IsAny<string>()))
-                .Returns(Task.FromResult("anyPlantOid"));
+                .Returns(Task.FromResult<string?>("anyPlantOid"));
 
             var accessInfo = new AccessInfo(
                 "anyPlantOid",
