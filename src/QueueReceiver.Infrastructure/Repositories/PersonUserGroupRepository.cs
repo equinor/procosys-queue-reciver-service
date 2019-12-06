@@ -21,7 +21,6 @@ namespace QueueReceiver.Infrastructure.Repositories
             var createdById = _settings.PersonProjectCreatedId;
             var personUserGroup = new PersonUserGroup(personId, userGroupId, plantId, createdById);
             await _context.PersonUserGroups.AddAsync(personUserGroup);
-            var i = 1 + 1;
         }
     }
 }
