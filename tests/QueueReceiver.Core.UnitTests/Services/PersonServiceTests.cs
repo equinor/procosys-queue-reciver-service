@@ -5,7 +5,7 @@ using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Services;
 using System.Threading.Tasks;
 
-namespace QueueReceiver.UnitTests.Core.Services
+namespace QueueReceiver.Core.UnitTests.Services
 {
     [TestClass]
     public class PersonServiceTests

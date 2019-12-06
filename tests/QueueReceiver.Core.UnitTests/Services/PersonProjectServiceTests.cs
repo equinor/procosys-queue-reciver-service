@@ -6,7 +6,7 @@ using QueueReceiver.Core.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace QueueReceiver.UnitTests.Core.Services
+namespace QueueReceiver.Core.UnitTests.Services
 {
     [TestClass]
     public class PersonProjectServiceTests
@@ -49,7 +49,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             await service.GiveProjectAccessToPlant(personId, plantId);
 
             //Assert
-            personProjectRepository.Verify(ppr => ppr.AddAsync(projectId,personId), Times.Once);
+            personProjectRepository.Verify(ppr => ppr.AddAsync(projectId, personId), Times.Once);
             personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
         }
 

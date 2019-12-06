@@ -7,7 +7,7 @@ using QueueReceiver.Core.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace QueueReceiver.UnitTests.Core.Services
+namespace QueueReceiver.Core.UnitTests.Services
 {
     [TestClass]
     public class AccessServiceTests
@@ -36,7 +36,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             //Arrange
             const string plantOidThatDoesntExists = "SomePlantThatDoesNotExist";
             _plantService.Setup(plantService => plantService.GetPlantId(plantOidThatDoesntExists))
-                .Returns(Task.FromResult<string?>(null));
+                .Returns(Task.FromResult<string>(null));
             var accessInfo = new AccessInfo(plantOidThatDoesntExists, new List<Member>());
 
             //Act
@@ -80,7 +80,7 @@ namespace QueueReceiver.UnitTests.Core.Services
         {
             //Arrange
             _plantService.Setup(plantService => plantService.GetPlantId(It.IsAny<string>()))
-                .Returns(Task.FromResult<string?>("anyPlantOid"));
+                .Returns(Task.FromResult("anyPlantOid"));
 
             var accessInfo = new AccessInfo(
                 "anyPlantOid",

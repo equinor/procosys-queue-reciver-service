@@ -12,10 +12,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QueueReceiver.UnitTests.Core.Services
+namespace QueueReceiver.Core.UnitTests.Services
 {
     [TestClass] //TODO this class might get rewritten and be better for testing
-    public class EntryPointServiceTests 
+    public class EntryPointServiceTests
     {
         private static (EntryPointService,
             TestableQueueClient,
