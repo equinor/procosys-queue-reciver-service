@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockQueryable.Moq;
 using Moq;
@@ -15,25 +16,25 @@ namespace QueueReceiver.Infrastructure.UnitTests.Repositories
     [TestClass]
     public class PersonUserGroupRepositoryTests
     {
+        private const long personId = 1;
+        private const long userGroupId = 1;
+        private const string plantId = "Dagobath";
+        private const long createdById = 1212;
+
         [TestMethod]
         public async Task AddAsync_DoesNothing_IfGroupAlreadyExists()
         {
             //Arrange
-            const long peronId = 1;
-            const long userGroupId = 1;
-            const string plantId = "Dagobath";
-            const long createdById = 1212;
-
             var personUserGroups = new List<PersonUserGroup>
             {
-                new PersonUserGroup(peronId,userGroupId,plantId,createdById)
+                new PersonUserGroup(personId,userGroupId,plantId,createdById)
             };
 
             var mockSet = personUserGroups.AsQueryable().BuildMockDbSet();
             var mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(cxt => cxt.PersonUserGroups).Returns(mockSet.Object);
             mockContext.Setup(ctx => ctx.PersonUserGroups.AddAsync(It.IsAny<PersonUserGroup>(), default))
-                .Returns(Task.FromResult(new EntityEntry<PersonUserGroup>(It.IsAny<InternalEntityEntry>())));
+                .Returns(Task.FromResult(new EntityEntry<PersonUserGroup>(new MockInternal())));
 
             var settings = new DbContextSettings
             {
@@ -43,10 +44,23 @@ namespace QueueReceiver.Infrastructure.UnitTests.Repositories
             var repository = new PersonUserGroupRepository(mockContext.Object, settings);
 
             //Act
-            await repository.AddAsync(userGroupId, plantId, peronId);
+            await repository.AddAsync(userGroupId, plantId, personId);
 
             //Assert
-            mockContext.Verify(context => context.AddAsync(It.IsAny<PersonUserGroup>(), default), Times.Never);
+            mockContext.Verify(context => context.PersonUserGroups.AddAsync(It.IsAny<PersonUserGroup>(), default), Times.Never);
+        }
+
+
+        private class MockInternal : InternalEntityEntry
+        {
+            private readonly PersonUserGroup personUserGroup = new PersonUserGroup(personId, userGroupId, plantId, createdById);
+
+            public MockInternal()
+                : base(default, new EntityType("mock", new Model(),default))
+            {
+            }
+
+            public override object Entity => personUserGroup;
         }
     }
 }
