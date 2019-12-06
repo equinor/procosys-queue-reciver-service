@@ -10,7 +10,6 @@ namespace QueueReceiver.Infrastructure.Data
 
         public ApplicationDbContext()
         {
-
         }
 
         public virtual DbSet<Person> Persons { get; set; } = null!;
