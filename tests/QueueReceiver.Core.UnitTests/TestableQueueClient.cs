@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Core;
 
-namespace QueueReceiver.UnitTests.Core
+namespace QueueReceiver.Core.UnitTests
 {
-    #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
     public class TestableQueueClient : IQueueClient
     {
         private Func<Message, CancellationToken, Task> processMessagesAsync;

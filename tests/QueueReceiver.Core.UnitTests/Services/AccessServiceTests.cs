@@ -7,7 +7,7 @@ using QueueReceiver.Core.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace QueueReceiver.UnitTests.Core.Services
+namespace QueueReceiver.Core.UnitTests.Services
 {
     [TestClass]
     public class AccessServiceTests

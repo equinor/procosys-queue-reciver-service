@@ -17,7 +17,7 @@ namespace QueueReceiver.Core.Services
             _factory = factory;
         }
 
-        public T Get<T>()
+        public T GetScope<T>()
         {
             CreateScope();
 

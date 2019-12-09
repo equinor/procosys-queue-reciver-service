@@ -5,7 +5,7 @@ using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Services;
 using System.Threading.Tasks;
 
-namespace QueueReceiver.UnitTests.Core.Services
+namespace QueueReceiver.Core.UnitTests.Services
 {
     [TestClass]
     public class PersonServiceTests
@@ -22,7 +22,7 @@ namespace QueueReceiver.UnitTests.Core.Services
         }
 
         [TestMethod]
-        public async Task FindOrCreate_can_find_by_oid()
+        public async Task FindOrCreate_CanFindByOid()
         {
             //Arrange
             const int SomeId = 1;
@@ -39,7 +39,7 @@ namespace QueueReceiver.UnitTests.Core.Services
         }
 
         [TestMethod]
-        public async Task FindOrCreate_can_find_by_username()
+        public async Task FindOrCreate_CanFindByUsername()
         {
             //Arrange
             const int SomeId = 1;
@@ -61,7 +61,7 @@ namespace QueueReceiver.UnitTests.Core.Services
         }
 
         [TestMethod]
-        public async Task FindOrCreate_can_find_by_email()
+        public async Task FindOrCreate_CanFindByEmail()
         {
             //Arrange
             const int SomeId = 1;
@@ -83,7 +83,7 @@ namespace QueueReceiver.UnitTests.Core.Services
         }
 
         [TestMethod]
-        public async Task FindByOid_returns_null_if_no_person_in_db()
+        public async Task FindByOid_ReturnsNull_IfPersonNotInDb()
         {
             //Arrange
             const string SomeOid = "someOid";
@@ -93,6 +93,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             //Act
             var person = await _service.FindByOid(SomeOid);
 
+            //Assert
             Assert.IsNull(person);
         }
     }

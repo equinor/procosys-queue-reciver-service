@@ -60,7 +60,7 @@ namespace QueueReceiver.Core.Services
             var authContext = new AuthenticationContext(authority);
 
             var clientCred = new ClientCredential(clientId, clientSecret);
-            return await authContext.AcquireTokenAsync(graphUrl, clientCred);
+            return await authContext.AcquireTokenAsync(graphUrl.OriginalString, clientCred);
         }
     }
 }
