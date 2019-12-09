@@ -6,6 +6,6 @@ namespace QueueReceiver.Core.Interfaces
     public interface IServiceLocator : IDisposable
     {
         IServiceScope CreateScope();
-        T Get<T>();
+        T GetScope<T>();
     }
 }

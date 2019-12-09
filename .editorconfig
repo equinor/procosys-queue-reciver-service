@@ -11,3 +11,4 @@ dotnet_diagnostic.CA2007.severity = none
 
 # CA1307: Specify StringComparison
 dotnet_diagnostic.CA1307.severity = silent
+

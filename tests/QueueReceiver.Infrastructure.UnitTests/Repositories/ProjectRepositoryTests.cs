@@ -3,11 +3,12 @@ using MockQueryable.Moq;
 using Moq;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace QueueReceiver.Infrastructure.Repositories.Tests
+namespace QueueReceiver.Infrastructure.UnitTests.Repositories
 {
     [TestClass]
     public class ProjectRepositoryTests
@@ -49,7 +50,7 @@ namespace QueueReceiver.Infrastructure.Repositories.Tests
                 }
             };
 
-            var mockSet =  projects.AsQueryable().BuildMockDbSet();
+            var mockSet = projects.AsQueryable().BuildMockDbSet();
             var mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(cxt => cxt.Projects).Returns(mockSet.Object);
             var repository = new ProjectRepository(mockContext.Object);
@@ -58,7 +59,7 @@ namespace QueueReceiver.Infrastructure.Repositories.Tests
             var result = await repository.GetParentProjectsByPlant(plantA);
 
             //Assert
-            Assert.AreEqual(1,result.Count);
+            Assert.AreEqual(1, result.Count);
             Assert.AreEqual(projectId, result[0].ProjectId);
         }
     }

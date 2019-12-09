@@ -4,7 +4,7 @@ using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Services;
 using System.Threading.Tasks;
 
-namespace QueueReceiver.UnitTests.Core.Services
+namespace QueueReceiver.Core.UnitTests.Services
 {
     [TestClass]
     public class PlantServiceTests
@@ -32,7 +32,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             var result = await _plantService.GetPlantId(existingPlantOid);
 
             //Assert
-            Assert.AreEqual(existingPlantId,result);
+            Assert.AreEqual(existingPlantId, result);
         }
     }
 }
