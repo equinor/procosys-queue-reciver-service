@@ -13,24 +13,32 @@ namespace QueueReceiver.UnitTests.Core.Services
     {
 
         private static (ProjectService,
-           Mock<IPersonProjectRepository>,
-           Mock<IProjectRepository>,
-           Mock<IPersonUserGroupRepository>,
-           Mock<IUserGroupRepository>)
-           Factory()
+            Mock<IPersonProjectRepository>,
+            Mock<IProjectRepository>,
+            Mock<IPersonUserGroupRepository>,
+            Mock<IUserGroupRepository>,
+            Mock<IPersonRestrictionRoleRepository>,
+            Mock<IRestrictionRoleRepository>)
+
+            Factory()
         {
             var personProjectRepository = new Mock<IPersonProjectRepository>();
             var projectRepository = new Mock<IProjectRepository>();
             var personUserGroupRepository = new Mock<IPersonUserGroupRepository>();
             var userGroupRepository = new Mock<IUserGroupRepository>();
+            var personRestrictionRoleRepository = new Mock<IPersonRestrictionRoleRepository>();
+            var restrictionRoleRepository = new Mock<IRestrictionRoleRepository>();
+
             var service = new ProjectService(
                 personProjectRepository.Object,
                 projectRepository.Object,
                 personUserGroupRepository.Object,
-                userGroupRepository.Object);
+                userGroupRepository.Object,
+                personRestrictionRoleRepository.Object,
+                restrictionRoleRepository.Object);
 
-            return (service, personProjectRepository, projectRepository,
-                        personUserGroupRepository, userGroupRepository);
+            return (service, personProjectRepository, projectRepository, personUserGroupRepository, userGroupRepository,
+                personRestrictionRoleRepository, restrictionRoleRepository);
         }
 
         [TestMethod]
@@ -39,9 +47,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             const string plantId = "somePlantId";
             const long personId = 2;
             const long projectId = 15;
-            var (service, personProjectRepository,
-                projectRepository, personUserGroupRepository,
-                userGroupRepository) = Factory();
+            var (service, personProjectRepository, projectRepository, _, _, _, _) = Factory();
             projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
                 .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
 
@@ -59,7 +65,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             const int amountOfChanges = 3;
 
             //Arrange
-            var (service, personProjectRepository, _, _, _) = Factory();
+            var (service, personProjectRepository, _, _, _, _, _) = Factory();
 
             personProjectRepository.Setup(ppr => ppr.SaveChangesAsync())
                 .Returns(Task.FromResult(amountOfChanges));
@@ -67,7 +73,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             //Act
             await service.RemoveAccessToPlant(personId, plantId);
 
-            //assert
+            //Assert
             personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
             personProjectRepository.Verify(ppr => ppr.VoidPersonProjects(plantId, personId), Times.Once);
         }

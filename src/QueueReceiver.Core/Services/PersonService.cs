@@ -24,6 +24,12 @@ namespace QueueReceiver.Core.Services
                 return person;
             }
             var adPerson = await _graphService.GetPersonByOid(userOid);
+
+            if (adPerson == null)
+            {
+                return null;
+            }
+
             person = await FindUserByEmailOrUserName(adPerson);
 
             if (person != null)

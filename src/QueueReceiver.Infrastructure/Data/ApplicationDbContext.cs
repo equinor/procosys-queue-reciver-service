@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Models;
+using Person = QueueReceiver.Core.Models.Person;
 
 namespace QueueReceiver.Infrastructure.Data
 {
@@ -13,12 +14,14 @@ namespace QueueReceiver.Infrastructure.Data
         }
 
         public virtual DbSet<Person> Persons { get; set; } = null!;
-        public virtual DbSet<PersonProject> Personprojects { get; set; } = null!;
+        public virtual DbSet<PersonProject> PersonProjects { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;
         public virtual DbSet<Plant> Plants { get; set; } = null!;
         public virtual DbSet<PersonUserGroup> PersonUserGroups { get; set; } = null!;
+        public virtual DbSet<PersonRestrictionRole> PersonRestrictionRoles { get; set; } = null!;
         public virtual DbSet<PersonProjectHistory> PersonProjectHistories { get; set; } = null!;
         public virtual DbSet<UserGroup> UserGroups { get; set; } = null!;
+        public virtual DbSet<RestrictionRole> RestrictionRoles { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +29,8 @@ namespace QueueReceiver.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new PersonProjectConfiguration());
             modelBuilder.ApplyConfiguration(new ProjectConfiguration());
             modelBuilder.ApplyConfiguration(new PersonUserGroupConfiguration());
+            modelBuilder.ApplyConfiguration(new RestrictionRoleConfiguration());
+            modelBuilder.ApplyConfiguration(new PersonRestrictionRoleConfiguration());
         }
     }
 }

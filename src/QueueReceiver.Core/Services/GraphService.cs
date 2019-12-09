@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using QueueReceiver.Core.Interfaces;
@@ -11,16 +12,16 @@ namespace QueueReceiver.Core.Services
 {
     public class GraphService : IGraphService
     {
-        private readonly GraphSettings settings;
-        private readonly ILogger<GraphService> log;
+        private readonly GraphSettings _settings;
+        private readonly ILogger<GraphService> _log;
 
         public GraphService(GraphSettings graphSettings, ILogger<GraphService> logger)
         {
-            settings = graphSettings;
-            log = logger;
+            _settings = graphSettings;
+            _log = logger;
         }
 
-        public async Task<AdPerson> GetPersonByOid(string userOid)
+        public async Task<AdPerson?> GetPersonByOid(string userOid)
         {
             AuthenticationResult auth = await GetAccessToken();
 
@@ -31,23 +32,31 @@ namespace QueueReceiver.Core.Services
                           requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", auth.AccessToken);
                           return Task.FromResult(0);
                       }));
-
-            log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
-            var user = await graphClient.Users[userOid].Request().GetAsync();
-            var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
+            try
             {
-                GivenName = user.GivenName,
-                Surname = user.Surname
-            };
-            return adPerson;
+                _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
+                var user = await graphClient.Users[userOid].Request().GetAsync();
+                var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
+                {
+                    GivenName = user.GivenName,
+                    Surname = user.Surname
+                };
+                return adPerson;
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e.Message);
+            }
+
+            return null;
         }
 
         private async Task<AuthenticationResult> GetAccessToken()
         {
-            var authority = settings.Authority;
-            var graphUrl = settings.GraphUrl;
-            var clientId = settings.ClientId;
-            var clientSecret = settings.ClientSecret;
+            var authority = _settings.Authority;
+            var graphUrl = _settings.GraphUrl;
+            var clientId = _settings.ClientId;
+            var clientSecret = _settings.ClientSecret;
             var authContext = new AuthenticationContext(authority);
 
             var clientCred = new ClientCredential(clientId, clientSecret);

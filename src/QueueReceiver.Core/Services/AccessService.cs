@@ -87,4 +87,3 @@ namespace QueueReceiver.Core.Services
         }
     }
 }
-

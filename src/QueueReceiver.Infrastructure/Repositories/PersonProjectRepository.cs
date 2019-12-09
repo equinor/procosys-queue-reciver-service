@@ -16,7 +16,7 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public PersonProjectRepository(ApplicationDbContext context, DbContextSettings settings)
         {
-            _personProjects = context.Personprojects;
+            _personProjects = context.PersonProjects;
             _context = context;
             _settings = settings;
         }

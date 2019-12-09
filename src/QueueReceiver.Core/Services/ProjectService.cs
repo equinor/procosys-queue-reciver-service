@@ -1,6 +1,4 @@
 ﻿using QueueReceiver.Core.Interfaces;
-using QueueReceiver.Core.Models;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Services
@@ -12,17 +10,24 @@ namespace QueueReceiver.Core.Services
         private readonly IProjectRepository _projectRepository;
         private readonly IPersonUserGroupRepository _personUserGroupRepository;
         private readonly IUserGroupRepository _userGroupRepository;
+        private readonly IPersonRestrictionRoleRepository _personRestrictionRoleRepository;
+        private readonly IRestrictionRoleRepository _restrictionRoleRepository;
 
         public ProjectService(
             IPersonProjectRepository personProjectRepository,
             IProjectRepository projectRepository,
             IPersonUserGroupRepository personUserGroupRepository,
-            IUserGroupRepository userGroupRepository)
+            IUserGroupRepository userGroupRepository,
+            IPersonRestrictionRoleRepository personRestrictionRoleRepository,
+            IRestrictionRoleRepository restrictionRoleRepository
+        )
         {
             _personProjectRepository = personProjectRepository;
             _projectRepository = projectRepository;
             _personUserGroupRepository = personUserGroupRepository;
             _userGroupRepository = userGroupRepository;
+            _personRestrictionRoleRepository = personRestrictionRoleRepository;
+            _restrictionRoleRepository = restrictionRoleRepository;
         }
 
         public async Task GiveProjectAccessToPlant(long personId, string plantId)
@@ -33,14 +38,19 @@ namespace QueueReceiver.Core.Services
             {
                 var projectId = project.ProjectId;
                 var personProject = await _personProjectRepository.GetAsync(projectId, personId);
-                if (personProject == null)
+                // if this person does not already have this access
+                if(personProject == null)
                 {
+                    // add them
                     await _personProjectRepository.AddAsync(projectId, personId);
                     //TODO PersonProjectHistory
                     updated = true;
                 }
+                // if there was one already, check if they're voided
+                // if they are,
                 else if (personProject.IsVoided)
                 {
+                    // unvoid them and send update command to db
                     personProject.IsVoided = false;
                     _personProjectRepository.Update(personProject);
                     //TODO PersonProjectHistory
@@ -48,11 +58,15 @@ namespace QueueReceiver.Core.Services
                 }
             });
 
+            // if new access is added or previous has been unvoided,
             if (updated)
             {
                 var userGroupId = await _userGroupRepository.FindIdByUserGroupName(DefaultUserGroup);
-                await _personUserGroupRepository.AddAsync(userGroupId, plantId, personId);
-                //TODO add default privilege if does not exists
+                await _personUserGroupRepository.AddIfNotExistAsync(userGroupId, plantId, personId);
+
+                var restrictionRole = await _restrictionRoleRepository.FindRestrictionRole("NO_RESTRICTIONS", plantId);
+                await _personRestrictionRoleRepository.AddIfNotExistAsync(plantId, restrictionRole, personId);
+
                 await _personProjectRepository.SaveChangesAsync();
             }
         }
