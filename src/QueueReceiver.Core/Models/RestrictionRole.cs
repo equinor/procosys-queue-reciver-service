@@ -6,9 +6,9 @@ namespace QueueReceiver.Core.Models
     public class RestrictionRole
     {
         [Column("RESTRICTIONROLE")]
-        public string Id { get; set; }
+        public string RestrictionRoleId { get; set; } = null!;
 
         [Column("PROJECTSCHEMA")] 
-        public string plantId { get; set; } = null!;
+        public string PlantId { get; set; } = null!;
     }
 }

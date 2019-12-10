@@ -8,7 +8,7 @@ namespace QueueReceiver.Infrastructure.Data
     {
         public void Configure(EntityTypeBuilder<RestrictionRole> builder)
         {
-            builder.HasKey(rr => new { rr.plantId, rr.Id });
+            builder.HasKey(rr => new { rr.PlantId, rr.RestrictionRoleId });
         }
     }
 }

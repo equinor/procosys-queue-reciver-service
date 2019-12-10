@@ -17,8 +17,8 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<string> FindRestrictionRole(string name, string plant)
         {
-            return await _context.RestrictionRoles.Where(restrictionRole => name.Equals(restrictionRole.Id) && plant.Equals(restrictionRole.plantId))
-                .Select(restrictionRole => restrictionRole.Id)
+            return await _context.RestrictionRoles.Where(restrictionRole => name.Equals(restrictionRole.RestrictionRoleId) && plant.Equals(restrictionRole.PlantId))
+                .Select(restrictionRole => restrictionRole.RestrictionRoleId)
                 .SingleAsync();
         }
     }
