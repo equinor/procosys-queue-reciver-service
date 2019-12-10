@@ -18,7 +18,7 @@ namespace QueueReceiver.Infrastructure
                 new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider()
             });
 
-        public static void AddDbContext(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
             => services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseOracle(configuration["ConnectionString"]);
@@ -37,7 +37,7 @@ namespace QueueReceiver.Infrastructure
             });
         }
 
-        public static void AddRepositories(this IServiceCollection services)
+        public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<IPersonProjectRepository, PersonProjectRepository>();
@@ -45,15 +45,17 @@ namespace QueueReceiver.Infrastructure
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IUserGroupRepository, UserGroupRepository>();
             services.AddScoped<IPersonUserGroupRepository, PersonUserGroupRepository>();
+            return services;
         }
 
-        public static void AddServices(this IServiceCollection services)
+        public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IAccessService, AccessService>();
             services.AddScoped<IPlantService, PlantService>();
             services.AddScoped<IGraphService, GraphService>();
             services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IProjectService, ProjectService>();
+            return services;
         }
     }
 }

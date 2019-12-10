@@ -1,4 +1,5 @@
 ﻿using QueueReceiver.Core.Interfaces;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Services
@@ -10,6 +11,11 @@ namespace QueueReceiver.Core.Services
         public PlantService(IPlantRepository plantRepository)
         {
             _plantRepository = plantRepository;
+        }
+
+        public IEnumerable<string> GetAllGroupOids()
+        {
+           return _plantRepository.GetAllInernalAndAffiliateOids();
         }
 
         public async Task<string?> GetPlantId(string plantOid)

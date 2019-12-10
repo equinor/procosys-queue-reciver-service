@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueueReceiver.Infrastructur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueueReceiver.Core", "src\QueueReceiver.Core\QueueReceiver.Core.csproj", "{5848828B-3998-44A2-A2F8-31525CA4E4C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupSyncer", "GroupSyncer\GroupSyncer.csproj", "{FAEAF9DF-9F03-4325-89EC-58ABC0BCF240}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{5848828B-3998-44A2-A2F8-31525CA4E4C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5848828B-3998-44A2-A2F8-31525CA4E4C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5848828B-3998-44A2-A2F8-31525CA4E4C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAEAF9DF-9F03-4325-89EC-58ABC0BCF240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAEAF9DF-9F03-4325-89EC-58ABC0BCF240}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAEAF9DF-9F03-4325-89EC-58ABC0BCF240}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAEAF9DF-9F03-4325-89EC-58ABC0BCF240}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{43CECE1D-346F-4BA4-B62E-7FFECD1F0A50} = {BC65202D-64E0-4603-B335-8E5F36C67431}
 		{09772918-3CEC-4371-9B14-BE8EC1B9C3BA} = {61B6D8C6-F591-426F-B858-9C826A32433D}
 		{5848828B-3998-44A2-A2F8-31525CA4E4C8} = {61B6D8C6-F591-426F-B858-9C826A32433D}
+		{FAEAF9DF-9F03-4325-89EC-58ABC0BCF240} = {61B6D8C6-F591-426F-B858-9C826A32433D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {840D546D-9B22-4171-A343-61BDFC85E445}

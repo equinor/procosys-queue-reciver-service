@@ -2,6 +2,7 @@
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,6 +15,13 @@ namespace QueueReceiver.Infrastructure.Repositories
         public PlantRepository(ApplicationDbContext context)
         {
             _plants = context.Plants;
+        }
+
+        public IEnumerable<string> GetAllInernalAndAffiliateOids()
+        {
+           var affiliates = _plants.Where(plant=> plant.AffiliateGroupId != null).Select(plant =>  plant.AffiliateGroupId);
+           var inter = _plants.Where(plant => plant.InternalGroupId != null).Select(plant => plant.InternalGroupId);
+           return affiliates.Concat(inter);
         }
 
         public Task<string?> GetPlantIdByOid(string plantOid)

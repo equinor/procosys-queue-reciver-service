@@ -23,6 +23,8 @@ namespace QueueReceiver.Core.Models
         public string? FirstName { get; set; }
         [Column("LASTNAME")]
         public string? LastName { get; set; }
+        [Column("MOBILEPHONENO")]
+        public string? MobilePhoneNumber { get; set; }
 
     }
 }

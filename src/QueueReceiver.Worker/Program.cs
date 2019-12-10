@@ -29,12 +29,6 @@ namespace QueueReceiver.Worker
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            })
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton<IEntryPointService, EntryPointService>();

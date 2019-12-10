@@ -7,5 +7,6 @@ namespace QueueReceiver.Core.Interfaces
     {
         Task<Person?> FindByOid(string userOid);
         Task<Person> FindOrCreate(string userOid);
+        void FindAndUpdate(string memberOid);
     }
 }

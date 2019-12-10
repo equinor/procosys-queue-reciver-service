@@ -24,6 +24,16 @@ namespace QueueReceiver.Infrastructure.Repositories
             return person;
         }
 
+        public Task<Person?> FindByNameAndMobileNumber(string mobileNumber, string givenName, string surname)
+        {
+          var person =  _persons.SingleOrDefaultAsync(p => 
+                p.MobilePhoneNumber.Equals(mobileNumber)
+             && p.FirstName.Equals(givenName) 
+             && p.LastName.Equals(surname));
+
+            return person;
+        }
+
         public Task<Person> FindByUserEmail(string userEmail) =>
             _persons.SingleOrDefaultAsync(person =>
                 userEmail.Equals(person.Email, OrdinalIgnoreCase));
