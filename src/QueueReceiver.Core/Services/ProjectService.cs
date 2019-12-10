@@ -38,19 +38,16 @@ namespace QueueReceiver.Core.Services
             {
                 var projectId = project.ProjectId;
                 var personProject = await _personProjectRepository.GetAsync(projectId, personId);
-                // if this person does not already have this access
+
                 if (personProject == null)
                 {
-                    // add them
                     await _personProjectRepository.AddAsync(projectId, personId);
                     //TODO PersonProjectHistory
                     updated = true;
                 }
-                // if there was one already, check if they're voided
-                // if they are,
+
                 else if (personProject.IsVoided)
                 {
-                    // unvoid them and send update command to db
                     personProject.IsVoided = false;
                     _personProjectRepository.Update(personProject);
                     //TODO PersonProjectHistory
@@ -58,7 +55,6 @@ namespace QueueReceiver.Core.Services
                 }
             });
 
-            // if new access is added or previous has been unvoided,
             if (updated)
             {
                 var userGroupId = await _userGroupRepository.FindIdByUserGroupName(DefaultUserGroup);
