@@ -15,11 +15,10 @@ namespace QueueReceiver.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<string> FindRestrictionRole(string name, string plant)
-        {
-            return await _context.RestrictionRoles.Where(restrictionRole => name.Equals(restrictionRole.RestrictionRoleId) && plant.Equals(restrictionRole.PlantId))
-                .Select(restrictionRole => restrictionRole.RestrictionRoleId)
-                .SingleAsync();
-        }
+        public async Task<string> FindRestrictionRole(string name, string plant) =>
+            await _context.RestrictionRoles.Where(restrictionRole 
+                    => name.Equals(restrictionRole.RestrictionRoleId) && plant.Equals(restrictionRole.PlantId))
+                    .Select(restrictionRole => restrictionRole.RestrictionRoleId)
+                    .SingleAsync();
     }
 }

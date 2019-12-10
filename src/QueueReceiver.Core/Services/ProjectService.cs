@@ -6,6 +6,7 @@ namespace QueueReceiver.Core.Services
     public class ProjectService : IProjectService
     {
         private const string DefaultUserGroup = "READ";
+        private const string DefaultRestrictionRole = "NO_RESTRICTIONS";
         private readonly IPersonProjectRepository _personProjectRepository;
         private readonly IProjectRepository _projectRepository;
         private readonly IPersonUserGroupRepository _personUserGroupRepository;
@@ -60,7 +61,7 @@ namespace QueueReceiver.Core.Services
                 var userGroupId = await _userGroupRepository.FindIdByUserGroupName(DefaultUserGroup);
                 await _personUserGroupRepository.AddIfNotExistAsync(userGroupId, plantId, personId);
 
-                var restrictionRole = await _restrictionRoleRepository.FindRestrictionRole("NO_RESTRICTIONS", plantId);
+                var restrictionRole = await _restrictionRoleRepository.FindRestrictionRole(DefaultRestrictionRole, plantId);
                 await _personRestrictionRoleRepository.AddIfNotExistAsync(plantId, restrictionRole, personId);
 
                 await _personProjectRepository.SaveChangesAsync();
