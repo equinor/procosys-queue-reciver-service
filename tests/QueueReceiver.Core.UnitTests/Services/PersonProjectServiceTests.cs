@@ -6,12 +6,11 @@ using QueueReceiver.Core.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace QueueReceiver.UnitTests.Core.Services
+namespace QueueReceiver.Core.UnitTests.Services
 {
     [TestClass]
     public class PersonProjectServiceTests
     {
-
         private static (ProjectService,
            Mock<IPersonProjectRepository>,
            Mock<IProjectRepository>,
@@ -34,8 +33,9 @@ namespace QueueReceiver.UnitTests.Core.Services
         }
 
         [TestMethod]
-        public async Task GiveAccessToPlantTest()
+        public async Task GiveAccessToPlant_CallsCorrectMethods()
         {
+            //Arrange
             const string plantId = "somePlantId";
             const long personId = 2;
             const long projectId = 15;
@@ -47,27 +47,27 @@ namespace QueueReceiver.UnitTests.Core.Services
 
             //Act
             await service.GiveProjectAccessToPlant(personId, plantId);
-            personProjectRepository.Verify(ppr => ppr.AddAsync(projectId,personId), Times.Once);
+
+            //Assert
+            personProjectRepository.Verify(ppr => ppr.AddAsync(projectId, personId), Times.Once);
             personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
         }
 
         [TestMethod]
-        public async Task RemoveAccessToPlantTest()
+        public async Task RemoveAccessToPlant_CallsCorrectMethods()
         {
+            //Arrange
             const string plantId = "somePlantId";
             const long personId = 2;
             const int amountOfChanges = 3;
-
-            //Arrange
             var (service, personProjectRepository, _, _, _) = Factory();
-
             personProjectRepository.Setup(ppr => ppr.SaveChangesAsync())
                 .Returns(Task.FromResult(amountOfChanges));
 
             //Act
             await service.RemoveAccessToPlant(personId, plantId);
 
-            //assert
+            //Assert
             personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
             personProjectRepository.Verify(ppr => ppr.VoidPersonProjects(plantId, personId), Times.Once);
         }

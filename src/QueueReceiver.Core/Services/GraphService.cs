@@ -44,7 +44,8 @@ namespace QueueReceiver.Core.Services
             var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
             {
                 GivenName = user.GivenName,
-                Surname = user.Surname
+                Surname = user.Surname,
+                MobileNumber = user.MobilePhone
             };
             return adPerson;
         }
@@ -70,7 +71,7 @@ namespace QueueReceiver.Core.Services
             var authContext = new AuthenticationContext(authority);
 
             var clientCred = new ClientCredential(clientId, clientSecret);
-            return await authContext.AcquireTokenAsync(graphUrl, clientCred);
+            return await authContext.AcquireTokenAsync(graphUrl.OriginalString, clientCred);
         }
     }
 }

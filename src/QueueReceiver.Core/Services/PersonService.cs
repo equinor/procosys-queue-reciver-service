@@ -24,8 +24,8 @@ namespace QueueReceiver.Core.Services
 
             Person? person = await _personRepository.FindByNameAndMobileNumber(
                                                                 aadPerson.MobileNumber,
-                                                                aadPerson.GivenName!,
-                                                                aadPerson.Surname!);
+                                                                aadPerson.GivenName,
+                                                                aadPerson.Surname);
             if(person != null)
             {
                 person.Oid = memberOid;
@@ -88,8 +88,8 @@ namespace QueueReceiver.Core.Services
 
         private async Task<Person?> FindByFullNameAndPhoneNumber(AdPerson aadPerson)
             => await _personRepository.FindByNameAndMobileNumber(
-                                                                aadPerson.MobileNumber!,
-                                                                aadPerson.GivenName!,
-                                                                aadPerson.Surname!);
+                                                                aadPerson.MobileNumber,
+                                                                aadPerson.GivenName,
+                                                                aadPerson.Surname);
     }
 }

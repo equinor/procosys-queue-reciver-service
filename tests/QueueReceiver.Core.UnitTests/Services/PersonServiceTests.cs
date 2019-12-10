@@ -5,7 +5,7 @@ using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Services;
 using System.Threading.Tasks;
 
-namespace QueueReceiver.UnitTests.Core.Services
+namespace QueueReceiver.Core.UnitTests.Services
 {
     [TestClass]
     public class PersonServiceTests
@@ -22,13 +22,13 @@ namespace QueueReceiver.UnitTests.Core.Services
         }
 
         [TestMethod]
-        public async Task FindOrCreate_can_find_by_oid()
+        public async Task FindOrCreate_CanFindByOid()
         {
             //Arrange
             const int SomeId = 1;
             const string SomeOid = "someOid";
             _personRepository.Setup(personService => personService.FindByUserOid(SomeOid))
-                    .Returns(Task.FromResult(new Person("", "") { Id = SomeId, Oid = SomeOid }));
+                    .Returns(Task.FromResult<Person?>(new Person("", "") { Id = SomeId, Oid = SomeOid }));
 
             //Act
             var person = await _service.FindOrCreate(SomeOid);
@@ -39,17 +39,24 @@ namespace QueueReceiver.UnitTests.Core.Services
         }
 
         [TestMethod]
-        public async Task FindOrCreate_can_find_by_username()
+        public async Task FindOrCreate_CanFindByNameAndMobileNumber()
         {
             //Arrange
             const int SomeId = 1;
-            const string someUsername = "someUsername";
+            const string GivenName = "Herman August";
+            const string Surname = "Kronglevåg";
             const string SomeOid = "someOid";
+            const string MobileNo = "762982109";
 
             _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
-                .Returns(Task.FromResult(new AdPerson(SomeOid, someUsername, "anyEmail")));
-            _personRepository.Setup(personService => personService.FindByUsername(someUsername))
-                .Returns(Task.FromResult(new Person(someUsername, "") { Id = SomeId }));
+                .Returns(Task.FromResult(new AdPerson(SomeOid, "anything", "anyEmail")
+                {
+                    MobileNumber = MobileNo,
+                    GivenName = GivenName,
+                    Surname = Surname
+                }));
+            _personRepository.Setup(repo => repo.FindByNameAndMobileNumber(MobileNo,GivenName,Surname))
+                .Returns(Task.FromResult<Person?>(new Person("tull", "tøys") { Id = SomeId }));
             _personRepository.Setup(personService => personService.SaveChangesAsync())
                 .Returns(Task.FromResult(1));
 
@@ -61,29 +68,7 @@ namespace QueueReceiver.UnitTests.Core.Services
         }
 
         [TestMethod]
-        public async Task FindOrCreate_can_find_by_email()
-        {
-            //Arrange
-            const int SomeId = 1;
-            const string someEmail = "someEmail";
-            const string SomeOid = "someOid";
-
-            _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
-                .Returns(Task.FromResult(new AdPerson(SomeOid, "anyUserName", someEmail)));
-            _personRepository.Setup(personService => personService.FindByUserEmail(someEmail))
-                .Returns(Task.FromResult(new Person("", someEmail) { Id = SomeId }));
-            _personRepository.Setup(personService => personService.SaveChangesAsync())
-                .Returns(Task.FromResult(1));
-
-            //Act
-            var person = await _service.FindOrCreate(SomeOid);
-
-            //Assert
-            Assert.AreEqual(SomeId, person.Id);
-        }
-
-        [TestMethod]
-        public async Task FindByOid_returns_null_if_no_person_in_db()
+        public async Task FindByOid_ReturnsNull_IfPersonNotInDb()
         {
             //Arrange
             const string SomeOid = "someOid";
@@ -93,6 +78,7 @@ namespace QueueReceiver.UnitTests.Core.Services
             //Act
             var person = await _service.FindByOid(SomeOid);
 
+            //Assert
             Assert.IsNull(person);
         }
     }

@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace QueueReceiver.UnitTests.Core
+namespace QueueReceiver.Core.UnitTests
 {
     internal interface ITestableQueueClient
     {
