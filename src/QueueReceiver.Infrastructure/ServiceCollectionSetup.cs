@@ -45,6 +45,8 @@ namespace QueueReceiver.Infrastructure
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IUserGroupRepository, UserGroupRepository>();
             services.AddScoped<IPersonUserGroupRepository, PersonUserGroupRepository>();
+            services.AddScoped<IRestrictionRoleRepository, RestrictionRoleRepository>();
+            services.AddScoped<IPersonRestrictionRoleRepository, PersonRestrictionRoleRepository>();
         }
 
         public static void AddServices(this IServiceCollection services)

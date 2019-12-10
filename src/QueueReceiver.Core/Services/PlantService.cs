@@ -12,9 +12,6 @@ namespace QueueReceiver.Core.Services
             _plantRepository = plantRepository;
         }
 
-        public async Task<string?> GetPlantId(string plantOid)
-        {
-            return await _plantRepository.GetPlantIdByOid(plantOid);
-        }
+        public async Task<string?> GetPlantId(string plantOid) => await _plantRepository.GetPlantIdByOid(plantOid);
     }
 }

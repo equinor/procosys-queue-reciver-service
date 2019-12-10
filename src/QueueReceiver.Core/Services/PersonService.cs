@@ -23,7 +23,14 @@ namespace QueueReceiver.Core.Services
             {
                 return person;
             }
+
             var adPerson = await _graphService.GetPersonByOid(userOid);
+
+            if (adPerson == null)
+            {
+                return null;
+            }
+
             person = await FindUserByEmailOrUserName(adPerson);
 
             if (person != null)
@@ -32,6 +39,7 @@ namespace QueueReceiver.Core.Services
                 _personRepository.Update(person);
                 await _personRepository.SaveChangesAsync();
             }
+
             return person;
         }
 
@@ -42,6 +50,7 @@ namespace QueueReceiver.Core.Services
             {
                 return person;
             }
+
             var adPerson = await _graphService.GetPersonByOid(userOid);
 
             /**
@@ -52,14 +61,15 @@ namespace QueueReceiver.Core.Services
             if (person == null)
             {
                 person = await _personRepository.AddPerson(
-                                    new Person(adPerson.Username, adPerson.Email)
-                                    {
-                                        Oid = adPerson.Oid,
-                                        FirstName = adPerson.GivenName,
-                                        LastName = adPerson.Surname
-                                    });
-            await _personRepository.SaveChangesAsync();
+                    new Person(adPerson.Username, adPerson.Email)
+                    {
+                        Oid = adPerson.Oid,
+                        FirstName = adPerson.GivenName,
+                        LastName = adPerson.Surname
+                    });
+                await _personRepository.SaveChangesAsync();
             }
+
             return person;
         }
 
