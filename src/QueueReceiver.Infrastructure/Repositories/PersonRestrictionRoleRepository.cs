@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using QueueReceiver.Core.Interfaces;
+﻿using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
+using System.Threading.Tasks;
 
 namespace QueueReceiver.Infrastructure.Repositories
 {
@@ -11,16 +11,16 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public PersonRestrictionRoleRepository(ApplicationDbContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
         public async Task AddIfNotExistAsync(string plantId, string restrictionRole, long personId)
         {
             var prr = new PersonRestrictionRole(plantId, restrictionRole, personId);
 
-            var exist = _context.PersonRestrictionRoles.Find(prr.RestrictionRole, prr.PersonId, prr.PlantId) != null;
+            var exists = _context.PersonRestrictionRoles.Find(prr.RestrictionRole, prr.PersonId, prr.PlantId) != null;
 
-            if (!exist)
+            if (!exists)
             {
                 await _context.PersonRestrictionRoles.AddAsync(prr);
             }

@@ -23,10 +23,12 @@ namespace QueueReceiver.UnitTests.Infrastructure.Repositories
         {
             //Arrange
             var mockContext = new Mock<ApplicationDbContext>();
-            mockContext.Setup(cxt => cxt.PersonRestrictionRoles.Find(restrictionRole, personId, plantId))
-                .Returns(new PersonRestrictionRole(plantId, restrictionRole, personId)); ;
-            mockContext.Setup(cxt => cxt.PersonRestrictionRoles.AddAsync(It.IsAny<PersonRestrictionRole>(), default))
-                .Returns(Task.FromResult(new EntityEntry<PersonRestrictionRole>(new MockInternal())));
+            mockContext.Setup(cxt => cxt.PersonRestrictionRoles
+                    .Find(restrictionRole, personId, plantId))
+                    .Returns(new PersonRestrictionRole(plantId, restrictionRole, personId));
+            mockContext.Setup(cxt => cxt.PersonRestrictionRoles
+                    .AddAsync(It.IsAny<PersonRestrictionRole>(), default))
+                    .Returns(Task.FromResult(new EntityEntry<PersonRestrictionRole>(new MockInternal())));
 
             var repository = new PersonRestrictionRoleRepository(mockContext.Object);
 
@@ -34,13 +36,16 @@ namespace QueueReceiver.UnitTests.Infrastructure.Repositories
             await repository.AddIfNotExistAsync(plantId, restrictionRole, personId);
 
             //Assert
-            mockContext.Verify(cxt => cxt.PersonRestrictionRoles.Find(restrictionRole, personId, plantId), Times.Once);
-            mockContext.Verify(cxt => cxt.PersonRestrictionRoles.AddAsync(It.IsAny<PersonRestrictionRole>(), default), Times.Never);
+            mockContext.Verify(cxt => cxt.PersonRestrictionRoles
+                .Find(restrictionRole, personId, plantId), Times.Once);
+            mockContext.Verify(cxt => cxt.PersonRestrictionRoles
+                .AddAsync(It.IsAny<PersonRestrictionRole>(), default), Times.Never);
         }
 
         private class MockInternal : InternalEntityEntry
         {
-            private readonly PersonRestrictionRole personRestrictionRole = new PersonRestrictionRole(plantId, restrictionRole, personId);
+            private readonly PersonRestrictionRole personRestrictionRole =
+                new PersonRestrictionRole(plantId, restrictionRole, personId);
 
             public MockInternal()
                 : base(default, new EntityType("mock", new Model(), default))

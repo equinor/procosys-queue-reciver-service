@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using QueueReceiver.Core.Interfaces;
@@ -7,6 +6,7 @@ using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Settings;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System;
 
 namespace QueueReceiver.Core.Services
 {
@@ -26,12 +26,13 @@ namespace QueueReceiver.Core.Services
             AuthenticationResult auth = await GetAccessToken();
 
             var graphClient = new GraphServiceClient(
-                   new DelegateAuthenticationProvider(
-                      (requestMessage) =>
-                      {
-                          requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", auth.AccessToken);
-                          return Task.FromResult(0);
-                      }));
+                new DelegateAuthenticationProvider(
+                    (requestMessage) =>
+                    {
+                        requestMessage.Headers.Authorization =
+                            new AuthenticationHeaderValue("bearer", auth.AccessToken);
+                        return Task.FromResult(0);
+                    }));
             try
             {
                 _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");

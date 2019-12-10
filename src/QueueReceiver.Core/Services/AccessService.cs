@@ -42,7 +42,7 @@ namespace QueueReceiver.Core.Services
                 return;
             }
 
-           var runningJobs = accessInfo.Members.AsParallel().Select(async member =>
+            var runningJobs = accessInfo.Members.AsParallel().Select(async member =>
             {
                 if (member.ShouldRemove)
                 {

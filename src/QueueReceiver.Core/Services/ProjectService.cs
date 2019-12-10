@@ -39,7 +39,7 @@ namespace QueueReceiver.Core.Services
                 var projectId = project.ProjectId;
                 var personProject = await _personProjectRepository.GetAsync(projectId, personId);
                 // if this person does not already have this access
-                if(personProject == null)
+                if (personProject == null)
                 {
                     // add them
                     await _personProjectRepository.AddAsync(projectId, personId);

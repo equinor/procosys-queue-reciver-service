@@ -7,9 +7,9 @@ namespace QueueReceiver.Core.Models
     {
         public PersonRestrictionRole(string plantId, string restrictionRole, long personId)
         {
-            PersonId = personId;
-            RestrictionRole = restrictionRole;
             PlantId = plantId;
+            RestrictionRole = restrictionRole;
+            PersonId = personId;
         }
 
         [Column("RESTRICTIONROLE")]

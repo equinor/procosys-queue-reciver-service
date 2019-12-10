@@ -21,9 +21,9 @@ namespace QueueReceiver.Infrastructure.Repositories
             var createdById = _settings.PersonProjectCreatedId;
             var pug = new PersonUserGroup(personId, userGroupId, plantId, createdById);
 
-            var exist = _context.PersonUserGroups.Find(pug.PlantId, pug.PersonId, pug.UserGroupId) != null;
+            var exists = _context.PersonUserGroups.Find(pug.PlantId, pug.PersonId, pug.UserGroupId) != null;
 
-            if (!exist)
+            if (!exists)
             {
                 await _context.PersonUserGroups.AddAsync(pug);
             }

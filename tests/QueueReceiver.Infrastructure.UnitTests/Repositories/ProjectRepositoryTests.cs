@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockQueryable.Moq;
 using Moq;
 using QueueReceiver.Core.Models;
@@ -10,7 +7,6 @@ using QueueReceiver.Infrastructure.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using QueueReceiver.Infrastructure.Repositories;
 
 namespace QueueReceiver.Infrastructure.UnitTests.Repositories
 {
@@ -57,7 +53,7 @@ namespace QueueReceiver.Infrastructure.UnitTests.Repositories
             var mockSet = projects.AsQueryable().BuildMockDbSet();
             var mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(cxt => cxt.Projects).Returns(mockSet.Object);
-           
+
             var repository = new ProjectRepository(mockContext.Object);
 
             //Act
