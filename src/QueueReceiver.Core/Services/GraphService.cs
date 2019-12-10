@@ -29,10 +29,20 @@ namespace QueueReceiver.Core.Services
             var members = await graphClient.Groups[oid].Members
                 .Request()
                 .GetAsync();
+            var result = members.Select(m => m.Id).ToList();
 
-           var result = members.CurrentPage.Select(m => m.Id);
-            //TODO itterate all pages
+            while (members.NextPageRequest != null)
+            {
+                members = await members.NextPageRequest.GetAsync();
+                result.AddRange(members.Select(m => m.Id));
+            }
+
             return result;
+
+            
+
+            //TODO itterate all pages
+            //return result;
         }
 
         public async Task<AdPerson> GetPersonByOid(string userOid)

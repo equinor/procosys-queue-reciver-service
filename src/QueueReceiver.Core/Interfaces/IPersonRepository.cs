@@ -1,4 +1,5 @@
 ﻿using QueueReceiver.Core.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Interfaces
@@ -12,5 +13,6 @@ namespace QueueReceiver.Core.Interfaces
         void Update(Person person);
         Task<int> SaveChangesAsync();
         Task<Person?> FindByNameAndMobileNumber(string mobileNumber, string givenName, string surname);
+        IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
     }
 }

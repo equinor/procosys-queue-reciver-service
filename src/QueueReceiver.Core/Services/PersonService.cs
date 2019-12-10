@@ -1,5 +1,6 @@
 ﻿using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Services
@@ -15,9 +16,9 @@ namespace QueueReceiver.Core.Services
             _graphService = graphService;
         }
 
-        public async void FindAndUpdate(string memberOid)
+        public async Task FindAndUpdate(AdPerson aadPerson)
         {
-            var aadPerson = await _graphService.GetPersonByOid(memberOid);
+            //var aadPerson = await _graphService.GetPersonByOid(memberOid);
 
             if (aadPerson.MobileNumber == null || aadPerson.GivenName == null || aadPerson.Surname == null)
                 return;
@@ -28,10 +29,8 @@ namespace QueueReceiver.Core.Services
                                                                 aadPerson.Surname);
             if(person != null)
             {
-                person.Oid = memberOid;
+                person.Oid = aadPerson.Oid;
                 _personRepository.Update(person);
-                await _personRepository.SaveChangesAsync();
-
             }
         }
 
@@ -53,6 +52,11 @@ namespace QueueReceiver.Core.Services
             //    await _personRepository.SaveChangesAsync();
             //}
             return person;
+        }
+
+        public async Task<int> SaveAsync()
+        {
+            return await _personRepository.SaveChangesAsync();
         }
 
         public async Task<Person> FindOrCreate(string userOid)
@@ -91,5 +95,10 @@ namespace QueueReceiver.Core.Services
                                                                 aadPerson.MobileNumber,
                                                                 aadPerson.GivenName,
                                                                 aadPerson.Surname);
+
+        public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids)
+        {
+            return _personRepository.GetAllNotInDb(oids);
+        }
     }
 }

@@ -39,8 +39,10 @@ namespace GroupSyncer
                 .BuildServiceProvider();
 
             var syncService = services.GetService<ISyncService>();
+            Console.WriteLine("starting sync");
             await syncService.ExcecuteOidSync();
-            Console.WriteLine("Sync Done (i hope)!");
+            Console.WriteLine("Sync Done!");
+
         }
     }
 }
