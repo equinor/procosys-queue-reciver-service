@@ -26,9 +26,9 @@ namespace QueueReceiver.Core.Services
             sw.Start();
             var groupOids = _plantService.GetAllGroupOids();
             Console.WriteLine($"get all groups took: {sw.ElapsedMilliseconds} ms, found {groupOids.Count()} groups");
+            
             sw.Restart();
             var allMembers = new HashSet<string>();
-
             foreach (var oid in groupOids)
             {
                 Console.WriteLine($"finding members in {oid}");
@@ -36,33 +36,33 @@ namespace QueueReceiver.Core.Services
                 Console.WriteLine($" found: {newMembers.Count()}, adding new memebers to set");
                 allMembers.UnionWith(newMembers);
             }
-            Console.WriteLine($"found {allMembers.Count} members in {sw.ElapsedMilliseconds}ms, checking against db");
+            Console.WriteLine($"found {allMembers.Count} members in azureAD:  {sw.ElapsedMilliseconds} ms");
+            
             sw.Restart();
+            Console.Write("removing members not already in db members ");
             var allNotInDb = _personService.GetAllNotInDb(allMembers);
+            Console.WriteLine($"{allMembers.Count - allNotInDb.Count()} removed in: {sw.ElapsedMilliseconds} ms");
+
+            sw.Restart();
+            Console.Write("Finding info on members in graph");
             var tasks = allNotInDb.Select(async m => await _graphService.GetPersonByOid(m));
+            var results = await Task.WhenAll(tasks);
+            Console.WriteLine($"  : {sw.ElapsedMilliseconds} ms");
 
-           var results = await Task.WhenAll(tasks);
-
+            sw.Restart();
+            Console.Write("Checking against db and tracking tracking to update");
             foreach (var aadPerson in results)
             {
                 await _personService.FindAndUpdate(aadPerson);
             }
+            Console.WriteLine($"  : {sw.ElapsedMilliseconds}");
 
+
+            sw.Restart();
+            Console.Write("Starting save");
             var added = await _personService.SaveAsync();
-            Console.WriteLine($" Syncing with db took: {sw.ElapsedMilliseconds} ms, added {added} persons");
+            Console.WriteLine($" added {added} persons with oid to the db in:  {sw.ElapsedMilliseconds} ms");
             sw.Stop();
-
-            /**
-             * for each group in AAD
-             *  loop through members
-             *    check if member exist in db
-             *      if exists, continue
-             *        if not, call graph with member oid 
-             *        then check db against shortname firstname and lastname
-             *        if 3/3 add oid to user, log
-             *          if not, log
-             **/
-
         }
     }
 }

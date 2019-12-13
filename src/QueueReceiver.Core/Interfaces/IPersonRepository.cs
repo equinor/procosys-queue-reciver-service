@@ -14,5 +14,6 @@ namespace QueueReceiver.Core.Interfaces
         Task<int> SaveChangesAsync();
         Task<Person?> FindByNameAndMobileNumber(string mobileNumber, string givenName, string surname);
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
+        void BulkUpdate(IList<Person> persons);
     }
 }

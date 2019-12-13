@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
@@ -30,8 +31,12 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<Person?> FindByNameAndMobileNumber(string mobileNumber, string givenName, string surname)
         {
-            return await _persons.SingleOrDefaultAsync(p =>
-                mobileNumber.Equals(p.MobilePhoneNumber)
+           mobileNumber = mobileNumber.Replace(" ", "");
+
+            return await _persons.FirstOrDefaultAsync(p =>
+            p.MobilePhoneNumber != null
+             &&  (mobileNumber.Equals(p.MobilePhoneNumber.Replace(" ", ""))
+                || mobileNumber.Equals("+47" + p.MobilePhoneNumber.Replace(" ", "")))
              && givenName.Equals(p.FirstName)
              && surname.Equals(p.LastName));
 
@@ -55,6 +60,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         {
             var withOid = _persons.Where(p => p.Oid != null).Select(p => p.Oid!).ToAsyncEnumerable();
             return oids.ToAsyncEnumerable().Except(withOid).ToEnumerable();
+
             //var result = new List<string>();
             //Stopwatch sw = new Stopwatch();
             //sw.Start();
@@ -78,10 +84,15 @@ namespace QueueReceiver.Infrastructure.Repositories
            await _persons.FirstOrDefaultAsync(person =>
                 userOid.Equals(person.Oid, OrdinalIgnoreCase));
 
+        public void BulkUpdate(IList<Person> persons)
+        {
+            _context.BulkUpdate(persons);
+        }
+
         public async Task<int> SaveChangesAsync()
             => await _context.SaveChangesAsync();
 
         public void Update(Person person)
-            => _context.Update(person);
+            => _context.Persons.Update(person);
     }
 }
