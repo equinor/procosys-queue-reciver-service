@@ -20,28 +20,47 @@ namespace QueueReceiver.Core.Services
             _personService = personService;
         }
 
+
+        public async Task ExcecuteAccessSync()
+        {
+            //Find all groups we want to sync
+            //var plants = _plantService.GetAllPlants();
+
+            /**
+             * 
+             * do smt with queue (ie. empty queue and pause queue service)?
+             * 
+             * For each plant
+             *   Find group members in graph with that plant id (internal/affiliate)
+             *   for each member in plant(from graph)
+             *   {
+             *     find members in db thats not in graph
+             *       void access
+             *       
+             *     find members in graph thats not in db,
+             *       add/unvoid access
+             *    }  
+             *    
+             *    do smt with queue(ie. empty deadletter queue, start service)?
+             * */
+
+        }
+
         public async Task ExcecuteOidSync()
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
             var groupOids = _plantService.GetAllGroupOids();
             Console.WriteLine($"get all groups took: {sw.ElapsedMilliseconds} ms, found {groupOids.Count()} groups");
-            
+
             sw.Restart();
-            var allMembers = new HashSet<string>();
-            foreach (var oid in groupOids)
-            {
-                Console.WriteLine($"finding members in {oid}");
-                var newMembers = await _graphService.GetMemberOids(oid);
-                Console.WriteLine($" found: {newMembers.Count()}, adding new memebers to set");
-                allMembers.UnionWith(newMembers);
-            }
+            HashSet<string> allMembers = await GetMemberOidsFromGroups(groupOids);
             Console.WriteLine($"found {allMembers.Count} members in azureAD:  {sw.ElapsedMilliseconds} ms");
-            
+
             sw.Restart();
-            Console.Write("removing members not already in db members ");
+            Console.Write("Removing members not already in db members ");
             var allNotInDb = _personService.GetAllNotInDb(allMembers);
-            Console.WriteLine($"{allMembers.Count - allNotInDb.Count()} removed in: {sw.ElapsedMilliseconds} ms");
+            Console.WriteLine($"{allMembers.Count - allNotInDb.Count()} removed : {sw.ElapsedMilliseconds} ms");
 
             sw.Restart();
             Console.Write("Finding info on members in graph");
@@ -50,19 +69,65 @@ namespace QueueReceiver.Core.Services
             Console.WriteLine($"  : {sw.ElapsedMilliseconds} ms");
 
             sw.Restart();
-            Console.Write("Checking against db and tracking tracking to update");
-            foreach (var aadPerson in results)
+            Console.Write("Checking members against db  using Name and phonenumer, setting oid");
+
+
+
+
+            //var result = new List<string>();
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
+            var smt = results.ToList();
+            //Console.WriteLine($"code sort takes {sw.ElapsedMilliseconds}ms");
+            //sw.Restart();
+            for (int i = 0; i < smt.Count; i += 400)
             {
-                await _personService.FindAndUpdate(aadPerson);
+                int count = ((smt.Count - i) < 400) ? smt.Count - i - 1 : 400;
+
+                sw.Restart();
+                Console.WriteLine($"Adding from {i} to {count}");
+                foreach (var aadPerson in smt.GetRange(i,count))
+                {
+                    await _personService.FindAndUpdate(aadPerson);
+                }
+
+                Console.Write($"Starting save  from {i} to {count} ");
+                var added = await _personService.SaveAsync();
+                Console.WriteLine($" added {added} persons with oid to the db :  {sw.ElapsedMilliseconds} ms");
+                //     var toAdd = await _persons
+                //    .Where(p => p.Oid != null && !oids.GetRange(i,count).Contains(p.Oid))
+                //    .Select(p => p.Oid)
+                //    .ToListAsync();
+                //    result.AddRange(toAdd);
             }
-            Console.WriteLine($"  : {sw.ElapsedMilliseconds}");
+            //Console.WriteLine($"Partitioning takes {sw.ElapsedMilliseconds}ms");
 
 
-            sw.Restart();
-            Console.Write("Starting save");
-            var added = await _personService.SaveAsync();
-            Console.WriteLine($" added {added} persons with oid to the db in:  {sw.ElapsedMilliseconds} ms");
+
             sw.Stop();
+
+            Console.WriteLine($"Done");
+           // Console.WriteLine($"  : {sw.ElapsedMilliseconds} ms");
+
+            //sw.Restart();
+            //Console.Write("Starting save");
+            ////var added = await _personService.SaveAsync();
+            //Console.WriteLine($" added {added} persons with oid to the db :  {sw.ElapsedMilliseconds} ms");
+            //sw.Stop();
+        }
+
+        private async Task<HashSet<string>> GetMemberOidsFromGroups(IEnumerable<string> groupOids)
+        {
+            var allMembers = new HashSet<string>();
+            foreach (var oid in groupOids)
+            {
+                Console.WriteLine($"finding members in {oid}");
+                var newMembers = await _graphService.GetMemberOids(oid);
+                Console.WriteLine($" found: {newMembers.Count()}, adding new memebers to set");
+                allMembers.UnionWith(newMembers);
+            }
+
+            return allMembers;
         }
     }
 }
