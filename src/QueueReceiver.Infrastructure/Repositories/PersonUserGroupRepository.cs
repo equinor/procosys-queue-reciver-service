@@ -16,11 +16,17 @@ namespace QueueReceiver.Infrastructure.Repositories
             _settings = settings;
         }
 
-       public async Task AddAsync(long userGroupId, string plantId, long personId)
+       public async Task AddIfNotExistAsync(long userGroupId, string plantId, long personId)
         {
             var createdById = _settings.PersonProjectCreatedId;
-            var personUserGroup = new PersonUserGroup(personId, userGroupId, plantId, createdById);
-            await _context.PersonUserGroups.AddAsync(personUserGroup);
+            var pug = new PersonUserGroup(personId, userGroupId, plantId, createdById);
+
+            var exists = _context.PersonUserGroups.Find(pug.PlantId, pug.PersonId, pug.UserGroupId) != null;
+
+            if (!exists)
+            {
+                await _context.PersonUserGroups.AddAsync(pug);
+            }
         }
     }
 }

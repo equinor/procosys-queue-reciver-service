@@ -1,6 +1,4 @@
 ﻿using QueueReceiver.Core.Interfaces;
-using QueueReceiver.Core.Models;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Services
@@ -8,21 +6,29 @@ namespace QueueReceiver.Core.Services
     public class ProjectService : IProjectService
     {
         private const string DefaultUserGroup = "READ";
+        private const string DefaultRestrictionRole = "NO_RESTRICTIONS";
         private readonly IPersonProjectRepository _personProjectRepository;
         private readonly IProjectRepository _projectRepository;
         private readonly IPersonUserGroupRepository _personUserGroupRepository;
         private readonly IUserGroupRepository _userGroupRepository;
+        private readonly IPersonRestrictionRoleRepository _personRestrictionRoleRepository;
+        private readonly IRestrictionRoleRepository _restrictionRoleRepository;
 
         public ProjectService(
             IPersonProjectRepository personProjectRepository,
             IProjectRepository projectRepository,
             IPersonUserGroupRepository personUserGroupRepository,
-            IUserGroupRepository userGroupRepository)
+            IUserGroupRepository userGroupRepository,
+            IPersonRestrictionRoleRepository personRestrictionRoleRepository,
+            IRestrictionRoleRepository restrictionRoleRepository
+        )
         {
             _personProjectRepository = personProjectRepository;
             _projectRepository = projectRepository;
             _personUserGroupRepository = personUserGroupRepository;
             _userGroupRepository = userGroupRepository;
+            _personRestrictionRoleRepository = personRestrictionRoleRepository;
+            _restrictionRoleRepository = restrictionRoleRepository;
         }
 
         public async Task GiveProjectAccessToPlant(long personId, string plantId)
@@ -33,12 +39,14 @@ namespace QueueReceiver.Core.Services
             {
                 var projectId = project.ProjectId;
                 var personProject = await _personProjectRepository.GetAsync(projectId, personId);
+
                 if (personProject == null)
                 {
                     await _personProjectRepository.AddAsync(projectId, personId);
                     //TODO PersonProjectHistory
                     updated = true;
                 }
+
                 else if (personProject.IsVoided)
                 {
                     personProject.IsVoided = false;
@@ -51,8 +59,11 @@ namespace QueueReceiver.Core.Services
             if (updated)
             {
                 var userGroupId = await _userGroupRepository.FindIdByUserGroupName(DefaultUserGroup);
-                await _personUserGroupRepository.AddAsync(userGroupId, plantId, personId);
-                //TODO add default privilege if does not exists
+                await _personUserGroupRepository.AddIfNotExistAsync(userGroupId, plantId, personId);
+
+                var restrictionRole = await _restrictionRoleRepository.FindRestrictionRole(DefaultRestrictionRole, plantId);
+                await _personRestrictionRoleRepository.AddIfNotExistAsync(plantId, restrictionRole, personId);
+
                 await _personProjectRepository.SaveChangesAsync();
             }
         }

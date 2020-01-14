@@ -1,5 +1,4 @@
-﻿using EFCore.BulkExtensions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
@@ -33,7 +32,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         {
            mobileNumber = mobileNumber.Replace(" ", "");
 
-            return await _persons.FirstOrDefaultAsync(p =>
+            return await _persons.AsNoTracking().FirstOrDefaultAsync(p =>
             p.MobilePhoneNumber != null
              &&  (mobileNumber.Equals(p.MobilePhoneNumber.Replace(" ", ""))
                 || mobileNumber.Equals("+47" + p.MobilePhoneNumber.Replace(" ", "")))
@@ -58,7 +57,7 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids)
         {
-            var withOid = _persons.Where(p => p.Oid != null).Select(p => p.Oid!).ToAsyncEnumerable();
+            var withOid = _persons.Where(p => p.Oid != null).Select(p => p.Oid!).AsNoTracking().ToAsyncEnumerable();
             return oids.ToAsyncEnumerable().Except(withOid).ToEnumerable();
 
             //var result = new List<string>();
@@ -84,15 +83,20 @@ namespace QueueReceiver.Infrastructure.Repositories
            await _persons.FirstOrDefaultAsync(person =>
                 userOid.Equals(person.Oid, OrdinalIgnoreCase));
 
-        public void BulkUpdate(IList<Person> persons)
-        {
-            _context.BulkUpdate(persons);
-        }
+        //public void BulkUpdate(IList<Person> persons)
+        //{
+        //    _context.BulkUpdate(persons);
+        //}
 
         public async Task<int> SaveChangesAsync()
             => await _context.SaveChangesAsync();
 
         public void Update(Person person)
             => _context.Persons.Update(person);
+
+        public int SaveChanges()
+        {
+            return _context.SaveChanges();
+        }
     }
 }

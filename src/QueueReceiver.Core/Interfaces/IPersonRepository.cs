@@ -12,8 +12,9 @@ namespace QueueReceiver.Core.Interfaces
         Task<Person> AddPerson(Person person);
         void Update(Person person);
         Task<int> SaveChangesAsync();
+        int SaveChanges();
         Task<Person?> FindByNameAndMobileNumber(string mobileNumber, string givenName, string surname);
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
-        void BulkUpdate(IList<Person> persons);
+       // void BulkUpdate(IList<Person> persons);
     }
 }

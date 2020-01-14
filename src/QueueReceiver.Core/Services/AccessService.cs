@@ -42,7 +42,7 @@ namespace QueueReceiver.Core.Services
                 return;
             }
 
-           var runningJobs = accessInfo.Members.AsParallel().Select(async member =>
+            var runningJobs = accessInfo.Members.AsParallel().Select(async member =>
             {
                 if (member.ShouldRemove)
                 {
@@ -54,7 +54,9 @@ namespace QueueReceiver.Core.Services
                 }
             });
 
+
             await Task.WhenAll(runningJobs);
+
         }
 
         private async Task RemoveAccess(Member member, string plantId)
@@ -87,4 +89,3 @@ namespace QueueReceiver.Core.Services
         }
     }
 }
-

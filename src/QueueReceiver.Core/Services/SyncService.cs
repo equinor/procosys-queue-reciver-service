@@ -43,7 +43,6 @@ namespace QueueReceiver.Core.Services
              *    
              *    do smt with queue(ie. empty deadletter queue, start service)?
              * */
-
         }
 
         public async Task ExcecuteOidSync()
@@ -66,13 +65,10 @@ namespace QueueReceiver.Core.Services
             Console.Write("Finding info on members in graph");
             var tasks = allNotInDb.Select(async m => await _graphService.GetPersonByOid(m));
             var results = await Task.WhenAll(tasks);
-            Console.WriteLine($"  : {sw.ElapsedMilliseconds} ms");
+            Console.WriteLine($" : {sw.ElapsedMilliseconds} ms");
 
             sw.Restart();
-            Console.Write("Checking members against db  using Name and phonenumer, setting oid");
-
-
-
+            Console.WriteLine("Checking members against db  using Name and phonenumer, setting oid");
 
             //var result = new List<string>();
             //Stopwatch sw = new Stopwatch();
@@ -80,20 +76,22 @@ namespace QueueReceiver.Core.Services
             var smt = results.ToList();
             //Console.WriteLine($"code sort takes {sw.ElapsedMilliseconds}ms");
             //sw.Restart();
-            for (int i = 0; i < smt.Count; i += 400)
+            const int batchSize = 10;
+            for (int i = 0; i < smt.Count; i += batchSize)
             {
-                int count = ((smt.Count - i) < 400) ? smt.Count - i - 1 : 400;
+                int count = ((smt.Count - i) < batchSize) ? smt.Count - i - 1 : batchSize;
 
                 sw.Restart();
-                Console.WriteLine($"Adding from {i} to {count}");
+                Console.WriteLine($"Adding from {i} to {i+count}");
                 foreach (var aadPerson in smt.GetRange(i,count))
                 {
                     await _personService.FindAndUpdate(aadPerson);
                 }
 
-                Console.Write($"Starting save  from {i} to {count} ");
-                var added = await _personService.SaveAsync();
+                Console.Write($"Starting save  from {i} to {i+count} ");
+                var added = _personService.SaveChanges();
                 Console.WriteLine($" added {added} persons with oid to the db :  {sw.ElapsedMilliseconds} ms");
+
                 //     var toAdd = await _persons
                 //    .Where(p => p.Oid != null && !oids.GetRange(i,count).Contains(p.Oid))
                 //    .Select(p => p.Oid)
@@ -101,8 +99,6 @@ namespace QueueReceiver.Core.Services
                 //    result.AddRange(toAdd);
             }
             //Console.WriteLine($"Partitioning takes {sw.ElapsedMilliseconds}ms");
-
-
 
             sw.Stop();
 

@@ -19,8 +19,8 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public IEnumerable<string> GetAllInernalAndAffiliateOids()
         {
-           var affiliates = _plants.Where(plant=> plant.AffiliateGroupId != null).Select(plant =>  plant.AffiliateGroupId);
-           var inter = _plants.Where(plant => plant.InternalGroupId != null).Select(plant => plant.InternalGroupId);
+           var affiliates = _plants.Where(plant=> plant.AffiliateGroupId != null).Select(plant =>  plant.AffiliateGroupId).AsNoTracking();
+           var inter = _plants.Where(plant => plant.InternalGroupId != null).Select(plant => plant.InternalGroupId).AsNoTracking();
            return affiliates.Concat(inter);
         }
 

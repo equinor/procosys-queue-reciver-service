@@ -66,6 +66,7 @@ namespace QueueReceiver.Core.Services
             {
                 return person;
             }
+
             var adPerson = await _graphService.GetPersonByOid(userOid);
 
             /**
@@ -99,6 +100,11 @@ namespace QueueReceiver.Core.Services
         public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids)
         {
             return _personRepository.GetAllNotInDb(oids);
+        }
+
+        public int SaveChanges()
+        {
+           return _personRepository.SaveChanges();
         }
     }
 }

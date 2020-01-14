@@ -16,7 +16,7 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public PersonProjectRepository(ApplicationDbContext context, DbContextSettings settings)
         {
-            _personProjects = context.Personprojects;
+            _personProjects = context.PersonProjects;
             _context = context;
             _settings = settings;
         }
@@ -34,19 +34,19 @@ namespace QueueReceiver.Infrastructure.Repositories
                 .Include(pp => pp.Project!)
                 .ThenInclude(project => project.Plant)
                 .Where(pp => plantId.Equals(pp.Project!.PlantId, StringComparison.Ordinal)
-                    && personId == pp.PersonId);
+                             && personId == pp.PersonId);
 
             personProjects.ForEachAsync(pp => pp.IsVoided = true);
             _personProjects.UpdateRange(personProjects);
         }
 
-        public async Task<int> SaveChangesAsync() 
+        public async Task<int> SaveChangesAsync()
             => await _context.SaveChangesAsync();
 
-        public async Task<PersonProject> GetAsync(long projectId, long personId) 
+        public async Task<PersonProject> GetAsync(long projectId, long personId)
             => await _personProjects.FindAsync(projectId, personId);
 
-        public void Update(PersonProject personProject) 
+        public void Update(PersonProject personProject)
             => _personProjects.Update(personProject);
     }
 }

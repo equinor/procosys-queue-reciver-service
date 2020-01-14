@@ -8,18 +8,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System;
 
 namespace QueueReceiver.Core.Services
 {
     public class GraphService : IGraphService
     {
-        private readonly GraphSettings settings;
-        private readonly ILogger<GraphService> log;
+        private readonly GraphSettings _settings;
+        private readonly ILogger<GraphService> _log;
 
         public GraphService(GraphSettings graphSettings, ILogger<GraphService> logger)
         {
-            settings = graphSettings;
-            log = logger;
+            _settings = graphSettings;
+            _log = logger;
         }
 
         public async Task<IEnumerable<string>> GetMemberOids(string oid)
@@ -49,7 +50,7 @@ namespace QueueReceiver.Core.Services
         {
             var graphClient = await CreateClient();
 
-            log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
+            _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
             var user = await graphClient.Users[userOid].Request().GetAsync();
             var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
             {
@@ -74,10 +75,10 @@ namespace QueueReceiver.Core.Services
 
         private async Task<AuthenticationResult> GetAccessToken()
         {
-            var authority = settings.Authority;
-            var graphUrl = settings.GraphUrl;
-            var clientId = settings.ClientId;
-            var clientSecret = settings.ClientSecret;
+            var authority = _settings.Authority;
+            var graphUrl = _settings.GraphUrl;
+            var clientId = _settings.ClientId;
+            var clientSecret = _settings.ClientSecret;
             var authContext = new AuthenticationContext(authority);
 
             var clientCred = new ClientCredential(clientId, clientSecret);

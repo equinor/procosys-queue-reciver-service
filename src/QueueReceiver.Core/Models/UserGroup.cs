@@ -10,6 +10,5 @@ namespace QueueReceiver.Core.Models
 
         [Column("NAME")]
         public string? Name { get; set; }
-
     }
 }
