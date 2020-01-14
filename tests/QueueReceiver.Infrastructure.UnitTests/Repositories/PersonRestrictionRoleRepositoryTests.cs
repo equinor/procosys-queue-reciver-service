@@ -24,7 +24,7 @@ namespace QueueReceiver.UnitTests.Infrastructure.Repositories
             //Arrange
             var mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(cxt => cxt.PersonRestrictionRoles
-                    .Find(restrictionRole, personId, plantId))
+                    .Find(plantId, restrictionRole, personId))
                     .Returns(new PersonRestrictionRole(plantId, restrictionRole, personId));
             mockContext.Setup(cxt => cxt.PersonRestrictionRoles
                     .AddAsync(It.IsAny<PersonRestrictionRole>(), default))
@@ -37,7 +37,7 @@ namespace QueueReceiver.UnitTests.Infrastructure.Repositories
 
             //Assert
             mockContext.Verify(cxt => cxt.PersonRestrictionRoles
-                .Find(restrictionRole, personId, plantId), Times.Once);
+                .Find(plantId, restrictionRole, personId), Times.Once);
             mockContext.Verify(cxt => cxt.PersonRestrictionRoles
                 .AddAsync(It.IsAny<PersonRestrictionRole>(), default), Times.Never);
         }
