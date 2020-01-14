@@ -14,17 +14,19 @@ namespace QueueReceiver.Core.Services
         private readonly IProjectService _projectService;
         private readonly IPlantService _plantService;
         private readonly ILogger<AccessService> _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
         public AccessService(
             IPersonService personService,
             IProjectService projectService,
             IPlantService plantService,
-            ILogger<AccessService> logger)
+            ILogger<AccessService> logger, IUnitOfWork unitOfWork)
         {
             _personService = personService;
             _projectService = projectService;
             _plantService = plantService;
             _logger = logger;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task HandleRequest(AccessInfo accessInfo)
@@ -55,6 +57,7 @@ namespace QueueReceiver.Core.Services
             });
 
             await Task.WhenAll(runningJobs);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         private async Task RemoveAccess(Member member, string plantId)
@@ -70,7 +73,7 @@ namespace QueueReceiver.Core.Services
                 CultureInfo.InvariantCulture,
                 Resources.RemoveAccess, person.Id, plantId));
 
-            await _projectService.RemoveAccessToPlant(person.Id, plantId);
+             _projectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
         private async Task GiveAccess(Member member, string plantId)

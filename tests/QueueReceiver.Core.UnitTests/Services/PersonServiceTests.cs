@@ -12,13 +12,15 @@ namespace QueueReceiver.Core.UnitTests.Services
     {
         private readonly Mock<IPersonRepository> _personRepository;
         private readonly Mock<IGraphService> _graphService;
+        private readonly Mock<IUnitOfWork> _unitOfWork;
         private readonly IPersonService _service;
 
         public PersonServiceTests()
         {
             _personRepository = new Mock<IPersonRepository>();
             _graphService = new Mock<IGraphService>();
-            _service = new PersonService(_personRepository.Object, _graphService.Object);
+            _unitOfWork = new Mock<IUnitOfWork>();
+            _service = new PersonService(_personRepository.Object, _graphService.Object,_unitOfWork.Object);
         }
 
         [TestMethod]
@@ -50,7 +52,7 @@ namespace QueueReceiver.Core.UnitTests.Services
                 .Returns(Task.FromResult(new AdPerson(SomeOid, someUsername, "anyEmail")));
             _personRepository.Setup(personService => personService.FindByUsername(someUsername))
                 .Returns(Task.FromResult(new Person(someUsername, "") { Id = SomeId }));
-            _personRepository.Setup(personService => personService.SaveChangesAsync())
+            _unitOfWork.Setup(uow => uow.SaveChangesAsync())
                 .Returns(Task.FromResult(1));
 
             //Act
@@ -72,8 +74,8 @@ namespace QueueReceiver.Core.UnitTests.Services
                 .Returns(Task.FromResult(new AdPerson(SomeOid, "anyUserName", someEmail)));
             _personRepository.Setup(personService => personService.FindByUserEmail(someEmail))
                 .Returns(Task.FromResult(new Person("", someEmail) { Id = SomeId }));
-            _personRepository.Setup(personService => personService.SaveChangesAsync())
-                .Returns(Task.FromResult(1));
+            _unitOfWork.Setup(uow => uow.SaveChangesAsync())
+              .Returns(Task.FromResult(1));
 
             //Act
             var person = await _service.FindOrCreate(SomeOid);

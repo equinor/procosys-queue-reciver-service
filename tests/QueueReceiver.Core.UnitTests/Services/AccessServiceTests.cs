@@ -16,18 +16,21 @@ namespace QueueReceiver.Core.UnitTests.Services
         private readonly Mock<IProjectService> _projectService;
         private readonly Mock<IPlantService> _plantService;
         private readonly Mock<ILogger<AccessService>> _logger;
+        private readonly Mock<IUnitOfWork> _unitOfWork;
         private readonly IAccessService _service;
         public AccessServiceTests()
         {
             _personService = new Mock<IPersonService>();
             _projectService = new Mock<IProjectService>();
             _plantService = new Mock<IPlantService>();
+            _unitOfWork = new Mock<IUnitOfWork>();
             _logger = new Mock<ILogger<AccessService>>();
             _service = new AccessService(
                 _personService.Object,
                 _projectService.Object,
                 _plantService.Object,
-                _logger.Object);
+                _logger.Object,
+                _unitOfWork.Object);
         }
 
         [TestMethod]
@@ -59,8 +62,6 @@ namespace QueueReceiver.Core.UnitTests.Services
                 .Returns(Task.FromResult(somePlantId)!);
             _personService.Setup(personService => personService.FindByOid(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
-            _projectService.Setup(projectService => projectService.RemoveAccessToPlant(somePersonId, plantOidThatExists))
-                .Returns(Task.FromResult(true));
 
             var accessInfo = new AccessInfo(plantOidThatExists, new List<Member>
                 {

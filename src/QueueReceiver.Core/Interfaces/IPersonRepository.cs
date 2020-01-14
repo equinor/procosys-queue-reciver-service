@@ -10,6 +10,5 @@ namespace QueueReceiver.Core.Interfaces
         Task<Person> FindByUsername(string userName);
         Task<Person> AddPerson(Person person);
         void Update(Person person);
-        Task<int> SaveChangesAsync();
     }
 }

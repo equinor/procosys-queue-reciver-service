@@ -5,7 +5,6 @@ namespace QueueReceiver.Core.Interfaces
 {
     public interface IPersonProjectRepository
     {
-        Task<int> SaveChangesAsync();
         void VoidPersonProjects(string plantId, long personId);
         void Update(PersonProject personProject);
         Task AddAsync(long projectId, long personId);

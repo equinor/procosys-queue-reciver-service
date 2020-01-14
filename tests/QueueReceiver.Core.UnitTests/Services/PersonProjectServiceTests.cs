@@ -56,28 +56,22 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             //Assert
             personProjectRepository.Verify(ppr => ppr.AddAsync(projectId, personId), Times.Once);
-            personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
         }
 
         [TestMethod]
-        public async Task RemoveAccessToPlant_CallsCorrectMethods()
+        public void RemoveAccessToPlant_CallsCorrectMethods()
         {
             //Arrange
             const string plantId = "somePlantId";
             const long personId = 2;
-            const int amountOfChanges = 3;
 
             //Arrange
             var (service, personProjectRepository, _, _, _, _, _) = Factory();
 
-            personProjectRepository.Setup(ppr => ppr.SaveChangesAsync())
-                .Returns(Task.FromResult(amountOfChanges));
-
             //Act
-            await service.RemoveAccessToPlant(personId, plantId);
+            service.RemoveAccessToPlant(personId, plantId);
 
             //Assert
-            personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
             personProjectRepository.Verify(ppr => ppr.VoidPersonProjects(plantId, personId), Times.Once);
         }
     }

@@ -8,11 +8,13 @@ namespace QueueReceiver.Core.Services
     {
         private readonly IPersonRepository _personRepository;
         private readonly IGraphService _graphService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PersonService(IPersonRepository personRepository, IGraphService graphService)
+        public PersonService(IPersonRepository personRepository, IGraphService graphService, IUnitOfWork unitOfWork)
         {
             _personRepository = personRepository;
             _graphService = graphService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Person?> FindByOid(string userOid)
@@ -37,7 +39,7 @@ namespace QueueReceiver.Core.Services
             {
                 person.Oid = adPerson.Oid;
                 _personRepository.Update(person);
-                await _personRepository.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
             }
 
             return person;
@@ -67,7 +69,7 @@ namespace QueueReceiver.Core.Services
                         FirstName = adPerson.GivenName,
                         LastName = adPerson.Surname
                     });
-                await _personRepository.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
             }
 
             return person;

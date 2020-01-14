@@ -63,15 +63,12 @@ namespace QueueReceiver.Core.Services
 
                 var restrictionRole = await _restrictionRoleRepository.FindRestrictionRole(DefaultRestrictionRole, plantId);
                 await _personRestrictionRoleRepository.AddIfNotExistAsync(plantId, restrictionRole, personId);
-
-                await _personProjectRepository.SaveChangesAsync();
             }
         }
 
-        public async Task RemoveAccessToPlant(long personId, string plantId)
+        public void RemoveAccessToPlant(long personId, string plantId)
         {
             _personProjectRepository.VoidPersonProjects(plantId, personId);
-            await _personProjectRepository.SaveChangesAsync();
         }
     }
 }
