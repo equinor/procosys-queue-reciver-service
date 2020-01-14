@@ -19,11 +19,14 @@ namespace QueueReceiver.Infrastructure
             });
 
         public static void AddDbContext(this IServiceCollection services, IConfiguration configuration)
-            => services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseOracle(configuration["ConnectionString"]);
-                options.UseLoggerFactory(LoggerFactory);
-            });
+        {
+            services.AddDbContext<ApplicationDbContext>(options =>
+                       {
+                           options.UseOracle(configuration["ConnectionString"]);
+                           options.UseLoggerFactory(LoggerFactory);
+                       });
+            services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<ApplicationDbContext>());
+        }
 
         public static void AddQueueClient(this IServiceCollection services, IConfiguration configuration)
         {

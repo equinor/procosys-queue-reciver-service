@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
+using System.Threading.Tasks;
 using Person = QueueReceiver.Core.Models.Person;
 
 namespace QueueReceiver.Infrastructure.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContext, IUnitOfWork
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options){}
@@ -23,6 +25,11 @@ namespace QueueReceiver.Infrastructure.Data
         public virtual DbSet<UserGroup> UserGroups { get; set; } = null!;
         public virtual DbSet<RestrictionRole> RestrictionRoles { get; set; } = null!;
 
+        public Task<int> SaveChangesAsync()
+        {
+            return base.SaveChangesAsync();
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -32,5 +39,7 @@ namespace QueueReceiver.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new RestrictionRoleConfiguration());
             modelBuilder.ApplyConfiguration(new PersonRestrictionRoleConfiguration());
         }
+
+  
     }
 }
