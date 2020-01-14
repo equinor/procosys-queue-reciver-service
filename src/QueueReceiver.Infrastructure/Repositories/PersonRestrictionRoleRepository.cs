@@ -18,7 +18,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         {
             var prr = new PersonRestrictionRole(plantId, restrictionRole, personId);
 
-            var exists = _context.PersonRestrictionRoles.Find(prr.RestrictionRole, prr.PersonId, prr.PlantId) != null;
+            var exists = _context.PersonRestrictionRoles.Find(prr.PlantId, prr.RestrictionRole, prr.PersonId) != null;
 
             if (!exists)
             {
