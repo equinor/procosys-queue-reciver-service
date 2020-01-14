@@ -47,7 +47,6 @@ namespace QueueReceiver.Infrastructure.UnitTests.Repositories
                 .AddAsync(It.IsAny<PersonUserGroup>(), default), Times.Never);
         }
 
-
         private class MockInternal : InternalEntityEntry
         {
             private readonly PersonUserGroup personUserGroup = new PersonUserGroup(personId, userGroupId, plantId, createdById);

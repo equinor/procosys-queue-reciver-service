@@ -1,4 +1,5 @@
 ﻿using QueueReceiver.Core.Interfaces;
+using QueueReceiver.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,7 +25,27 @@ namespace QueueReceiver.Core.Services
         public async Task ExcecuteAccessSync()
         {
             //Find all groups we want to sync
-            //var plants = _plantService.GetAllPlants();
+            //List<Plant> plants = _plantService.GetAllPlants();
+
+            //plants.ForEach(async plant =>
+            //{
+            //    var AdMemberOids = await GetMemberOidsFromGroups(new string[] { plant.AffiliateGroupId, plant.InternalGroupId });
+
+            // //   List<string> dbMemberOids = _plantService.getAllMemberOids(plant.PlantId);
+
+            //    //var membersInDbNotInAd = dbMemberOids.Except(AdMemberOids).ToList();
+            //    //var membersInAdNotInDb = AdMemberOids.Except(dbMemberOids).ToList();
+
+            //    if (membersInAdNotInDb.Any())
+            //    {
+            //        //GiveAccess;
+            //    }
+            //    if (membersInDbNotInAd.Any())
+            //    {
+            //        //RemoveAccess;
+            //    }
+
+            //});
 
             /**
              * 
