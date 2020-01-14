@@ -17,7 +17,6 @@ namespace QueueReceiver.UnitTests.Infrastructure.Repositories
         private const string restrictionRole = "NO_RESTRICTION";
         private const string plantId = "Dagobath";
 
-
         [TestMethod]
         public async Task AddSync_DoesNothing_IfRoleAlreadyExists()
         {

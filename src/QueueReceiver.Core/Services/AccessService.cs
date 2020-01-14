@@ -11,18 +11,18 @@ namespace QueueReceiver.Core.Services
     public class AccessService : IAccessService
     {
         private readonly IPersonService _personService;
-        private readonly IProjectService _projectService;
+        private readonly IPersonProjectService _personProjectService;
         private readonly IPlantService _plantService;
         private readonly ILogger<AccessService> _logger;
 
         public AccessService(
             IPersonService personService,
-            IProjectService projectService,
+            IPersonProjectService personProjectService,
             IPlantService plantService,
             ILogger<AccessService> logger)
         {
             _personService = personService;
-            _projectService = projectService;
+            _personProjectService = personProjectService;
             _plantService = plantService;
             _logger = logger;
         }
