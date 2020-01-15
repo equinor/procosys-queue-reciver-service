@@ -13,9 +13,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         private readonly ApplicationDbContext _context;
 
         public ProjectRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+            => _context = context;
 
         public Task<List<Project>> GetParentProjectsByPlant(string plantId)
         {

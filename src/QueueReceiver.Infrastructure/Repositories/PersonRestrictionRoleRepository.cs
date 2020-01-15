@@ -10,9 +10,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         private readonly ApplicationDbContext _context;
 
         public PersonRestrictionRoleRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+            => _context = context;
 
         public async Task AddIfNotExistAsync(string plantId, string restrictionRole, long personId)
         {

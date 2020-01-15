@@ -11,9 +11,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         private readonly ApplicationDbContext _context;
 
         public UserGroupRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+            => _context = context;
 
         public async Task<long> FindIdByUserGroupName(string name)
             => await _context.UserGroups

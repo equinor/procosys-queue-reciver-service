@@ -82,8 +82,6 @@ namespace QueueReceiver.Core.Services
         }
 
         private static bool MessageHasNoRelevantData(AccessInfo accessInfo)
-        {
-            return accessInfo.Members == null;
-        }
+            => accessInfo.Members == null;
     }
 }

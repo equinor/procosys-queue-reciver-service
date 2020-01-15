@@ -13,9 +13,7 @@ namespace QueueReceiver.Core.Services
         private IServiceScope? _scope;
 
         public ServiceLocator(IServiceScopeFactory factory)
-        {
-            _factory = factory;
-        }
+            => _factory = factory;
 
         public T GetScope<T>()
         {
@@ -25,9 +23,7 @@ namespace QueueReceiver.Core.Services
         }
 
         public IServiceScope CreateScope()
-        {
-            return _factory.CreateScope();
-        }
+            => _factory.CreateScope();
 
         public void Dispose()
         {

@@ -11,9 +11,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         private readonly ApplicationDbContext _context;
 
         public RestrictionRoleRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+            => _context = context;
 
         public async Task<string> FindRestrictionRole(string name, string plant) =>
             await _context.RestrictionRoles.Where(restrictionRole 
