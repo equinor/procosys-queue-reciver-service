@@ -11,7 +11,9 @@ namespace QueueReceiver.Infrastructure.Data
             builder.Property(ppho => ppho.Id).ForOracleUseSequenceHiLo("SEQ_PERSONPROJECT_HISTORY_OP");
 
             builder.HasKey(ppho => ppho.Id);
-            builder.HasOne(ppho => ppho.PersonProjectHistory).WithMany(pph => pph.PersonProjectHistoryOperations).HasForeignKey(ppho => ppho.PersonProjectHistoryId);
+            builder.HasOne(ppho => ppho.PersonProjectHistory)
+                .WithMany(pph => pph.PersonProjectHistoryOperations)
+                .HasForeignKey(ppho => ppho.PersonProjectHistoryId);
         }
     }
 }
