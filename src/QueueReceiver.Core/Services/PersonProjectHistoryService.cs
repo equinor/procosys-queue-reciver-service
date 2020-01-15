@@ -1,10 +1,12 @@
 ﻿using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
+using System;
 
 namespace QueueReceiver.Core.Services
 {
     public class PersonProjectHistoryService : IPersonProjectHistoryService
     {
+        public const string updatedBy = "ACCESS SYNC";
 
         public PersonProjectHistory CreatePersonProjectHistory(long personId)
         {
@@ -19,44 +21,44 @@ namespace QueueReceiver.Core.Services
         }
 
         public void LogAddAccess(long personId, PersonProjectHistory personProjectHistory, long projectId)
-            => LogInsert(personId, personProjectHistory, projectId, "INSERT", "ACCESS SYNC");
+            => LogInsert(personId, personProjectHistory, projectId, "INSERT");
 
         public void LogDefaultUserGroup(long personId, PersonProjectHistory personProjectHistory, long projectId)
-            => LogUpdate(personId, personProjectHistory, projectId, "User role", "Read", "N", "Y", "ACCESS SYNC");
+            => LogUpdate(personId, personProjectHistory, projectId, "User role", "Read", "N", "Y");
 
         public void LogUnvoidProjects(long personId, PersonProjectHistory personProjectHistory, long projectId)
-            => LogUpdate(personId, personProjectHistory, projectId, "UPDATE", "ISVOIDED", "Y", "N", "ACCESS SYNC");
+            => LogUpdate(personId, personProjectHistory, projectId, "UPDATE", "ISVOIDED", "Y", "N");
 
         public void LogVoidProjects(long personId, PersonProjectHistory personProjectHistory, long projectId)
-            => LogUpdate(personId, personProjectHistory, projectId, "UPDATE", "ISVOIDED", "N", "Y", "ACCESS SYNC");
+            => LogUpdate(personId, personProjectHistory, projectId, "UPDATE", "ISVOIDED", "N", "Y");
 
-        private void LogInsert(long personId, PersonProjectHistory personProjectHistory, long projectId, string operationType, string updatedBy)
+        private void LogInsert(long personId, PersonProjectHistory personProjectHistory, long projectId, string operationType)
         {
-            var ppho = new PersonProjectHistoryOperation()
-            {
-                OperationType = operationType,
-                ProjectId = projectId,
-                PersonId = personId,
-                UpdatedByUser = updatedBy,
-                PersonProjectHistory = personProjectHistory
-            };
+            var ppho = new PersonProjectHistoryOperation(
+                operationType,
+                projectId,
+                personId,
+                updatedBy,
+                personProjectHistory);
+
             personProjectHistory.PersonProjectHistoryOperations.Add(ppho);
         }
 
         private void LogUpdate(long personId, PersonProjectHistory personProjectHistory, long projectId,
-                                      string operationType, string fieldName, string oldValue, string newValue, string updatedBy)
+                                      string operationType, string fieldName, string oldValue, string newValue)
         {
-            var ppho = new PersonProjectHistoryOperation()
+            var ppho = new PersonProjectHistoryOperation(
+                operationType,
+                projectId,
+                personId,
+                updatedBy,
+                personProjectHistory) 
             {
-                OperationType = operationType,
                 OldValue = oldValue,
                 NewValue = newValue,
-                ProjectId = projectId,
-                PersonId = personId,
-                UpdatedByUser = updatedBy,
-                PersonProjectHistory = personProjectHistory,
                 FieldName = fieldName
             };
+
             personProjectHistory.PersonProjectHistoryOperations.Add(ppho);
         }
     }

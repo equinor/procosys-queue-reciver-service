@@ -5,6 +5,20 @@ namespace QueueReceiver.Core.Models
     [Table("PERSONPROJECT_HISTORY_OP")]
     public class PersonProjectHistoryOperation
     {
+        public PersonProjectHistoryOperation(
+            string operationType,
+            long projectId,
+            long personId,
+            string updatedByUser,
+            PersonProjectHistory personProjectHistory)
+        {
+            OperationType = operationType;
+            ProjectId = projectId;
+            PersonId = personId;
+            UpdatedByUser = updatedByUser;
+            PersonProjectHistory = personProjectHistory;
+        }
+
         [Column("PERSONPROJECT_HISTORY_OP_ID")]
         public long Id { get; set; }
 
@@ -12,13 +26,13 @@ namespace QueueReceiver.Core.Models
         public string OperationType { get; set; }
 
         [Column("OLD_VALUE")]
-        public string OldValue { get; set; }
+        public string? OldValue { get; set; }
 
         [Column("NEW_VALUE")]
-        public string NewValue { get; set; }
+        public string? NewValue { get; set; }
 
         [Column("FIELD_NAME")]
-        public string FieldName { get; set; }
+        public string? FieldName { get; set; }
 
         [Column("PROJECT_ID")]
         public long ProjectId { get; set; }
