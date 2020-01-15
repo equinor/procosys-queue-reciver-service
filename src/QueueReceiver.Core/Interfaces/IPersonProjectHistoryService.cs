@@ -9,5 +9,6 @@ namespace QueueReceiver.Core.Interfaces
         void LogDefaultUserGroup(long personId, PersonProjectHistory personProjectHistory, long projectId);
         void LogUnvoidProjects(long personId, PersonProjectHistory personProjectHistory, long projectId);
         void LogVoidProjects(long personId, PersonProjectHistory personProjectHistory, long projectId);
+        PersonProjectHistory CreatePersonProjectHistory(long personId);
     }
 }

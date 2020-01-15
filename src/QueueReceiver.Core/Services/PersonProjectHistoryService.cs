@@ -5,6 +5,19 @@ namespace QueueReceiver.Core.Services
 {
     public class PersonProjectHistoryService : IPersonProjectHistoryService
     {
+
+        public PersonProjectHistory CreatePersonProjectHistory(long personId)
+        {
+            var personProjectHistory = new PersonProjectHistory()
+            {
+                UpdatedAt = DateTime.Now,
+                UpdatedBy = personId,
+                UpdatedByUserName = updatedBy
+            };
+
+            return personProjectHistory;
+        }
+
         public void LogAddAccess(long personId, PersonProjectHistory personProjectHistory, long projectId)
             => LogInsert(personId, personProjectHistory, projectId, "INSERT", "ACCESS SYNC");
 

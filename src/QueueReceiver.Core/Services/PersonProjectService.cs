@@ -44,7 +44,7 @@ namespace QueueReceiver.Core.Services
             var updated = false;
             var unvoided = false;
 
-            var personProjectHistory = CreatePersonProjectHistory(personId);
+            var personProjectHistory = _personProjectHistoryService.CreatePersonProjectHistory(personId);
             var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
            
             projects.ForEach(async project =>
@@ -99,24 +99,13 @@ namespace QueueReceiver.Core.Services
 
         public async Task RemoveAccessToPlant(long personId, string plantId)
         {
-            var personProjectHistory = CreatePersonProjectHistory(personId);
+            var personProjectHistory = _personProjectHistoryService.CreatePersonProjectHistory(personId); 
             var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
             _personProjectRepository.VoidPersonProjects(plantId, personId);
 
             projects.ForEach(p => _personProjectHistoryService.LogVoidProjects(personId, personProjectHistory, p.ProjectId));
             
             await _personProjectRepository.SaveChangesAsync();
-        }
-
-        private PersonProjectHistory CreatePersonProjectHistory(long personId)
-        {
-            var personProjectHistory = new PersonProjectHistory()
-            {
-                UpdatedAt = DateTime.Now,
-                UpdatedBy = personId,
-                UpdatedByUserName = "ACCESS SYNC"
-            };
-            return personProjectHistory;
         }
     }
 }
