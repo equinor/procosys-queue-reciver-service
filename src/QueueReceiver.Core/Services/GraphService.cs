@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System;
 
 namespace QueueReceiver.Core.Services
 {
@@ -39,8 +38,7 @@ namespace QueueReceiver.Core.Services
             }
 
             return result;
-
-            
+          
 
             //TODO itterate all pages
             //return result;
