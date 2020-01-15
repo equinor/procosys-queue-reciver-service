@@ -70,7 +70,7 @@ namespace QueueReceiver.Core.Services
                 CultureInfo.InvariantCulture,
                 Resources.RemoveAccess, person.Id, plantId));
 
-            await _projectService.RemoveAccessToPlant(person.Id, plantId);
+            await _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
         private async Task GiveAccess(Member member, string plantId)
@@ -78,7 +78,7 @@ namespace QueueReceiver.Core.Services
             Person person = await _personService.FindOrCreate(member.UserOid);
 
             _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantId}");
-            await _projectService.GiveProjectAccessToPlant(person.Id, plantId);
+            await _personProjectService.GiveProjectAccessToPlant(person.Id, plantId);
         }
 
         private static bool MessageHasNoRelevantData(AccessInfo accessInfo)
