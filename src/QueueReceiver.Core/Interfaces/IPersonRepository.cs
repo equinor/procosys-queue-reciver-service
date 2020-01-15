@@ -6,7 +6,6 @@ namespace QueueReceiver.Core.Interfaces
     public interface IPersonRepository
     {
         Task<Person> FindByUserOid(string userOid);
-        Task<Person> FindByUserId(long userId);
         Task<Person> FindByUserEmail(string userEmail);
         Task<Person> FindByUsername(string userName);
         Task<Person> AddPerson(Person person);

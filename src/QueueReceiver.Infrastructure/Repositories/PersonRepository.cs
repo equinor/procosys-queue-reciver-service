@@ -42,10 +42,6 @@ namespace QueueReceiver.Infrastructure.Repositories
             _persons.SingleOrDefaultAsync(person => 
                 userOid.Equals(person.Oid, OrdinalIgnoreCase));
 
-        public Task<Person> FindByUserId(long userId) =>
-            _persons.SingleOrDefaultAsync(person =>
-            userId.Equals(person.Id));
-
         public async Task<int> SaveChangesAsync()
             => await _context.SaveChangesAsync();
 
