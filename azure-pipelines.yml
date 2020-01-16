@@ -59,7 +59,7 @@ stages:
       displayName: 'Create NuGet Package - Release Version'
       inputs:
         command: custom
-        custom: 'dotnet pack -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages/releases'
+        custom: dotnet pack -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages/releases
         #packagesToPack:  '**/*Worker/worker.nuspec'
         #packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
         #arguments: '--configuration $(buildConfiguration) -p:NuspecFile=**/*Worker/worker.nuspec'
