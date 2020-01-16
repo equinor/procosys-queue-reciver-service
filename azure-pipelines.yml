@@ -33,7 +33,6 @@ stages:
         projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
  
-
 - stage: "Pack"
   displayName: 'Pack NuGet Package'
   dependsOn: 'Build'
@@ -52,6 +51,13 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
+    - script: dotnet publish --configuration $(buildConfiguration)
+      displayName: 'dotnet publish $(buildConfiguration)'
+
+  - job:
+    pool:
+      vmImage: $(vmImageName)
+    steps:
     - checkout: self  
     - task: DotNetCoreCLI@2
       displayName: 'Create NuGet Package - Release Version'
@@ -59,7 +65,7 @@ stages:
         command: pack
         packagesToPack:  '**/*Worker/*.csproj'
         packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
-        arguments: '--configuration $(buildConfiguration)'
+        arguments: '--configuration $(buildConfiguration) -p:NuspecFile=**/*Worker/worker.nuspec'
               
     - task: DotNetCoreCLI@2
       displayName: 'Create NuGet Package - Prerelease Version'
@@ -72,7 +78,6 @@ stages:
     
     - publish: '$(Build.ArtifactStagingDirectory)/packages'
       artifact: 'packages'
-
     
 - stage: "PublishPreRelease"
   displayName: 'Publish Prerelease NuGet Package'

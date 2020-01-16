@@ -6,12 +6,7 @@
     <version>1.0.2</version>
     <description>Excecutable for quereceiver service</description>
     <authors>Equinor ASA</authors>
-
-    <!-- Optional elements -->
-
-    <!-- ... -->
   </metadata>
-  <!-- Optional 'files' node -->
   <files>
     <file src="bin\Release\netcoreapp3.0\win-x64\publish\QueueReceiver.Worker.exe" target="lib\netcoreapp3.0"></file>
   </files>
