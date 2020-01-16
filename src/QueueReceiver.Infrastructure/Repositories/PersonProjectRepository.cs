@@ -40,9 +40,6 @@ namespace QueueReceiver.Infrastructure.Repositories
             _personProjects.UpdateRange(personProjects);
         }
 
-        public async Task<int> SaveChangesAsync()
-            => await _context.SaveChangesAsync();
-
         public async Task<PersonProject> GetAsync(long projectId, long personId)
             => await _personProjects.FindAsync(projectId, personId);
 
