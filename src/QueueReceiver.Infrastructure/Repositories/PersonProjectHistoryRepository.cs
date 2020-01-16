@@ -10,8 +10,8 @@ namespace QueueReceiver.Infrastructure.Repositories
 {
     public class PersonProjectHistoryRepository : IPersonProjectHistoryRepository
     {
-        private readonly DbSet<PersonProjectHistory> _personProjectHistories;
         private readonly ApplicationDbContext _context;
+        private readonly DbSet<PersonProjectHistory> _personProjectHistories;
 
         public PersonProjectHistoryRepository(ApplicationDbContext context)
         {
@@ -21,7 +21,7 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public Task<List<PersonProjectHistory>> GetPersonProjectHistoryById(int id)
         {
-            return _context.PersonProjectHistories
+            return _personProjectHistories
                 .Where(history =>
                     history.Id == id)
                 .ToListAsync();
