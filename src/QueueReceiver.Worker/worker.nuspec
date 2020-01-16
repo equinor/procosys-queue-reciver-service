@@ -8,6 +8,6 @@
     <authors>Equinor ASA</authors>
   </metadata>
   <files>
-    <file src="bin\Release\netcoreapp3.0\win-x64\publish\QueueReceiver.Worker.exe" target="lib\netcoreapp3.0"></file>
+    <file src="bin\Release\netcoreapp3.1\win-x64\publish\QueueReceiver.Worker.exe" target="lib\netcoreapp3.1"></file>
   </files>
 </package>
