@@ -55,20 +55,20 @@ stages:
     - checkout: self  
     - script: dotnet publish --configuration $(buildConfiguration) -r win-x64
       displayName: 'dotnet publish $(buildConfiguration)'
-    - task: DotNetCoreCLI@2
+    - script: dotnet pack -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages/releases
       displayName: 'Create NuGet Package - Release Version'
-      inputs:
-        command: custom
-        custom: dotnet pack -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages/releases
+      #inputs:
+       # command: custom
+       # custom: dotnet pack -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages/releases
         #packagesToPack:  '**/*Worker/worker.nuspec'
         #packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
         #arguments: '--configuration $(buildConfiguration) -p:NuspecFile=**/*Worker/worker.nuspec'
               
-    - task: DotNetCoreCLI@2
+    - script: dotnet pack -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages/prereleases
       displayName: 'Create NuGet Package - Prerelease Version'
-      inputs:
-       command: custom
-       custom: dotnet pack -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages/prereleases
+      #inputs:
+       #command: custom
+       #custom: dotnet pack -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages/prereleases
     
     - publish: '$(Build.ArtifactStagingDirectory)/packages'
       artifact: 'packages'
