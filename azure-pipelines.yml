@@ -59,15 +59,15 @@ stages:
       displayName: 'Create NuGet Package - Release Version'
       inputs:
         command: pack
-        packagesToPack:  '**/*Worker/*.csproj'
+        packagesToPack:  '**/*Worker/*.nuspec'
         packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
-        arguments: '--configuration $(buildConfiguration) -p:NuspecFile=**/*Worker/worker.nuspec'
+        arguments: '--configuration $(buildConfiguration)'
               
     - task: DotNetCoreCLI@2
       displayName: 'Create NuGet Package - Prerelease Version'
       inputs:
         command: pack
-        packagesToPack:  '**/*Worker/*.csproj'
+        packagesToPack:  '**/*Worker/*.nuspec'
         packDirectory: '$(Build.ArtifactStagingDirectory)/packages/prereleases'
         buildProperties: 'VersionSuffix="$(Build.BuildNumber)"'
         arguments: '--configuration $(buildConfiguration)'
