@@ -4,6 +4,9 @@
     <VersionPrefix>1.0.1</VersionPrefix>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>dotnet-QueueReceiverService-07627E4F-C4B5-47B4-AF2D-E17B095E695C</UserSecretsId>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
