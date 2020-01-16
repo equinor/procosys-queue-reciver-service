@@ -9,14 +9,12 @@ namespace QueueReceiver.Core.Models
             string operationType,
             long projectId,
             long personId,
-            string updatedByUser,
-            PersonProjectHistory personProjectHistory)
+            string updatedByUser)
         {
             OperationType = operationType;
             ProjectId = projectId;
             PersonId = personId;
             UpdatedByUser = updatedByUser;
-            PersonProjectHistory = personProjectHistory;
         }
 
         [Column("PERSONPROJECT_HISTORY_OP_ID")]

@@ -37,8 +37,10 @@ namespace QueueReceiver.Core.Services
                 operationType,
                 projectId,
                 personId,
-                PersonProjectHistoryConstants.UpdatedBy,
-                personProjectHistory);
+                PersonProjectHistoryConstants.UpdatedBy)
+            {
+                PersonProjectHistory = personProjectHistory
+            };
 
             personProjectHistory.PersonProjectHistoryOperations.Add(ppho);
         }
@@ -50,9 +52,9 @@ namespace QueueReceiver.Core.Services
                 operationType,
                 projectId,
                 personId,
-                PersonProjectHistoryConstants.UpdatedBy,
-                personProjectHistory) 
+                PersonProjectHistoryConstants.UpdatedBy) 
             {
+                PersonProjectHistory = personProjectHistory,
                 OldValue = oldValue,
                 NewValue = newValue,
                 FieldName = fieldName
