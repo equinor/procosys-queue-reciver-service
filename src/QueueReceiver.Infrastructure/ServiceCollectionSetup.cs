@@ -50,6 +50,7 @@ namespace QueueReceiver.Infrastructure
             services.AddScoped<IPersonUserGroupRepository, PersonUserGroupRepository>();
             services.AddScoped<IRestrictionRoleRepository, RestrictionRoleRepository>();
             services.AddScoped<IPersonRestrictionRoleRepository, PersonRestrictionRoleRepository>();
+            services.AddScoped<IPersonProjectHistoryRepository, PersonProjectHistoryRepository>();
         }
 
         public static void AddServices(this IServiceCollection services)
@@ -58,7 +59,8 @@ namespace QueueReceiver.Infrastructure
             services.AddScoped<IPlantService, PlantService>();
             services.AddScoped<IGraphService, GraphService>();
             services.AddScoped<IPersonService, PersonService>();
-            services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IPersonProjectService, PersonProjectService>();
+            services.AddScoped<IPersonProjectHistoryService, PersonProjectHistoryService>();
         }
     }
 }

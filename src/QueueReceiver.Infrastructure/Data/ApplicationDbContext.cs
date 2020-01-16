@@ -22,6 +22,7 @@ namespace QueueReceiver.Infrastructure.Data
         public virtual DbSet<PersonUserGroup> PersonUserGroups { get; set; } = null!;
         public virtual DbSet<PersonRestrictionRole> PersonRestrictionRoles { get; set; } = null!;
         public virtual DbSet<PersonProjectHistory> PersonProjectHistories { get; set; } = null!;
+        public virtual DbSet<PersonProjectHistoryOperation> PersonProjectHistoryOperations { get; set; } = null!;
         public virtual DbSet<UserGroup> UserGroups { get; set; } = null!;
         public virtual DbSet<RestrictionRole> RestrictionRoles { get; set; } = null!;
 
@@ -38,6 +39,8 @@ namespace QueueReceiver.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new PersonUserGroupConfiguration());
             modelBuilder.ApplyConfiguration(new RestrictionRoleConfiguration());
             modelBuilder.ApplyConfiguration(new PersonRestrictionRoleConfiguration());
+            modelBuilder.ApplyConfiguration(new PersonProjectHistoryConfiguration());
+            modelBuilder.ApplyConfiguration(new PersonProjectHistoryOperationConfiguration());
         }
 
   

@@ -15,6 +15,11 @@ namespace QueueReceiver.Infrastructure.Data
                 .HasConversion(
                     b => b ? 'Y' : 'N',
                     c => c.Equals('Y'));
+
+            builder.Property(p => p.IsMainProject)
+                .HasConversion(
+                b => b ? 'Y' : 'N',
+                c => c.Equals('Y'));
         }
     }
 }

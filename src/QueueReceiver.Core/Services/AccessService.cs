@@ -11,19 +11,19 @@ namespace QueueReceiver.Core.Services
     public class AccessService : IAccessService
     {
         private readonly IPersonService _personService;
-        private readonly IProjectService _projectService;
+        private readonly IPersonProjectService _personProjectService;
         private readonly IPlantService _plantService;
         private readonly ILogger<AccessService> _logger;
         private readonly IUnitOfWork _unitOfWork;
 
         public AccessService(
             IPersonService personService,
-            IProjectService projectService,
+            IPersonProjectService personProjectService,
             IPlantService plantService,
             ILogger<AccessService> logger, IUnitOfWork unitOfWork)
         {
             _personService = personService;
-            _projectService = projectService;
+            _personProjectService = personProjectService;
             _plantService = plantService;
             _logger = logger;
             _unitOfWork = unitOfWork;
@@ -73,7 +73,7 @@ namespace QueueReceiver.Core.Services
                 CultureInfo.InvariantCulture,
                 Resources.RemoveAccess, person.Id, plantId));
 
-             _projectService.RemoveAccessToPlant(person.Id, plantId);
+            _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
         private async Task GiveAccess(Member member, string plantId)
@@ -81,12 +81,10 @@ namespace QueueReceiver.Core.Services
             Person person = await _personService.FindOrCreate(member.UserOid);
 
             _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantId}");
-            await _projectService.GiveProjectAccessToPlant(person.Id, plantId);
+            await _personProjectService.GiveProjectAccessToPlant(person.Id, plantId);
         }
 
         private static bool MessageHasNoRelevantData(AccessInfo accessInfo)
-        {
-            return accessInfo.Members == null;
-        }
+            => accessInfo.Members == null;
     }
 }
