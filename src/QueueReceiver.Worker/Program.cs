@@ -13,10 +13,8 @@ namespace QueueReceiver.Worker
 {
     public class Program
     {
-        public Program(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public Program(IConfiguration configuration) 
+            => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
 

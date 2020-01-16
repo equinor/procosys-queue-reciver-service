@@ -13,19 +13,19 @@ namespace QueueReceiver.Core.UnitTests.Services
     public class AccessServiceTests
     {
         private readonly Mock<IPersonService> _personService;
-        private readonly Mock<IProjectService> _projectService;
+        private readonly Mock<IPersonProjectService> _personProjectService;
         private readonly Mock<IPlantService> _plantService;
         private readonly Mock<ILogger<AccessService>> _logger;
         private readonly IAccessService _service;
         public AccessServiceTests()
         {
             _personService = new Mock<IPersonService>();
-            _projectService = new Mock<IProjectService>();
+            _personProjectService = new Mock<IPersonProjectService>();
             _plantService = new Mock<IPlantService>();
             _logger = new Mock<ILogger<AccessService>>();
             _service = new AccessService(
                 _personService.Object,
-                _projectService.Object,
+                _personProjectService.Object,
                 _plantService.Object,
                 _logger.Object);
         }
@@ -59,7 +59,7 @@ namespace QueueReceiver.Core.UnitTests.Services
                 .Returns(Task.FromResult(somePlantId)!);
             _personService.Setup(personService => personService.FindByOid(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
-            _projectService.Setup(projectService => projectService.RemoveAccessToPlant(somePersonId, plantOidThatExists))
+            _personProjectService.Setup(personProjectService => personProjectService.RemoveAccessToPlant(somePersonId, plantOidThatExists))
                 .Returns(Task.FromResult(true));
 
             var accessInfo = new AccessInfo(plantOidThatExists, new List<Member>
@@ -72,7 +72,7 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             //Assert
             _personService.Verify(_ => _.FindByOid(someOid), Times.Once);
-            _projectService.Verify(_ => _.RemoveAccessToPlant(somePersonId, It.IsAny<string>()), Times.Once);
+            _personProjectService.Verify(_ => _.RemoveAccessToPlant(somePersonId, It.IsAny<string>()), Times.Once);
         }
 
         [TestMethod]
@@ -91,7 +91,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             await _service.HandleRequest(accessInfo);
 
             //Assert
-            _projectService.Verify(_ => _.RemoveAccessToPlant(It.IsAny<long>(), It.IsAny<string>()), Times.Never);
+            _personProjectService.Verify(_ => _.RemoveAccessToPlant(It.IsAny<long>(), It.IsAny<string>()), Times.Never);
         }
     }
 }
