@@ -8,6 +8,7 @@ trigger:
     include:
       - master
       - dev
+      - deploy
 
 variables:
   System.Debug: 'true'
@@ -43,7 +44,7 @@ stages:
      or
      ( 
        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-       eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+       eq(variables['Build.SourceBranch'], 'refs/heads/deploy')
      )
     )
   jobs:
