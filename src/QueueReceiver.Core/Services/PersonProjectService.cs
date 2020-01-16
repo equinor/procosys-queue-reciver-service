@@ -1,14 +1,11 @@
-﻿using QueueReceiver.Core.Interfaces;
-using QueueReceiver.Core.Models;
-using System;
+﻿using QueueReceiver.Core.Constants;
+using QueueReceiver.Core.Interfaces;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Services
 {
     public class PersonProjectService : IPersonProjectService
     {
-        private const string DefaultUserGroup = "READ";
-        private const string DefaultRestrictionRole = "NO_RESTRICTIONS";
         private readonly IPersonProjectRepository _personProjectRepository;
         private readonly IProjectRepository _projectRepository;
         private readonly IPersonUserGroupRepository _personUserGroupRepository;
@@ -68,10 +65,10 @@ namespace QueueReceiver.Core.Services
 
             if (updated)
             {
-                var userGroupId = await _userGroupRepository.FindIdByUserGroupName(DefaultUserGroup);
+                var userGroupId = await _userGroupRepository.FindIdByUserGroupName(PersonProjectConstants.DefaultUserGroup);
                 await _personUserGroupRepository.AddIfNotExistAsync(userGroupId, plantId, personId);
 
-                var restrictionRole = await _restrictionRoleRepository.FindRestrictionRole(DefaultRestrictionRole, plantId);
+                var restrictionRole = await _restrictionRoleRepository.FindRestrictionRole(PersonProjectConstants.DefaultRestrictionRole, plantId);
                 await _personRestrictionRoleRepository.AddIfNotExistAsync(plantId, restrictionRole, personId);
 
                 projects.ForEach(p =>

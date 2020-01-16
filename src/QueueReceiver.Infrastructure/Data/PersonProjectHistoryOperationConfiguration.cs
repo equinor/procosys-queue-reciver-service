@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Models;
 
 namespace QueueReceiver.Infrastructure.Data
@@ -8,7 +9,8 @@ namespace QueueReceiver.Infrastructure.Data
     {
         public void Configure(EntityTypeBuilder<PersonProjectHistoryOperation> builder)
         {
-            builder.Property(ppho => ppho.Id).ForOracleUseSequenceHiLo("SEQ_PERSONPROJECT_HISTORY_OP");
+            builder.Property(ppho => ppho.Id)
+                .ForOracleUseSequenceHiLo(PersonProjectHistoryOperationConstants.Sequence);
 
             builder.HasKey(ppho => ppho.Id);
             builder.HasOne(ppho => ppho.PersonProjectHistory)

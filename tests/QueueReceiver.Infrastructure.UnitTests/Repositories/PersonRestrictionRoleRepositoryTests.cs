@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
 using QueueReceiver.Infrastructure.Repositories;
@@ -14,7 +15,7 @@ namespace QueueReceiver.UnitTests.Infrastructure.Repositories
     public class PersonRestrictionRoleRepositoryTests
     {
         private const long personId = 2;
-        private const string restrictionRole = "NO_RESTRICTION";
+        private const string restrictionRole = PersonProjectConstants.DefaultRestrictionRole;
         private const string plantId = "Dagobath";
 
         [TestMethod]

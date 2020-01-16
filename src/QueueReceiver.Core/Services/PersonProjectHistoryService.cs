@@ -1,4 +1,5 @@
-﻿using QueueReceiver.Core.Interfaces;
+﻿using QueueReceiver.Core.Constants;
+using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using System;
 
@@ -6,15 +7,13 @@ namespace QueueReceiver.Core.Services
 {
     public class PersonProjectHistoryService : IPersonProjectHistoryService
     {
-        public const string updatedBy = "ACCESS SYNC";
-
         public PersonProjectHistory CreatePersonProjectHistory(long personId)
         {
             var personProjectHistory = new PersonProjectHistory()
             {
                 UpdatedAt = DateTime.Now,
                 UpdatedBy = personId,
-                UpdatedByUserName = updatedBy
+                UpdatedByUserName = PersonProjectHistoryConstants.UpdatedBy
             };
 
             return personProjectHistory;
@@ -38,7 +37,7 @@ namespace QueueReceiver.Core.Services
                 operationType,
                 projectId,
                 personId,
-                updatedBy,
+                PersonProjectHistoryConstants.UpdatedBy,
                 personProjectHistory);
 
             personProjectHistory.PersonProjectHistoryOperations.Add(ppho);
@@ -51,7 +50,7 @@ namespace QueueReceiver.Core.Services
                 operationType,
                 projectId,
                 personId,
-                updatedBy,
+                PersonProjectHistoryConstants.UpdatedBy,
                 personProjectHistory) 
             {
                 OldValue = oldValue,
