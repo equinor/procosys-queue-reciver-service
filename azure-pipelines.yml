@@ -14,7 +14,7 @@ variables:
   System.Debug: 'true'
   vmImageName: 'windows-latest'
   buildConfiguration: 'Release'
-  version: '1.0.4-$(Build.BuildNumber)'
+  
 
 stages:
   
@@ -65,11 +65,8 @@ stages:
         #packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
         #arguments: '--configuration $(buildConfiguration) -p:NuspecFile=**/*Worker/worker.nuspec'
               
-    - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\prereleases --version-suffix "$(Build.BuildNumber)"
+    - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\prereleases -properties version=1.0.4-"$(Build.BuildNumber)"
       displayName: 'Create NuGet Package - Prerelease Version'
-      #inputs:
-       #command: custom
-       #custom: dotnet pack **/*Worker/worker.csproj -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages/prereleases
     
     - publish: '$(Build.ArtifactStagingDirectory)/packages'
       artifact: 'packages'
