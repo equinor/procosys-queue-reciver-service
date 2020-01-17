@@ -56,7 +56,7 @@ stages:
     - checkout: self  
     - script: dotnet publish --configuration $(buildConfiguration) -r win-x64
       displayName: 'dotnet publish $(buildConfiguration)'
-    - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\releases
+    - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\releases -properties version=1.0.4
       displayName: 'Create NuGet Package - Release Version'
       #inputs:
        # command: custom
