@@ -3,7 +3,7 @@
   <metadata>
     <!-- Required elements-->
     <id>QueueReceiver.Worker</id>
-    <version>1.0.3</version>
+    <version>$version$</version>
     <description>Excecutable for quereceiver service</description>
     <authors>Equinor ASA</authors>
   </metadata>
