@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Hosting.WindowsServices;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
@@ -11,7 +10,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Reflection;
 
 namespace QueueReceiver.Worker
 {
@@ -33,9 +31,6 @@ namespace QueueReceiver.Worker
             .UseWindowsService()
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
-                //var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-                //var pathToContentRoot = Path.GetDirectoryName(pathToExe);
-
                 config = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
