@@ -7,6 +7,7 @@ using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
 using QueueReceiver.Infrastructure.Data;
+using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -15,7 +16,7 @@ namespace QueueReceiver.Worker
 {
     public class Program
     {
-        public Program(IConfiguration configuration) 
+        public Program(IConfiguration configuration)
             => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
@@ -32,6 +33,7 @@ namespace QueueReceiver.Worker
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
                 config = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             })
             .ConfigureServices((hostContext, services) =>
