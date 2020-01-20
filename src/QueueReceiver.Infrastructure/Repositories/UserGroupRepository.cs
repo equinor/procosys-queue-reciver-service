@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Interfaces;
+using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,15 +9,13 @@ namespace QueueReceiver.Infrastructure.Repositories
 {
     public class UserGroupRepository : IUserGroupRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DbSet<UserGroup> _userGroups;
 
         public UserGroupRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+            => _userGroups = context.UserGroups;
 
         public async Task<long> FindIdByUserGroupName(string name)
-            => await _context.UserGroups
+            => await _userGroups
             .Where(userGroup => name.Equals(userGroup.Name))
             .Select(userGroup => userGroup.Id)
             .SingleAsync();

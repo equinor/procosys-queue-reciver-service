@@ -15,7 +15,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         public PersonRepository(ApplicationDbContext context)
         {
             _context = context;
-            _persons = _context.Persons;
+            _persons = context.Persons;
         }
 
         public async Task<Person> AddPerson(Person person)

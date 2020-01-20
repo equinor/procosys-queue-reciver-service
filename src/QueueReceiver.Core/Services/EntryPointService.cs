@@ -33,9 +33,7 @@ namespace QueueReceiver.Core.Services
         }
 
         public async Task DisposeQueue()
-        {
-            await _queueClient.CloseAsync();
-        }
+            => await _queueClient.CloseAsync();
 
         private void RegisterOnMessageHandlerAndReceiveMessages()
         {

@@ -8,10 +8,9 @@ namespace QueueReceiver.Core.Services
         private readonly IPlantRepository _plantRepository;
 
         public PlantService(IPlantRepository plantRepository)
-        {
-            _plantRepository = plantRepository;
-        }
+            => _plantRepository = plantRepository;
 
-        public async Task<string?> GetPlantId(string plantOid) => await _plantRepository.GetPlantIdByOid(plantOid);
+        public async Task<string?> GetPlantId(string plantOid)
+            => await _plantRepository.GetPlantIdByOid(plantOid);
     }
 }
