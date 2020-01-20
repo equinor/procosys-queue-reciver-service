@@ -2,7 +2,6 @@
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using System.Threading.Tasks;
-using Person = QueueReceiver.Core.Models.Person;
 
 namespace QueueReceiver.Infrastructure.Data
 {
