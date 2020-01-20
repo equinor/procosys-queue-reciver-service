@@ -44,7 +44,21 @@ namespace QueueReceiver.Core.Services
                 return;
             }
 
-            var runningJobs = accessInfo.Members.AsParallel().Select(async member =>
+          var syncPersonTableTasks = accessInfo.Members.Select(async member =>
+            {
+                if (!member.ShouldRemove)
+                {
+                   await _personService.CreateIfNotExist(member.UserOid);
+                }
+                else
+                {
+                    await _personService.UpdateWithOidIfNotFound(member.UserOid);
+                }
+            });
+            await Task.WhenAll(syncPersonTableTasks);
+            await _unitOfWork.SaveChangesAsync();
+
+            var syncAccessTasks = accessInfo.Members.Select(async member =>
             {
                 if (member.ShouldRemove)
                 {
@@ -56,7 +70,7 @@ namespace QueueReceiver.Core.Services
                 }
             });
 
-            await Task.WhenAll(runningJobs);
+            await Task.WhenAll(syncAccessTasks);
             await _unitOfWork.SaveChangesAsync();
         }
 
@@ -72,14 +86,18 @@ namespace QueueReceiver.Core.Services
             _logger.LogInformation(string.Format(
                 CultureInfo.InvariantCulture,
                 Resources.RemoveAccess, person.Id, plantId));
-
-            await _personProjectService.RemoveAccessToPlant(person.Id, plantId);
+             _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
         private async Task GiveAccess(Member member, string plantId)
         {
-            Person person = await _personService.FindOrCreate(member.UserOid);
+            Person? person = await _personService.FindByOid(member.UserOid);
 
+            if (person == null)
+            {
+                _logger.LogError(Resources.PersonWasNotFoundOrCreated,member.UserOid);
+                return;
+            }
             _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantId}");
             await _personProjectService.GiveProjectAccessToPlant(person.Id, plantId);
         }

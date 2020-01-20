@@ -1,5 +1,6 @@
 ﻿using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Interfaces;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Services
@@ -14,7 +15,6 @@ namespace QueueReceiver.Core.Services
         private readonly IRestrictionRoleRepository _restrictionRoleRepository;
         private readonly IPersonProjectHistoryRepository _personProjectHistoryRepository;
         private readonly IPersonProjectHistoryService _personProjectHistoryService;
-        private readonly IUnitOfWork _unitOfWork;
 
         public PersonProjectService(
             IPersonProjectRepository personProjectRepository,
@@ -24,8 +24,7 @@ namespace QueueReceiver.Core.Services
             IPersonRestrictionRoleRepository personRestrictionRoleRepository,
             IRestrictionRoleRepository restrictionRoleRepository,
             IPersonProjectHistoryRepository personProjectHistoryRepository,
-            IPersonProjectHistoryService personProjectHistoryService,
-            IUnitOfWork unitOfWork
+            IPersonProjectHistoryService personProjectHistoryService
         )
         {
             _personProjectRepository = personProjectRepository;
@@ -36,7 +35,6 @@ namespace QueueReceiver.Core.Services
             _restrictionRoleRepository = restrictionRoleRepository;
             _personProjectHistoryRepository = personProjectHistoryRepository;
             _personProjectHistoryService = personProjectHistoryService;
-            _unitOfWork = unitOfWork;
         }
 
         public async Task GiveProjectAccessToPlant(long personId, string plantId)
@@ -95,11 +93,10 @@ namespace QueueReceiver.Core.Services
             }
         }
 
-        public async Task RemoveAccessToPlant(long personId, string plantId)
+        public void RemoveAccessToPlant(long personId, string plantId)
         {
             var personProjectHistory = _personProjectHistoryService.CreatePersonProjectHistory(personId);
-            var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
-            _personProjectRepository.VoidPersonProjects(plantId, personId);
+            var projects = _personProjectRepository.VoidPersonProjects(plantId, personId).Select(pp=> pp.Project!).ToList();
             projects.ForEach(p => _personProjectHistoryService.LogVoidProjects(personId, personProjectHistory, p.ProjectId));
         }
     }

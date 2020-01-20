@@ -5,6 +5,7 @@ using QueueReceiver.Infrastructure.EntityConfiguration;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 
 namespace QueueReceiver.Infrastructure.Repositories
 {
@@ -26,7 +27,7 @@ namespace QueueReceiver.Infrastructure.Repositories
             await _personProjects.AddAsync(personProject);
         }
 
-        public void VoidPersonProjects(string plantId, long personId)
+        public List<PersonProject> VoidPersonProjects(string plantId, long personId)
         {
             var personProjects = _personProjects
                 .Include(pp => pp.Project!)
@@ -34,6 +35,8 @@ namespace QueueReceiver.Infrastructure.Repositories
                 .Where(pp => plantId.Equals(pp.Project!.PlantId, StringComparison.Ordinal)
                              && personId == pp.PersonId);
             personProjects.ForEachAsync(pp => pp.IsVoided = true);
+
+            return personProjects.ToList();
         }
 
         public async Task<PersonProject> GetAsync(long projectId, long personId)
