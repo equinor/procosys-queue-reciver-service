@@ -35,7 +35,7 @@ stages:
         projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
  
-- stage: "Publish and Pack"
+- stage: "PublishAndPack"
   displayName: 'Pack NuGet Package'
   dependsOn: 'Build'
   condition:  |
@@ -64,7 +64,7 @@ stages:
     - publish: '$(Build.ArtifactStagingDirectory)/packages'
       artifact: 'packages'
     
-- stage: "Push Prerelease"
+- stage: "PushPrerelease"
   displayName: 'Publish Prerelease NuGet Package'
   dependsOn: 'Pack'
   condition: succeeded()
@@ -86,7 +86,7 @@ stages:
         allowPackageConflicts: true
 
 
-- stage: "Push Release"
+- stage: "PushRelease"
   displayName: 'Publish Release NuGet Package'
   dependsOn: 'PublishPreRelease'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
