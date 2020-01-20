@@ -8,6 +8,7 @@ using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
 using QueueReceiver.Infrastructure.Data;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -32,10 +33,14 @@ namespace QueueReceiver.Worker
             .UseWindowsService()
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
+                //var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+                //var pathToContentRoot = Path.GetDirectoryName(pathToExe);
+
                 config = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             })
+            .UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton<IEntryPointService, EntryPointService>();
