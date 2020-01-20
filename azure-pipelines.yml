@@ -66,7 +66,7 @@ stages:
     
 - stage: "PushPrerelease"
   displayName: 'Publish Prerelease NuGet Package'
-  dependsOn: 'Pack'
+  dependsOn: 'PublishAndPack'
   condition: succeeded()
   jobs:
   - job:
@@ -88,7 +88,7 @@ stages:
 
 - stage: "PushRelease"
   displayName: 'Publish Release NuGet Package'
-  dependsOn: 'PublishPreRelease'
+  dependsOn: 'PushPrerelease'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
   - deployment:
