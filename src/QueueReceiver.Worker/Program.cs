@@ -30,12 +30,12 @@ namespace QueueReceiver.Worker
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .UseWindowsService()
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
                 config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             })
-            .UseWindowsService()
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton<IEntryPointService, EntryPointService>();
