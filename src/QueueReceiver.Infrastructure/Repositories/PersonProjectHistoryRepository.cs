@@ -10,12 +10,10 @@ namespace QueueReceiver.Infrastructure.Repositories
 {
     public class PersonProjectHistoryRepository : IPersonProjectHistoryRepository
     {
-        private readonly QueueReceiverServiceContext _context;
         private readonly DbSet<PersonProjectHistory> _personProjectHistories;
 
         public PersonProjectHistoryRepository(QueueReceiverServiceContext context)
         {
-            _context = context;
             _personProjectHistories = context.PersonProjectHistories;
         }
 
@@ -29,8 +27,5 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task AddAsync(PersonProjectHistory personProjHistory)
             => await _personProjectHistories.AddAsync(personProjHistory);
-
-        public async Task<int> SaveChangesAsync()
-            => await _context.SaveChangesAsync();
     }
 }

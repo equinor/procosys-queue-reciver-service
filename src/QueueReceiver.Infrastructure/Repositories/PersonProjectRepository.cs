@@ -11,13 +11,11 @@ namespace QueueReceiver.Infrastructure.Repositories
     public class PersonProjectRepository : IPersonProjectRepository
     {
         private readonly DbSet<PersonProject> _personProjects;
-        private readonly QueueReceiverServiceContext _context;
         private readonly DbContextSettings _settings;
 
         public PersonProjectRepository(QueueReceiverServiceContext context, DbContextSettings settings)
         {
             _personProjects = context.PersonProjects;
-            _context = context;
             _settings = settings;
         }
 
@@ -35,15 +33,10 @@ namespace QueueReceiver.Infrastructure.Repositories
                 .ThenInclude(project => project.Plant)
                 .Where(pp => plantId.Equals(pp.Project!.PlantId, StringComparison.Ordinal)
                              && personId == pp.PersonId);
-
             personProjects.ForEachAsync(pp => pp.IsVoided = true);
-            _personProjects.UpdateRange(personProjects);
         }
 
         public async Task<PersonProject> GetAsync(long projectId, long personId)
             => await _personProjects.FindAsync(projectId, personId);
-
-        public void Update(PersonProject personProject)
-            => _personProjects.Update(personProject);
     }
 }

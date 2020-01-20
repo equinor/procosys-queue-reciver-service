@@ -38,7 +38,6 @@ namespace QueueReceiver.Core.Services
             if (person != null)
             {
                 person.Oid = adPerson.Oid;
-                _personRepository.Update(person);
                 await _unitOfWork.SaveChangesAsync();
             }
 

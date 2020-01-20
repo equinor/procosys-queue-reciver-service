@@ -9,6 +9,5 @@ namespace QueueReceiver.Core.Interfaces
         Task<Person> FindByUserEmail(string userEmail);
         Task<Person> FindByUsername(string userName);
         Task<Person> AddPerson(Person person);
-        void Update(Person person);
     }
 }
