@@ -11,7 +11,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         private readonly DbContextSettings _settings;
         private readonly DbSet<PersonUserGroup> _personUserGroups;
 
-        public PersonUserGroupRepository(ApplicationDbContext context, DbContextSettings settings)
+        public PersonUserGroupRepository(QueueReceiverServiceContext context, DbContextSettings settings)
         {
             _settings = settings;
             _personUserGroups = context.PersonUserGroups;

@@ -9,10 +9,10 @@ namespace QueueReceiver.Infrastructure.Repositories
 {
     public class PersonRepository : IPersonRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly QueueReceiverServiceContext _context;
         private readonly DbSet<Person> _persons;
 
-        public PersonRepository(ApplicationDbContext context)
+        public PersonRepository(QueueReceiverServiceContext context)
         {
             _context = context;
             _persons = context.Persons;

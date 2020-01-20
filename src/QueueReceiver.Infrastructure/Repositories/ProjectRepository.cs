@@ -12,7 +12,7 @@ namespace QueueReceiver.Infrastructure.Repositories
     {
         private readonly DbSet<Project> _projects;
 
-        public ProjectRepository(ApplicationDbContext context)
+        public ProjectRepository(QueueReceiverServiceContext context)
             => _projects = context.Projects;
 
         public Task<List<Project>> GetParentProjectsByPlant(string plantId)

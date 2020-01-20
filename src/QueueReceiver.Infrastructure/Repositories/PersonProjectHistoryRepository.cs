@@ -10,10 +10,10 @@ namespace QueueReceiver.Infrastructure.Repositories
 {
     public class PersonProjectHistoryRepository : IPersonProjectHistoryRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly QueueReceiverServiceContext _context;
         private readonly DbSet<PersonProjectHistory> _personProjectHistories;
 
-        public PersonProjectHistoryRepository(ApplicationDbContext context)
+        public PersonProjectHistoryRepository(QueueReceiverServiceContext context)
         {
             _context = context;
             _personProjectHistories = context.PersonProjectHistories;

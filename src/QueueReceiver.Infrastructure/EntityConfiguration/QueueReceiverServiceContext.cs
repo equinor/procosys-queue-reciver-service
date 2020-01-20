@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace QueueReceiver.Infrastructure.EntityConfiguration
 {
-    public class ApplicationDbContext : DbContext, IUnitOfWork
+    public class QueueReceiverServiceContext : DbContext, IUnitOfWork
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public QueueReceiverServiceContext(DbContextOptions<QueueReceiverServiceContext> options)
             : base(options){}
 
-        public ApplicationDbContext()
+        public QueueReceiverServiceContext()
         {
         }
 

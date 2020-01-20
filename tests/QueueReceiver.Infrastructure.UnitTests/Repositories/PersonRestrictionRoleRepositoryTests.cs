@@ -22,7 +22,7 @@ namespace QueueReceiver.UnitTests.Infrastructure.Repositories
         public async Task AddSync_DoesNothing_IfRoleAlreadyExists()
         {
             //Arrange
-            var mockContext = new Mock<ApplicationDbContext>();
+            var mockContext = new Mock<QueueReceiverServiceContext>();
             mockContext.Setup(cxt => cxt.PersonRestrictionRoles
                     .Find(plantId, restrictionRole, personId))
                     .Returns(new PersonRestrictionRole(plantId, restrictionRole, personId));

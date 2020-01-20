@@ -11,7 +11,7 @@ namespace QueueReceiver.Infrastructure.Repositories
     {
         private readonly DbSet<Plant> _plants;
 
-        public PlantRepository(ApplicationDbContext context)
+        public PlantRepository(QueueReceiverServiceContext context)
             => _plants = context.Plants;
 
         public Task<string?> GetPlantIdByOid(string plantOid)

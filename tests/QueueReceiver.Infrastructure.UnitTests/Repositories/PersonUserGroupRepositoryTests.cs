@@ -22,7 +22,7 @@ namespace QueueReceiver.Infrastructure.UnitTests.Repositories
         public async Task AddAsync_DoesNothing_IfGroupAlreadyExists()
         {
             //Arrange
-            var mockContext = new Mock<ApplicationDbContext>();
+            var mockContext = new Mock<QueueReceiverServiceContext>();
             mockContext.Setup(cxt => cxt.PersonUserGroups
                     .Find(plantId, personId, userGroupId))
                     .Returns(new PersonUserGroup(personId, userGroupId, plantId, createdById));
