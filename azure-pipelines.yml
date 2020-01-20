@@ -35,7 +35,7 @@ stages:
         projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
  
-- stage: "Pack"
+- stage: "Publish and Pack"
   displayName: 'Pack NuGet Package'
   dependsOn: 'Build'
   condition:  |
@@ -58,20 +58,13 @@ stages:
       displayName: 'dotnet publish $(buildConfiguration)'
     - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -p:NuspecProperties=version=1.0.4 -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\releases
       displayName: 'Create NuGet Package - Release Version'
-      #inputs:
-       # command: custom
-       # custom: dotnet pack -p:NuspecFile=worker.nuspec -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages/releases
-        #packagesToPack:  '**/*Worker/worker.nuspec'
-        #packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
-        #arguments: '--configuration $(buildConfiguration) -p:NuspecFile=**/*Worker/worker.nuspec'
-              
     - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -p:NuspecProperties=version=1.0.4-"$(Build.BuildNumber)" -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\prereleases
       displayName: 'Create NuGet Package - Prerelease Version'
     
     - publish: '$(Build.ArtifactStagingDirectory)/packages'
       artifact: 'packages'
     
-- stage: "PublishPreRelease"
+- stage: "Push Prerelease"
   displayName: 'Publish Prerelease NuGet Package'
   dependsOn: 'Pack'
   condition: succeeded()
@@ -93,7 +86,7 @@ stages:
         allowPackageConflicts: true
 
 
-- stage: "PublishRelease"
+- stage: "Push Release"
   displayName: 'Publish Release NuGet Package'
   dependsOn: 'PublishPreRelease'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

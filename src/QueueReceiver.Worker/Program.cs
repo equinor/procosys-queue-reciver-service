@@ -9,6 +9,7 @@ using QueueReceiver.Infrastructure;
 using QueueReceiver.Infrastructure.Data;
 using System.IO;
 using System.Net;
+using System.Reflection;
 
 namespace QueueReceiver.Worker
 {
@@ -32,7 +33,6 @@ namespace QueueReceiver.Worker
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
                 config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             })
             .UseWindowsService()
