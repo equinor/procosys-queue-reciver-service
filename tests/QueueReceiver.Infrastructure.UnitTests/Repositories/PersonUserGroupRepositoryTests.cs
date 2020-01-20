@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using QueueReceiver.Infrastructure.Repositories;
 using System.Threading.Tasks;
 

@@ -73,7 +73,7 @@ namespace QueueReceiver.Core.Services
                 CultureInfo.InvariantCulture,
                 Resources.RemoveAccess, person.Id, plantId));
 
-            _personProjectService.RemoveAccessToPlant(person.Id, plantId);
+            await _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
         private async Task GiveAccess(Member member, string plantId)

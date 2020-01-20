@@ -5,7 +5,7 @@ using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using System.IO;
 using System.Net;
 

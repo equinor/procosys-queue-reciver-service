@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using System.Threading.Tasks;
 using static System.StringComparison;
 

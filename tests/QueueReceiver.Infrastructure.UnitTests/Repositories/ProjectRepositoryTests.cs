@@ -2,7 +2,7 @@
 using MockQueryable.Moq;
 using Moq;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using QueueReceiver.Infrastructure.Repositories;
 using System.Collections.Generic;
 using System.Linq;

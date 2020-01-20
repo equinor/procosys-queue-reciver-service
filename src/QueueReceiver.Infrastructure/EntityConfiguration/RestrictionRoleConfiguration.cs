@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Models;
 
-namespace QueueReceiver.Infrastructure.Data
+namespace QueueReceiver.Infrastructure.EntityConfiguration
 {
     public class RestrictionRoleConfiguration : IEntityTypeConfiguration<RestrictionRole>
     {

@@ -49,7 +49,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string SomeOid = "someOid";
 
             _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
-                .Returns(Task.FromResult(new AdPerson(SomeOid, someUsername, "anyEmail")));
+                .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, someUsername, "anyEmail")));
             _personRepository.Setup(personService => personService.FindByUsername(someUsername))
                 .Returns(Task.FromResult(new Person(someUsername, "") { Id = SomeId }));
             _unitOfWork.Setup(uow => uow.SaveChangesAsync())
@@ -71,7 +71,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string SomeOid = "someOid";
 
             _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
-                .Returns(Task.FromResult(new AdPerson(SomeOid, "anyUserName", someEmail)));
+                .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, "anyUserName", someEmail)));
             _personRepository.Setup(personService => personService.FindByUserEmail(someEmail))
                 .Returns(Task.FromResult(new Person("", someEmail) { Id = SomeId }));
             _unitOfWork.Setup(uow => uow.SaveChangesAsync())
@@ -90,7 +90,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             //Arrange
             const string SomeOid = "someOid";
             _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
-                .Returns(Task.FromResult(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
+                .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
 
             //Act
             var person = await _service.FindByOid(SomeOid);

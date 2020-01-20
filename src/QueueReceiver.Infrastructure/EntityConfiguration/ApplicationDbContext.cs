@@ -2,9 +2,8 @@
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using System.Threading.Tasks;
-using Person = QueueReceiver.Core.Models.Person;
 
-namespace QueueReceiver.Infrastructure.Data
+namespace QueueReceiver.Infrastructure.EntityConfiguration
 {
     public class ApplicationDbContext : DbContext, IUnitOfWork
     {
@@ -42,7 +41,5 @@ namespace QueueReceiver.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new PersonProjectHistoryConfiguration());
             modelBuilder.ApplyConfiguration(new PersonProjectHistoryOperationConfiguration());
         }
-
-  
     }
 }
