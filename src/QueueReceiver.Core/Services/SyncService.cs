@@ -13,12 +13,15 @@ namespace QueueReceiver.Core.Services
         private readonly IPlantService _plantService;
         private readonly IGraphService _graphService;
         private readonly IPersonService _personService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public SyncService(IPlantService plantService, IGraphService graphService, IPersonService personService)
+        public SyncService(IPlantService plantService, IGraphService graphService,
+            IPersonService personService, IUnitOfWork unitOfWork)
         {
             _plantService = plantService;
             _graphService = graphService;
             _personService = personService;
+            _unitOfWork = unitOfWork;
         }
 
 
@@ -88,49 +91,26 @@ namespace QueueReceiver.Core.Services
             var results = await Task.WhenAll(tasks);
             Console.WriteLine($" : {sw.ElapsedMilliseconds} ms");
 
-            sw.Restart();
-            Console.WriteLine("Checking members against db  using Name and phonenumer, setting oid");
-
-            //var result = new List<string>();
-            //Stopwatch sw = new Stopwatch();
-            //sw.Start();
-            var smt = results.ToList();
-            //Console.WriteLine($"code sort takes {sw.ElapsedMilliseconds}ms");
-            //sw.Restart();
+            var resultList = results.ToList();
+            Console.WriteLine($"Checking {resultList.Count} members against db using Name and phonenumer, setting oid");
             const int batchSize = 10;
-            for (int i = 0; i < smt.Count; i += batchSize)
+            for (int i = 0; i < resultList.Count; i += batchSize)
             {
-                int count = ((smt.Count - i) < batchSize) ? smt.Count - i - 1 : batchSize;
+                int count = ((resultList.Count - i) < batchSize) ? resultList.Count - i - 1 : batchSize;
 
                 sw.Restart();
                 Console.WriteLine($"Adding from {i} to {i+count}");
-                foreach (var aadPerson in smt.GetRange(i,count))
+                foreach (var aadPerson in resultList.GetRange(i,count))
                 {
                     await _personService.FindAndUpdate(aadPerson);
                 }
 
                 Console.Write($"Starting save  from {i} to {i+count} ");
-                var added = _personService.SaveChanges();
+                var added = await _unitOfWork.SaveChangesAsync();
                 Console.WriteLine($" added {added} persons with oid to the db :  {sw.ElapsedMilliseconds} ms");
 
-                //     var toAdd = await _persons
-                //    .Where(p => p.Oid != null && !oids.GetRange(i,count).Contains(p.Oid))
-                //    .Select(p => p.Oid)
-                //    .ToListAsync();
-                //    result.AddRange(toAdd);
             }
-            //Console.WriteLine($"Partitioning takes {sw.ElapsedMilliseconds}ms");
-
             sw.Stop();
-
-            Console.WriteLine($"Done");
-           // Console.WriteLine($"  : {sw.ElapsedMilliseconds} ms");
-
-            //sw.Restart();
-            //Console.Write("Starting save");
-            ////var added = await _personService.SaveAsync();
-            //Console.WriteLine($" added {added} persons with oid to the db :  {sw.ElapsedMilliseconds} ms");
-            //sw.Stop();
         }
 
         private async Task<HashSet<string>> GetMemberOidsFromGroups(IEnumerable<string> groupOids)
@@ -143,7 +123,6 @@ namespace QueueReceiver.Core.Services
                 Console.WriteLine($" found: {newMembers.Count()}, adding new memebers to set");
                 allMembers.UnionWith(newMembers);
             }
-
             return allMembers;
         }
     }

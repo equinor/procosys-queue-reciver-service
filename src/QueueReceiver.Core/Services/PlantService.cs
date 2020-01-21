@@ -9,18 +9,12 @@ namespace QueueReceiver.Core.Services
         private readonly IPlantRepository _plantRepository;
 
         public PlantService(IPlantRepository plantRepository)
-        {
-            _plantRepository = plantRepository;
-        }
+            => _plantRepository = plantRepository;
 
-        public IEnumerable<string> GetAllGroupOids()
-        {
-           return _plantRepository.GetAllInernalAndAffiliateOids();
-        }
+        public IEnumerable<string> GetAllGroupOids() 
+            => _plantRepository.GetAllInernalAndAffiliateOids();
 
         public async Task<string?> GetPlantId(string plantOid)
-        {
-            return await _plantRepository.GetPlantIdByOid(plantOid);
-        }
+            => await _plantRepository.GetPlantIdByOid(plantOid);
     }
 }

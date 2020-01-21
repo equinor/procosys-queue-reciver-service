@@ -17,6 +17,9 @@ namespace QueueReceiver.Core.Models
         [Column("PARENT_PROJECT_ID")]
         public long? ParentProjectId { get; set; }
 
+        [Column("ISMAINPROJECT")]
+        public bool IsMainProject { get; set; }
+
         public virtual Plant? Plant { get; set; }
     }
 }

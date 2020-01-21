@@ -11,13 +11,15 @@ namespace QueueReceiver.Core.UnitTests.Services
     [TestClass]
     public class PersonProjectServiceTests
     {
-        private static (ProjectService,
+        private static (PersonProjectService,
             Mock<IPersonProjectRepository>,
             Mock<IProjectRepository>,
             Mock<IPersonUserGroupRepository>,
             Mock<IUserGroupRepository>,
             Mock<IPersonRestrictionRoleRepository>,
-            Mock<IRestrictionRoleRepository>)
+            Mock<IRestrictionRoleRepository>,
+            Mock<IPersonProjectHistoryRepository>,
+            Mock<IPersonProjectHistoryService>)
 
             Factory()
         {
@@ -27,17 +29,21 @@ namespace QueueReceiver.Core.UnitTests.Services
             var userGroupRepository = new Mock<IUserGroupRepository>();
             var personRestrictionRoleRepository = new Mock<IPersonRestrictionRoleRepository>();
             var restrictionRoleRepository = new Mock<IRestrictionRoleRepository>();
+            var personProjectHistoryRepository = new Mock<IPersonProjectHistoryRepository>();
+            var personProjectHistoryService = new Mock<IPersonProjectHistoryService>();
 
-            var service = new ProjectService(
+            var service = new PersonProjectService(
                 personProjectRepository.Object,
                 projectRepository.Object,
                 personUserGroupRepository.Object,
                 userGroupRepository.Object,
                 personRestrictionRoleRepository.Object,
-                restrictionRoleRepository.Object);
+                restrictionRoleRepository.Object,
+                personProjectHistoryRepository.Object,
+                personProjectHistoryService.Object);
 
             return (service, personProjectRepository, projectRepository, personUserGroupRepository, userGroupRepository,
-                personRestrictionRoleRepository, restrictionRoleRepository);
+                personRestrictionRoleRepository, restrictionRoleRepository, personProjectHistoryRepository, personProjectHistoryService);
         }
 
         [TestMethod]
@@ -47,7 +53,9 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string plantId = "somePlantId";
             const long personId = 2;
             const long projectId = 15;
-            var (service, personProjectRepository, projectRepository, _, _, _, _) = Factory();
+
+            var(service, personProjectRepository, projectRepository, _, _, _, _, _, _) = Factory();
+
             projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
                 .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
 
@@ -56,7 +64,6 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             //Assert
             personProjectRepository.Verify(ppr => ppr.AddAsync(projectId, personId), Times.Once);
-            personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
         }
 
         [TestMethod]
@@ -65,19 +72,23 @@ namespace QueueReceiver.Core.UnitTests.Services
             //Arrange
             const string plantId = "somePlantId";
             const long personId = 2;
-            const int amountOfChanges = 3;
+            const long projectId = 4;
 
-            //Arrange
-            var (service, personProjectRepository, _, _, _, _, _) = Factory();
+            var (service, personProjectRepository, projectRepository, _, _, _, _, _, _) = Factory();
 
-            personProjectRepository.Setup(ppr => ppr.SaveChangesAsync())
-                .Returns(Task.FromResult(amountOfChanges));
+            personProjectRepository.Setup(ppr => ppr.VoidPersonProjects(plantId,personId))
+                .Returns(new List<PersonProject>
+                            { new PersonProject(projectId, personId, 123)
+                                {
+                                    Project = new Project { PlantId = plantId, ProjectId = projectId } 
+                                }
+                             }
+                );
 
             //Act
-            await service.RemoveAccessToPlant(personId, plantId);
+            service.RemoveAccessToPlant(personId, plantId);
 
             //Assert
-            personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
             personProjectRepository.Verify(ppr => ppr.VoidPersonProjects(plantId, personId), Times.Once);
         }
     }

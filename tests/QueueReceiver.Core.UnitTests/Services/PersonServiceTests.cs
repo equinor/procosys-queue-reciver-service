@@ -22,7 +22,7 @@ namespace QueueReceiver.Core.UnitTests.Services
         }
 
         [TestMethod]
-        public async Task FindOrCreate_CanFindByOid()
+        public async Task FindByOid_Works()
         {
             //Arrange
             const int SomeId = 1;
@@ -31,7 +31,7 @@ namespace QueueReceiver.Core.UnitTests.Services
                     .Returns(Task.FromResult<Person?>(new Person("", "") { Id = SomeId, Oid = SomeOid }));
 
             //Act
-            var person = await _service.FindOrCreate(SomeOid);
+            var person = await _service.FindByOid(SomeOid);
 
             //Assert
             Assert.AreEqual(SomeId, person.Id);
@@ -47,6 +47,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string Surname = "Kronglevåg";
             const string SomeOid = "someOid";
             const string MobileNo = "762982109";
+            const string someUsername = "smtsmtsmt";
 
             _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
                 .Returns(Task.FromResult(new AdPerson(SomeOid, "anything", "anyEmail")
@@ -55,13 +56,11 @@ namespace QueueReceiver.Core.UnitTests.Services
                     GivenName = GivenName,
                     Surname = Surname
                 }));
-            _personRepository.Setup(repo => repo.FindByNameAndMobileNumber(MobileNo,GivenName,Surname))
+            _personRepository.Setup(repo => repo.FindByMobileNumberAndName(MobileNo,GivenName,Surname))
                 .Returns(Task.FromResult<Person?>(new Person("tull", "tøys") { Id = SomeId }));
-            _personRepository.Setup(personService => personService.SaveChangesAsync())
-                .Returns(Task.FromResult(1));
 
             //Act
-            var person = await _service.FindOrCreate(SomeOid);
+            var person = await _service.CreateIfNotExist(SomeOid);
 
             //Assert
             Assert.AreEqual(SomeId, person.Id);
@@ -73,10 +72,10 @@ namespace QueueReceiver.Core.UnitTests.Services
             //Arrange
             const string SomeOid = "someOid";
             _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
-                .Returns(Task.FromResult(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
+                .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
 
             //Act
-            var person = await _service.FindByOid(SomeOid);
+            var person = await _service.FindOrUpdate(SomeOid);
 
             //Assert
             Assert.IsNull(person);

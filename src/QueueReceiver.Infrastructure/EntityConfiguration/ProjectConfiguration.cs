@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using QueueReceiver.Core.Models;
 
-namespace QueueReceiver.Infrastructure.Data
+namespace QueueReceiver.Infrastructure.EntityConfiguration
 {
     public class ProjectConfiguration : IEntityTypeConfiguration<Project>
     {
@@ -15,6 +15,11 @@ namespace QueueReceiver.Infrastructure.Data
                 .HasConversion(
                     b => b ? 'Y' : 'N',
                     c => c.Equals('Y'));
+
+            builder.Property(p => p.IsMainProject)
+                .HasConversion(
+                b => b ? 'Y' : 'N',
+                c => c.Equals('Y'));
         }
     }
 }

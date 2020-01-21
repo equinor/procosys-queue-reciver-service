@@ -129,6 +129,9 @@
   <data name="PersonDoesNotExist" xml:space="preserve">
     <value>Person doesn't exist in db so there is no reson to remove access, removing message from queue</value>
   </data>
+  <data name="PersonWasNotFoundOrCreated" xml:space="preserve">
+    <value>Person with  oid {0} could not be found in the database</value>
+  </data>
   <data name="RemoveAccess" xml:space="preserve">
     <value>Removing access for person with id: {0}, to plant {1}</value>
   </data>

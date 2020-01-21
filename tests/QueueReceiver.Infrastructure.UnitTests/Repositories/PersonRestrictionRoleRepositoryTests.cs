@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using QueueReceiver.Infrastructure.Repositories;
 
 namespace QueueReceiver.UnitTests.Infrastructure.Repositories
@@ -14,17 +15,16 @@ namespace QueueReceiver.UnitTests.Infrastructure.Repositories
     public class PersonRestrictionRoleRepositoryTests
     {
         private const long personId = 2;
-        private const string restrictionRole = "NO_RESTRICTION";
+        private const string restrictionRole = PersonProjectConstants.DefaultRestrictionRole;
         private const string plantId = "Dagobath";
-
 
         [TestMethod]
         public async Task AddSync_DoesNothing_IfRoleAlreadyExists()
         {
             //Arrange
-            var mockContext = new Mock<ApplicationDbContext>();
+            var mockContext = new Mock<QueueReceiverServiceContext>();
             mockContext.Setup(cxt => cxt.PersonRestrictionRoles
-                    .Find(restrictionRole, personId, plantId))
+                    .Find(plantId, restrictionRole, personId))
                     .Returns(new PersonRestrictionRole(plantId, restrictionRole, personId));
             mockContext.Setup(cxt => cxt.PersonRestrictionRoles
                     .AddAsync(It.IsAny<PersonRestrictionRole>(), default))
@@ -37,7 +37,7 @@ namespace QueueReceiver.UnitTests.Infrastructure.Repositories
 
             //Assert
             mockContext.Verify(cxt => cxt.PersonRestrictionRoles
-                .Find(restrictionRole, personId, plantId), Times.Once);
+                .Find(plantId, restrictionRole, personId), Times.Once);
             mockContext.Verify(cxt => cxt.PersonRestrictionRoles
                 .AddAsync(It.IsAny<PersonRestrictionRole>(), default), Times.Never);
         }

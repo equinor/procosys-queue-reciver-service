@@ -13,21 +13,25 @@ namespace QueueReceiver.Core.UnitTests.Services
     public class AccessServiceTests
     {
         private readonly Mock<IPersonService> _personService;
-        private readonly Mock<IProjectService> _projectService;
+        private readonly Mock<IPersonProjectService> _personProjectService;
         private readonly Mock<IPlantService> _plantService;
         private readonly Mock<ILogger<AccessService>> _logger;
+        private readonly Mock<IUnitOfWork> _unitOfWork;
         private readonly IAccessService _service;
+
         public AccessServiceTests()
         {
             _personService = new Mock<IPersonService>();
-            _projectService = new Mock<IProjectService>();
+            _personProjectService = new Mock<IPersonProjectService>();
             _plantService = new Mock<IPlantService>();
+            _unitOfWork = new Mock<IUnitOfWork>();
             _logger = new Mock<ILogger<AccessService>>();
             _service = new AccessService(
                 _personService.Object,
-                _projectService.Object,
+                _personProjectService.Object,
                 _plantService.Object,
-                _logger.Object);
+                _logger.Object,
+                _unitOfWork.Object);
         }
 
         [TestMethod]
@@ -44,7 +48,7 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             //Assert
             _plantService.Verify(_ => _.GetPlantId(plantOidThatDoesntExists), Times.Once);
-            _personService.Verify(_ => _.FindOrCreate(It.IsAny<string>()), Times.Never);
+            _personService.Verify(_ => _.CreateIfNotExist(It.IsAny<string>()), Times.Never);
         }
 
         [TestMethod]
@@ -57,10 +61,10 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string plantOidThatExists = "SomePlantThatExist";
             _plantService.Setup(plantService => plantService.GetPlantId(plantOidThatExists))
                 .Returns(Task.FromResult(somePlantId)!);
-            _personService.Setup(personService => personService.FindByOid(someOid))
+            _personService.Setup(personService => personService.FindOrUpdate(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
-            _projectService.Setup(projectService => projectService.RemoveAccessToPlant(somePersonId, plantOidThatExists))
-                .Returns(Task.FromResult(true));
+            _personService.Setup(PersonService => PersonService.FindByOid(someOid))
+                .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
 
             var accessInfo = new AccessInfo(plantOidThatExists, new List<Member>
                 {
@@ -71,8 +75,8 @@ namespace QueueReceiver.Core.UnitTests.Services
             await _service.HandleRequest(accessInfo);
 
             //Assert
-            _personService.Verify(_ => _.FindByOid(someOid), Times.Once);
-            _projectService.Verify(_ => _.RemoveAccessToPlant(somePersonId, It.IsAny<string>()), Times.Once);
+            _personService.Verify(_ => _.FindOrUpdate(someOid), Times.Once);
+            _personProjectService.Verify(_ => _.RemoveAccessToPlant(somePersonId, It.IsAny<string>()), Times.Once);
         }
 
         [TestMethod]
@@ -91,7 +95,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             await _service.HandleRequest(accessInfo);
 
             //Assert
-            _projectService.Verify(_ => _.RemoveAccessToPlant(It.IsAny<long>(), It.IsAny<string>()), Times.Never);
+            _personProjectService.Verify(_ => _.RemoveAccessToPlant(It.IsAny<long>(), It.IsAny<string>()), Times.Never);
         }
     }
 }

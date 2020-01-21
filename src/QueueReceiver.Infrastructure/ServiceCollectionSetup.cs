@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Services;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using QueueReceiver.Infrastructure.Repositories;
 
 namespace QueueReceiver.Infrastructure
@@ -19,11 +19,11 @@ namespace QueueReceiver.Infrastructure
             });
 
         public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
-            => services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseOracle(configuration["ConnectionString"]);
-                options.UseLoggerFactory(LoggerFactory);
-            });
+            => services.AddDbContext<QueueReceiverServiceContext>(options =>
+                {
+                    options.UseOracle(configuration["ConnectionString"]);
+                    options.UseLoggerFactory(LoggerFactory);
+                }).AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<QueueReceiverServiceContext>());
 
         public static void AddQueueClient(this IServiceCollection services, IConfiguration configuration)
         {
@@ -38,24 +38,23 @@ namespace QueueReceiver.Infrastructure
         }
 
         public static IServiceCollection AddRepositories(this IServiceCollection services)
-        {
-            services.AddScoped<IPersonRepository, PersonRepository>();
-            services.AddScoped<IPersonProjectRepository, PersonProjectRepository>();
-            services.AddScoped<IPlantRepository, PlantRepository>();
-            services.AddScoped<IProjectRepository, ProjectRepository>();
-            services.AddScoped<IUserGroupRepository, UserGroupRepository>();
-            services.AddScoped<IPersonUserGroupRepository, PersonUserGroupRepository>();
-            return services;
-        }
+            => services.AddScoped<IPersonRepository, PersonRepository>()
+            .AddScoped<IPersonProjectRepository, PersonProjectRepository>()
+            .AddScoped<IPlantRepository, PlantRepository>()
+            .AddScoped<IProjectRepository, ProjectRepository>()
+            .AddScoped<IUserGroupRepository, UserGroupRepository>()
+            .AddScoped<IPersonUserGroupRepository, PersonUserGroupRepository>()
+            .AddScoped<IRestrictionRoleRepository, RestrictionRoleRepository>()
+            .AddScoped<IPersonRestrictionRoleRepository, PersonRestrictionRoleRepository>()
+            .AddScoped<IPersonProjectHistoryRepository, PersonProjectHistoryRepository>();
+        
 
         public static IServiceCollection AddServices(this IServiceCollection services)
-        {
-            services.AddScoped<IAccessService, AccessService>();
-            services.AddScoped<IPlantService, PlantService>();
-            services.AddScoped<IGraphService, GraphService>();
-            services.AddScoped<IPersonService, PersonService>();
-            services.AddScoped<IProjectService, ProjectService>();
-            return services;
-        }
+            => services.AddScoped<IAccessService, AccessService>()
+            .AddScoped<IPlantService, PlantService>()
+            .AddScoped<IGraphService, GraphService>()
+            .AddScoped<IPersonService, PersonService>()
+            .AddScoped<IPersonProjectService, PersonProjectService>()
+            .AddScoped<IPersonProjectHistoryService, PersonProjectHistoryService>();
     }
 }
