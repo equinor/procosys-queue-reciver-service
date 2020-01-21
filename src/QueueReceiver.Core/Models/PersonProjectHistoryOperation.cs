@@ -5,10 +5,12 @@ namespace QueueReceiver.Core.Models
     [Table("PERSONPROJECT_HISTORY_OP")]
     public class PersonProjectHistoryOperation
     {
-
+        #pragma warning disable CS8618 // Non-nullable field needed for EF core.
         public PersonProjectHistoryOperation()
         {
         }
+        #pragma warning restore CS8618 
+
 
         public PersonProjectHistoryOperation(
             string operationType,
