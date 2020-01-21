@@ -6,6 +6,8 @@ using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
 using QueueReceiver.Infrastructure.EntityConfiguration;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 
@@ -13,7 +15,7 @@ namespace QueueReceiver.Worker
 {
     public class Program
     {
-        public Program(IConfiguration configuration) 
+        public Program(IConfiguration configuration)
             => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
@@ -26,6 +28,14 @@ namespace QueueReceiver.Worker
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .UseWindowsService()
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                config = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            })
+            .UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton<IEntryPointService, EntryPointService>();
