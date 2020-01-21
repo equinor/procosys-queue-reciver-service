@@ -11,7 +11,7 @@ trigger:
 
 variables:
   System.Debug: 'true'
-  vmImageName: 'ubuntu-latest'
+  vmImageName: 'windows-latest'
   buildConfiguration: 'Release'
 
 stages:
@@ -33,9 +33,8 @@ stages:
         projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
  
-
-- stage: "Pack"
-  displayName: 'Pack NuGet Package'
+- stage: "PublishAndPack"
+  displayName: 'Publish and Pack'
   dependsOn: 'Build'
   condition:  |
    and
@@ -49,34 +48,24 @@ stages:
     )
   jobs:
   - job:
+    displayName: 
     pool:
       vmImage: $(vmImageName)
     steps:
     - checkout: self  
-    - task: DotNetCoreCLI@2
+    - script: dotnet publish --configuration $(buildConfiguration) -r win-x64
+      displayName: 'dotnet publish $(buildConfiguration)'
+    - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -p:NuspecProperties=version=1.0.4 -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\releases
       displayName: 'Create NuGet Package - Release Version'
-      inputs:
-        command: pack
-        packagesToPack:  '**/*Worker/*.csproj'
-        packDirectory: '$(Build.ArtifactStagingDirectory)/packages/releases'
-        arguments: '--configuration $(buildConfiguration)'
-              
-    - task: DotNetCoreCLI@2
+    - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -p:NuspecProperties=version=1.0.4-"$(Build.BuildNumber)" -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\prereleases
       displayName: 'Create NuGet Package - Prerelease Version'
-      inputs:
-        command: pack
-        packagesToPack:  '**/*Worker/*.csproj'
-        packDirectory: '$(Build.ArtifactStagingDirectory)/packages/prereleases'
-        buildProperties: 'VersionSuffix="$(Build.BuildNumber)"'
-        arguments: '--configuration $(buildConfiguration)'
     
     - publish: '$(Build.ArtifactStagingDirectory)/packages'
       artifact: 'packages'
-
     
-- stage: "PublishPreRelease"
-  displayName: 'Publish Prerelease NuGet Package'
-  dependsOn: 'Pack'
+- stage: "PushPrerelease"
+  displayName: 'Push prerelease'
+  dependsOn: 'PublishAndPack'
   condition: succeeded()
   jobs:
   - job:
@@ -96,9 +85,9 @@ stages:
         allowPackageConflicts: true
 
 
-- stage: "PublishRelease"
-  displayName: 'Publish Release NuGet Package'
-  dependsOn: 'PublishPreRelease'
+- stage: "PushRelease"
+  displayName: 'Push release'
+  dependsOn: 'PushPrerelease'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
   - deployment:
