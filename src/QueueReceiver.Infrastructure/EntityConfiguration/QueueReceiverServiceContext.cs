@@ -1,15 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
-using Person = QueueReceiver.Core.Models.Person;
+using System.Threading.Tasks;
 
-namespace QueueReceiver.Infrastructure.Data
+namespace QueueReceiver.Infrastructure.EntityConfiguration
 {
-    public class ApplicationDbContext : DbContext
+    public class QueueReceiverServiceContext : DbContext, IUnitOfWork
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public QueueReceiverServiceContext(DbContextOptions<QueueReceiverServiceContext> options)
             : base(options){}
 
-        public ApplicationDbContext()
+        public QueueReceiverServiceContext()
         {
         }
 
@@ -23,6 +24,11 @@ namespace QueueReceiver.Infrastructure.Data
         public virtual DbSet<PersonProjectHistoryOperation> PersonProjectHistoryOperations { get; set; } = null!;
         public virtual DbSet<UserGroup> UserGroups { get; set; } = null!;
         public virtual DbSet<RestrictionRole> RestrictionRoles { get; set; } = null!;
+
+        public Task<int> SaveChangesAsync()
+        {
+            return base.SaveChangesAsync();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

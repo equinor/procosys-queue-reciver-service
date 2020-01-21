@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using System.Threading.Tasks;
 using static System.StringComparison;
 
@@ -9,12 +9,10 @@ namespace QueueReceiver.Infrastructure.Repositories
 {
     public class PersonRepository : IPersonRepository
     {
-        private readonly ApplicationDbContext _context;
         private readonly DbSet<Person> _persons;
 
-        public PersonRepository(ApplicationDbContext context)
+        public PersonRepository(QueueReceiverServiceContext context)
         {
-            _context = context;
             _persons = context.Persons;
         }
 
@@ -39,13 +37,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         }
 
         public Task<Person> FindByUserOid(string userOid) =>
-            _persons.SingleOrDefaultAsync(person => 
+            _persons.SingleOrDefaultAsync(person =>
                 userOid.Equals(person.Oid, OrdinalIgnoreCase));
-
-        public async Task<int> SaveChangesAsync()
-            => await _context.SaveChangesAsync();
-
-        public void Update(Person person)
-            => _context.Update(person);
     }
 }

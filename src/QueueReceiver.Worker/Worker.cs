@@ -20,17 +20,17 @@ namespace QueueReceiver.Worker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Worker service at: {time}", DateTimeOffset.Now);
+            _logger.LogInformation($"Worker service at: {DateTimeOffset.Now}" );
             await _entryPointService.InitializeQueue();
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation($"Worker running at: { DateTimeOffset.Now}");
                 await Task.Delay(10000000, stoppingToken);
             }
 
             await _entryPointService.DisposeQueue();
-            _logger.LogInformation("Worker service stopping at: {time}", DateTimeOffset.Now);
+            _logger.LogInformation($"Worker service stopping at: at: { DateTimeOffset.Now}");
         }
     }
 }

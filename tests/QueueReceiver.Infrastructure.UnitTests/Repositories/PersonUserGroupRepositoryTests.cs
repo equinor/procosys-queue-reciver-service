@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using QueueReceiver.Infrastructure.Repositories;
 using System.Threading.Tasks;
 
@@ -22,7 +22,7 @@ namespace QueueReceiver.Infrastructure.UnitTests.Repositories
         public async Task AddAsync_DoesNothing_IfGroupAlreadyExists()
         {
             //Arrange
-            var mockContext = new Mock<ApplicationDbContext>();
+            var mockContext = new Mock<QueueReceiverServiceContext>();
             mockContext.Setup(cxt => cxt.PersonUserGroups
                     .Find(plantId, personId, userGroupId))
                     .Returns(new PersonUserGroup(personId, userGroupId, plantId, createdById));

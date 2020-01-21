@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,7 +11,7 @@ namespace QueueReceiver.Infrastructure.Repositories
     {
         private readonly DbSet<RestrictionRole> _restrictionRoles;
 
-        public RestrictionRoleRepository(ApplicationDbContext context)
+        public RestrictionRoleRepository(QueueReceiverServiceContext context)
             => _restrictionRoles = context.RestrictionRoles;
 
         public async Task<string> FindRestrictionRole(string name, string plant) =>

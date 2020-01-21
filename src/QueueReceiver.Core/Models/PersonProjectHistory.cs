@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace QueueReceiver.Core.Models
 {
     [Table("PERSONPROJECT_HISTORY")]
-    public class PersonProjectHistory 
+    public class PersonProjectHistory
     {
         public PersonProjectHistory()
         {
@@ -13,7 +13,7 @@ namespace QueueReceiver.Core.Models
         }
 
         public List<PersonProjectHistoryOperation> PersonProjectHistoryOperations { get; set; }
-        
+
         [Column("PERSONPROJECT_HISTORY_ID")]
         public long Id { get; set; }
 
@@ -24,6 +24,6 @@ namespace QueueReceiver.Core.Models
         public DateTime UpdatedAt { get; set; }
 
         [Column("LAST_UPDATEDBYUSER")]
-        public string UpdatedByUserName { get; set; }
+        public string? UpdatedByUserName { get; set; }
     }
 }

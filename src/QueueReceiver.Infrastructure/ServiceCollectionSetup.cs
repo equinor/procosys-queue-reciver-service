@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Services;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using QueueReceiver.Infrastructure.Repositories;
 
 namespace QueueReceiver.Infrastructure
@@ -19,11 +19,14 @@ namespace QueueReceiver.Infrastructure
             });
 
         public static void AddDbContext(this IServiceCollection services, IConfiguration configuration)
-            => services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseOracle(configuration["ConnectionString"]);
-                options.UseLoggerFactory(LoggerFactory);
-            });
+        {
+            services.AddDbContext<QueueReceiverServiceContext>(options =>
+                       {
+                           options.UseOracle(configuration["ConnectionString"]);
+                           options.UseLoggerFactory(LoggerFactory);
+                       });
+            services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<QueueReceiverServiceContext>());
+        }
 
         public static void AddQueueClient(this IServiceCollection services, IConfiguration configuration)
         {

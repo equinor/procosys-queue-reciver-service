@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Models;
 
-namespace QueueReceiver.Infrastructure.Data
+namespace QueueReceiver.Infrastructure.EntityConfiguration
 {
     public class PersonProjectHistoryConfiguration : IEntityTypeConfiguration<PersonProjectHistory>
     {

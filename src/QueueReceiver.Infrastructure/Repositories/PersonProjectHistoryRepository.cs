@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,12 +10,10 @@ namespace QueueReceiver.Infrastructure.Repositories
 {
     public class PersonProjectHistoryRepository : IPersonProjectHistoryRepository
     {
-        private readonly ApplicationDbContext _context;
         private readonly DbSet<PersonProjectHistory> _personProjectHistories;
 
-        public PersonProjectHistoryRepository(ApplicationDbContext context)
+        public PersonProjectHistoryRepository(QueueReceiverServiceContext context)
         {
-            _context = context;
             _personProjectHistories = context.PersonProjectHistories;
         }
 
@@ -29,8 +27,5 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task AddAsync(PersonProjectHistory personProjHistory)
             => await _personProjectHistories.AddAsync(personProjHistory);
-
-        public async Task<int> SaveChangesAsync()
-            => await _context.SaveChangesAsync();
     }
 }

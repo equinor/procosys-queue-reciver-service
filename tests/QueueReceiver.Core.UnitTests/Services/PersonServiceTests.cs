@@ -22,7 +22,7 @@ namespace QueueReceiver.Core.UnitTests.Services
         }
 
         [TestMethod]
-        public async Task FindOrCreate_CanFindByOid()
+        public async Task FindByOid_Works()
         {
             //Arrange
             const int SomeId = 1;
@@ -31,7 +31,7 @@ namespace QueueReceiver.Core.UnitTests.Services
                     .Returns(Task.FromResult(new Person("", "") { Id = SomeId, Oid = SomeOid }));
 
             //Act
-            var person = await _service.FindOrCreate(SomeOid);
+            var person = await _service.FindByOid(SomeOid);
 
             //Assert
             Assert.AreEqual(SomeId, person.Id);
@@ -39,7 +39,7 @@ namespace QueueReceiver.Core.UnitTests.Services
         }
 
         [TestMethod]
-        public async Task FindOrCreate_CanFindByUsername()
+        public async Task CreateIfNotExist_CanFindByUsername()
         {
             //Arrange
             const int SomeId = 1;
@@ -47,21 +47,19 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string SomeOid = "someOid";
 
             _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
-                .Returns(Task.FromResult(new AdPerson(SomeOid, someUsername, "anyEmail")));
+                .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, someUsername, "anyEmail")));
             _personRepository.Setup(personService => personService.FindByUsername(someUsername))
                 .Returns(Task.FromResult(new Person(someUsername, "") { Id = SomeId }));
-            _personRepository.Setup(personService => personService.SaveChangesAsync())
-                .Returns(Task.FromResult(1));
 
             //Act
-            var person = await _service.FindOrCreate(SomeOid);
+            var person = await _service.CreateIfNotExist(SomeOid);
 
             //Assert
             Assert.AreEqual(SomeId, person.Id);
         }
 
         [TestMethod]
-        public async Task FindOrCreate_CanFindByEmail()
+        public async Task CreateIfNotExist_CanFindByEmail()
         {
             //Arrange
             const int SomeId = 1;
@@ -69,14 +67,12 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string SomeOid = "someOid";
 
             _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
-                .Returns(Task.FromResult(new AdPerson(SomeOid, "anyUserName", someEmail)));
+                .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, "anyUserName", someEmail)));
             _personRepository.Setup(personService => personService.FindByUserEmail(someEmail))
                 .Returns(Task.FromResult(new Person("", someEmail) { Id = SomeId }));
-            _personRepository.Setup(personService => personService.SaveChangesAsync())
-                .Returns(Task.FromResult(1));
 
             //Act
-            var person = await _service.FindOrCreate(SomeOid);
+            var person = await _service.CreateIfNotExist(SomeOid);
 
             //Assert
             Assert.AreEqual(SomeId, person.Id);
@@ -88,10 +84,10 @@ namespace QueueReceiver.Core.UnitTests.Services
             //Arrange
             const string SomeOid = "someOid";
             _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
-                .Returns(Task.FromResult(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
+                .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
 
             //Act
-            var person = await _service.FindByOid(SomeOid);
+            var person = await _service.UpdateWithOidIfNotFound(SomeOid);
 
             //Assert
             Assert.IsNull(person);

@@ -54,7 +54,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const long personId = 2;
             const long projectId = 15;
 
-            var (service, personProjectRepository, projectRepository, _, _, _, _, _, _) = Factory();
+            var(service, personProjectRepository, projectRepository, _, _, _, _, _, _) = Factory();
 
             projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
                 .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
@@ -64,7 +64,6 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             //Assert
             personProjectRepository.Verify(ppr => ppr.AddAsync(projectId, personId), Times.Once);
-            personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
         }
 
         [TestMethod]
@@ -80,14 +79,11 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
                 .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
-            personProjectRepository.Setup(ppr => ppr.SaveChangesAsync())
-                .Returns(Task.FromResult(amountOfChanges));
 
             //Act
-            await service.RemoveAccessToPlant(personId, plantId);
+             service.RemoveAccessToPlant(personId, plantId);
 
             //Assert
-            personProjectRepository.Verify(ppr => ppr.SaveChangesAsync(), Times.Once);
             personProjectRepository.Verify(ppr => ppr.VoidPersonProjects(plantId, personId), Times.Once);
         }
     }

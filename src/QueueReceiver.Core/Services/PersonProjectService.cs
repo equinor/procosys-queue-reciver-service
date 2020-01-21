@@ -1,5 +1,6 @@
 ﻿using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Interfaces;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Services
@@ -37,13 +38,13 @@ namespace QueueReceiver.Core.Services
         }
 
         public async Task GiveProjectAccessToPlant(long personId, string plantId)
-        { 
+        {
             var updated = false;
             var unvoided = false;
 
             var personProjectHistory = _personProjectHistoryService.CreatePersonProjectHistory(personId);
             var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
-           
+
             projects.ForEach(async project =>
             {
                 var projectId = project.ProjectId;
@@ -58,7 +59,6 @@ namespace QueueReceiver.Core.Services
                 else if (personProject.IsVoided)
                 {
                     personProject.IsVoided = false;
-                    _personProjectRepository.Update(personProject);
                     unvoided = true;
                 }
             });
@@ -74,7 +74,7 @@ namespace QueueReceiver.Core.Services
                 projects.ForEach(p =>
                 {
                     _personProjectHistoryService.LogAddAccess(personId, personProjectHistory, p.ProjectId);
-                    
+
                     if (p.IsMainProject)
                     {
                         _personProjectHistoryService.LogDefaultUserGroup(personId, personProjectHistory, p.ProjectId);
@@ -83,26 +83,21 @@ namespace QueueReceiver.Core.Services
             }
 
             if (unvoided)
-            { 
+            {
                 projects.ForEach(p => _personProjectHistoryService.LogUnvoidProjects(personId, personProjectHistory, p.ProjectId));
             }
 
             if (unvoided || updated)
             {
                 await _personProjectHistoryRepository.AddAsync(personProjectHistory);
-                await _personProjectRepository.SaveChangesAsync();
             }
         }
 
-        public async Task RemoveAccessToPlant(long personId, string plantId)
+        public void RemoveAccessToPlant(long personId, string plantId)
         {
-            var personProjectHistory = _personProjectHistoryService.CreatePersonProjectHistory(personId); 
-            var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
-            _personProjectRepository.VoidPersonProjects(plantId, personId);
-
+            var personProjectHistory = _personProjectHistoryService.CreatePersonProjectHistory(personId);
+            var projects = _personProjectRepository.VoidPersonProjects(plantId, personId).Select(pp=> pp.Project!).ToList();
             projects.ForEach(p => _personProjectHistoryService.LogVoidProjects(personId, personProjectHistory, p.ProjectId));
-            
-            await _personProjectRepository.SaveChangesAsync();
         }
     }
 }

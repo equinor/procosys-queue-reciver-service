@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,7 +11,7 @@ namespace QueueReceiver.Infrastructure.Repositories
     {
         private readonly DbSet<Plant> _plants;
 
-        public PlantRepository(ApplicationDbContext context)
+        public PlantRepository(QueueReceiverServiceContext context)
             => _plants = context.Plants;
 
         public Task<string?> GetPlantIdByOid(string plantOid)

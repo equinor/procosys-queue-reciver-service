@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Infrastructure.EntityConfiguration;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Infrastructure.Repositories
@@ -10,7 +10,7 @@ namespace QueueReceiver.Infrastructure.Repositories
     {
         private readonly DbSet<PersonRestrictionRole> _personRestrictionRoles;
 
-        public PersonRestrictionRoleRepository(ApplicationDbContext context) 
+        public PersonRestrictionRoleRepository(QueueReceiverServiceContext context) 
             => _personRestrictionRoles = context.PersonRestrictionRoles;
 
         public async Task AddIfNotExistAsync(string plantId, string restrictionRole, long personId)
