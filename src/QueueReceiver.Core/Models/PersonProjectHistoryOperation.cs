@@ -5,6 +5,11 @@ namespace QueueReceiver.Core.Models
     [Table("PERSONPROJECT_HISTORY_OP")]
     public class PersonProjectHistoryOperation
     {
+
+        public PersonProjectHistoryOperation()
+        {
+        }
+
         public PersonProjectHistoryOperation(
             string operationType,
             long projectId,
