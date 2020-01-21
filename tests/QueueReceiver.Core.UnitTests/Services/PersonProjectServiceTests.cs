@@ -67,7 +67,7 @@ namespace QueueReceiver.Core.UnitTests.Services
         }
 
         [TestMethod]
-        public async Task RemoveAccessToPlant_CallsCorrectMethods()
+        public void RemoveAccessToPlant_CallsCorrectMethods()
         {
             //Arrange
             const string plantId = "somePlantId";

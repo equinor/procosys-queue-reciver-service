@@ -54,7 +54,7 @@ namespace QueueReceiver.Worker
                 hostContext.Configuration.Bind(nameof(GraphSettings), graphSettings);
                 services.AddSingleton(graphSettings);
 
-                services.AddHostedService<Worker>();
+                services.AddHostedService<WorkerService>();
             });
     }
 }

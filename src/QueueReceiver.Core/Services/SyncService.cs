@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace QueueReceiver.Core.Services
 {
@@ -69,6 +70,7 @@ namespace QueueReceiver.Core.Services
              * */
         }
 
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
         public async Task ExcecuteOidSync()
         {
             Stopwatch sw = new Stopwatch();
@@ -108,7 +110,6 @@ namespace QueueReceiver.Core.Services
                 Console.Write($"Starting save  from {i} to {i+count} ");
                 var added = await _unitOfWork.SaveChangesAsync();
                 Console.WriteLine($" added {added} persons with oid to the db :  {sw.ElapsedMilliseconds} ms");
-
             }
             sw.Stop();
         }

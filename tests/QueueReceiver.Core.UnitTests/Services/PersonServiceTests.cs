@@ -34,7 +34,8 @@ namespace QueueReceiver.Core.UnitTests.Services
             var person = await _service.FindByOid(SomeOid);
 
             //Assert
-            Assert.AreEqual(SomeId, person.Id);
+            Assert.IsNotNull(person);
+            Assert.AreEqual(SomeId, person!.Id);
             Assert.AreEqual(SomeOid, person.Oid);
         }
 
@@ -47,7 +48,6 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string Surname = "Kronglevåg";
             const string SomeOid = "someOid";
             const string MobileNo = "762982109";
-            const string someUsername = "smtsmtsmt";
 
             _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
                 .Returns(Task.FromResult(new AdPerson(SomeOid, "anything", "anyEmail")
@@ -72,7 +72,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             //Arrange
             const string SomeOid = "someOid";
             _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
-                .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
+                .Returns(Task.FromResult(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
 
             //Act
             var person = await _service.FindOrUpdate(SomeOid);

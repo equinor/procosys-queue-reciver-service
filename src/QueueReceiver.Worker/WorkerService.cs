@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace QueueReceiver.Worker
 {
-    public class Worker : BackgroundService
+    public class WorkerService : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly ILogger<WorkerService> _logger;
         private readonly IEntryPointService _entryPointService;
 
-        public Worker(ILogger<Worker> logger, IEntryPointService entryPointService)
+        public WorkerService(ILogger<WorkerService> logger, IEntryPointService entryPointService)
         {
             _logger = logger;
             _entryPointService = entryPointService;

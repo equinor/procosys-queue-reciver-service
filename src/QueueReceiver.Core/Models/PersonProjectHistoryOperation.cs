@@ -11,7 +11,6 @@ namespace QueueReceiver.Core.Models
         }
         #pragma warning restore CS8618 
 
-
         public PersonProjectHistoryOperation(
             string operationType,
             long projectId,

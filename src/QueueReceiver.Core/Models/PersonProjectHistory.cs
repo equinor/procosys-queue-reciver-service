@@ -12,7 +12,7 @@ namespace QueueReceiver.Core.Models
             PersonProjectHistoryOperations = new List<PersonProjectHistoryOperation>();
         }
 
-        public List<PersonProjectHistoryOperation> PersonProjectHistoryOperations { get; set; }
+        public List<PersonProjectHistoryOperation> PersonProjectHistoryOperations { get; }
 
         [Column("PERSONPROJECT_HISTORY_ID")]
         public long Id { get; set; }
