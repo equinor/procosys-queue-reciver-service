@@ -62,8 +62,8 @@ namespace QueueReceiver.Core.UnitTests.Services
                 .Returns(Task.FromResult(somePlantId)!);
             _personService.Setup(personService => personService.UpdateWithOidIfNotFound(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
-            //_personProjectService.Setup(personProjectService => personProjectService.RemoveAccessToPlant(somePersonId, plantOidThatExists))
-              //  .Returns(Task.FromResult(true));
+            _personService.Setup(PersonService => PersonService.FindByOid(someOid))
+                .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
 
             var accessInfo = new AccessInfo(plantOidThatExists, new List<Member>
                 {

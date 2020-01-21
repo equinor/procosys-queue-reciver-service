@@ -72,13 +72,13 @@ namespace QueueReceiver.Core.UnitTests.Services
             //Arrange
             const string plantId = "somePlantId";
             const long personId = 2;
-            const int amountOfChanges = 3;
             const long projectId = 4;
 
             var (service, personProjectRepository, projectRepository, _, _, _, _, _, _) = Factory();
 
-            projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
-                .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
+            personProjectRepository.Setup(ppr => ppr.VoidPersonProjects(plantId, personId)).Returns(new List<PersonProject> { new PersonProject(projectId, personId, 1234)
+            { Project = new Project { PlantId = plantId, ProjectId = projectId }
+            } });
 
             //Act
              service.RemoveAccessToPlant(personId, plantId);
