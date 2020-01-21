@@ -8,13 +8,11 @@ trigger:
     include:
       - master
       - dev
-      - deploy
 
 variables:
   System.Debug: 'true'
   vmImageName: 'windows-latest'
   buildConfiguration: 'Release'
-  
 
 stages:
   
@@ -36,7 +34,7 @@ stages:
         arguments: '--configuration $(buildConfiguration)'
  
 - stage: "PublishAndPack"
-  displayName: 'Pack NuGet Package'
+  displayName: 'Publish and Pack'
   dependsOn: 'Build'
   condition:  |
    and
@@ -45,11 +43,12 @@ stages:
      or
      ( 
        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-       eq(variables['Build.SourceBranch'], 'refs/heads/deploy')
+       eq(variables['Build.SourceBranch'], 'refs/heads/dev')
      )
     )
   jobs:
   - job:
+    displayName: 
     pool:
       vmImage: $(vmImageName)
     steps:
@@ -65,7 +64,7 @@ stages:
       artifact: 'packages'
     
 - stage: "PushPrerelease"
-  displayName: 'Publish Prerelease NuGet Package'
+  displayName: 'Push prerelease'
   dependsOn: 'PublishAndPack'
   condition: succeeded()
   jobs:
@@ -87,7 +86,7 @@ stages:
 
 
 - stage: "PushRelease"
-  displayName: 'Publish Release NuGet Package'
+  displayName: 'Push release'
   dependsOn: 'PushPrerelease'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:

@@ -13,6 +13,7 @@
     <StartupObject>QueueReceiver.Worker.Program</StartupObject>
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

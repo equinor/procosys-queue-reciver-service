@@ -30,7 +30,7 @@ namespace QueueReceiver.Infrastructure
             services.AddSingleton<IQueueClient>(_ =>
             {
                 var connString = configuration["ServiceBusConnectionString"];
-                var queueName = "updateuseraccessdev";//TODO config[""];
+                var queueName = configuration["ServiceBusQueueName"];
                 var queueClient = new QueueClient(connString, queueName);
                 queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
                 return queueClient;
