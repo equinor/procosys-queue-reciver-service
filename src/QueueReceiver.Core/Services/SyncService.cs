@@ -25,7 +25,6 @@ namespace QueueReceiver.Core.Services
             _unitOfWork = unitOfWork;
         }
 
-
         public async Task ExcecuteAccessSync()
         {
             //Find all groups we want to sync
