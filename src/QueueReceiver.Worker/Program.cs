@@ -38,7 +38,7 @@ namespace QueueReceiver.Worker
             .UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddSingleton<IEntryPointService, EntryPointService>();
+                services.AddSingleton<IEntryPointService, EntryPointService>(); //TODO: Why not move these services to AddServices()?
                 services.AddSingleton<IServiceLocator, ServiceLocator>();
 
                 services.AddDbContext(hostContext.Configuration);
