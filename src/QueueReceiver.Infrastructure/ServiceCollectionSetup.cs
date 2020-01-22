@@ -52,6 +52,7 @@ namespace QueueReceiver.Infrastructure
 
         public static void AddServices(this IServiceCollection services)
         {
+            services.AddScoped<IEntryPointService, EntryPointService>();
             services.AddScoped<IAccessService, AccessService>();
             services.AddScoped<IPlantService, PlantService>();
             services.AddScoped<IGraphService, GraphService>();

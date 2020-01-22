@@ -29,7 +29,7 @@ namespace QueueReceiver.Core.Services
 
             if (adPerson == null)
             {
-                return person; //TODO: This will always be null. Intentionally?
+                return null;
             }
 
             person = await FindUserByEmailOrUserName(adPerson);
