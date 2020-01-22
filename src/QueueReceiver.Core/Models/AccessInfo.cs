@@ -12,7 +12,7 @@ namespace QueueReceiver.Core.Models
         }
 
         [JsonProperty("groupId")]
-        public string PlantOid { get; set; }
+        public string PlantOid { get; set; } // TODO: Remove setter. Change to type Guid
 
         [JsonProperty("members")]
         public List<Member> Members { get; }
@@ -27,9 +27,9 @@ namespace QueueReceiver.Core.Models
         }
 
         [JsonProperty("id")]
-        public string UserOid { get; set; }
+        public string UserOid { get; set; }// TODO: Remove setter. Change to type Guid
 
         [JsonProperty("remove")]
-        public bool ShouldRemove { get; set; }
+        public bool ShouldRemove { get; set; }// TODO: Remove setter. Consider renaming to "RemoveAccess" or "Void" or something. Current name could indicate that the user should be deleted from the database.
     }
 }
