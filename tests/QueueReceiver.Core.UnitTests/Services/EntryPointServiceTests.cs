@@ -14,47 +14,28 @@ using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.UnitTests.Services
 {
-    [TestClass] //TODO this class might get rewritten and be better for testing
+    [TestClass]
     public class EntryPointServiceTests
     {
         private static (EntryPointService,
             TestableQueueClient,
-            Mock<IServiceLocator>,
             Mock<ILogger<EntryPointService>>,
             Mock<IAccessService>)
             Factory()
         {
             var logger = new Mock<ILogger<EntryPointService>>();
             var queueClient = new TestableQueueClient();
-            var serviceLocator = new Mock<IServiceLocator>();
-            var service = new EntryPointService(queueClient, serviceLocator.Object, logger.Object);
+            var accessService = new Mock<IAccessService>();
+            var service = new EntryPointService(queueClient, accessService.Object, logger.Object);
 
-            var accessService = SetupCreateScope(serviceLocator);
-
-            return (service, queueClient, serviceLocator, logger, accessService);
-        }
-
-        private static Mock<IAccessService> SetupCreateScope(Mock<IServiceLocator> serviceLocator)
-        {
-            var fakeScope = new Mock<IServiceScope>();
-            serviceLocator.Setup(sl => sl.CreateScope())
-                            .Returns(fakeScope.Object);
-
-            var serviceProvider = new Mock<IServiceProvider>();
-            fakeScope.Setup(s => s.ServiceProvider)
-                .Returns(serviceProvider.Object);
-
-            var service = new Mock<IAccessService>();
-            serviceProvider.Setup(sp => sp.GetService(typeof(IAccessService)))
-                .Returns(service.Object);
-
-            return service;
+            //var accessService = SetupCreateScope(serviceLocator);
+            return (service, queueClient, logger, accessService);
         }
 
         [TestMethod]
         public async Task InitializeQueueTest()
         {
-            var (service, queueClient, _, logger, accessService) = Factory();
+            var (service, queueClient, logger, accessService) = Factory();
 
             accessService.Setup(acs => acs.HandleRequest(It.IsAny<AccessInfo>()))
                 .ThrowsAsync(new InternalTestFailureException("!"));

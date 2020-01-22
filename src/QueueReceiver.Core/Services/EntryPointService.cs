@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using QueueReceiver.Core.Interfaces;
@@ -14,15 +13,15 @@ namespace QueueReceiver.Core.Services
     public class EntryPointService : IEntryPointService
     {
         private readonly IQueueClient _queueClient;
-        private readonly IServiceLocator _scopeFactory;
+        private readonly IAccessService _accessService;
         private readonly ILogger<EntryPointService> _logger;
 
         public EntryPointService(IQueueClient queueClient,
-            IServiceLocator serviceLocator,
+            IAccessService serviceLocator,
             ILogger<EntryPointService> logger)
         {
             _queueClient = queueClient;
-            _scopeFactory = serviceLocator;
+            _accessService = serviceLocator;
             _logger = logger;
         }
 
@@ -50,16 +49,7 @@ namespace QueueReceiver.Core.Services
             var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
             _logger.LogInformation($"Processing message : { accessInfo }");
 
-            /**
-             * Injecting accessService here because class is singleton.
-             * It is not possible inject scoped dependiences from a constructor of a singleton  
-            **/
-            using var scope = _scopeFactory.CreateScope();
-            var accessService =
-                scope.ServiceProvider
-                    .GetRequiredService<IAccessService>();
-
-            await accessService.HandleRequest(accessInfo);
+            await _accessService.HandleRequest(accessInfo);
 
             //TODO consider moving to its own class, to be able to test, 
             //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock

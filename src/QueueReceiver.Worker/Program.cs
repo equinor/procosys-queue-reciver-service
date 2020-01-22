@@ -29,7 +29,7 @@ namespace QueueReceiver.Worker
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
             .UseWindowsService()
-            .ConfigureAppConfiguration((hostingContext, config) =>
+            .ConfigureAppConfiguration((_, config) =>
             {
                 config = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
@@ -38,11 +38,12 @@ namespace QueueReceiver.Worker
             .UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddSingleton<IEntryPointService, EntryPointService>();
-                services.AddSingleton<IServiceLocator, ServiceLocator>();
+                services.AddScoped<IEntryPointService, EntryPointService>();
 
-                services.AddDbContext(hostContext.Configuration);
-                services.AddQueueClient(hostContext.Configuration);
+                services.AddDbContext(hostContext.Configuration["ConnectionString"]);
+                services.AddQueueClient(
+                    hostContext.Configuration["ServiceBusConnectionString"],
+                    hostContext.Configuration["ServiceBusQueueName"]);
                 services.AddRepositories();
                 services.AddServices();
 
