@@ -38,7 +38,7 @@ namespace QueueReceiver.Worker
             .UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddScoped<IEntryPointService, EntryPointService>();
+                services.AddScoped<IEntryPointService, EntryPointService>();//TODO: Why not move these services to AddServices()?
 
                 services.AddDbContext(hostContext.Configuration["ConnectionString"]);
                 services.AddQueueClient(

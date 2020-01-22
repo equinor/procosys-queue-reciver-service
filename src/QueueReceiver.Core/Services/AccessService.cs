@@ -46,7 +46,7 @@ namespace QueueReceiver.Core.Services
 
           var syncPersonTableTasks = accessInfo.Members.Select(async member =>
             {
-                if (!member.ShouldRemove)
+                if (!member.ShouldRemove) //TODO: Instead of "if(!)->else", use "if()->else, ref. below
                 {
                    await _personService.CreateIfNotExist(member.UserOid);
                 }
@@ -55,7 +55,7 @@ namespace QueueReceiver.Core.Services
                     await _personService.UpdateWithOidIfNotFound(member.UserOid);
                 }
             });
-            await Task.WhenAll(syncPersonTableTasks);
+            await Task.WhenAll(syncPersonTableTasks); //TODO: Is there a benefit of doing this in parallel? Consider doing a timing test and do it sequentially if needed.
             await _unitOfWork.SaveChangesAsync();
 
             var syncAccessTasks = accessInfo.Members.Select(async member =>
@@ -70,11 +70,11 @@ namespace QueueReceiver.Core.Services
                 }
             });
 
-            await Task.WhenAll(syncAccessTasks);
+            await Task.WhenAll(syncAccessTasks); //TODO: Is there a benefit of doing this in parallel? Consider doing a timing test and do it sequentially if needed.
             await _unitOfWork.SaveChangesAsync();
         }
 
-        private async Task RemoveAccess(Member member, string plantId)
+        private async Task RemoveAccess(Member member, string plantId) //TODO: Consider accepting "string userOid" or "Guid userOid" to make it more explicit and easier to test.
         {
             Person? person = await _personService.FindByOid(member.UserOid);
 
@@ -98,7 +98,7 @@ namespace QueueReceiver.Core.Services
                 _logger.LogError(Resources.PersonWasNotFoundOrCreated,member.UserOid);
                 return;
             }
-            _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantId}");
+            _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantId}"); //TODO: Settle on one standard for formatting messages, ref. logging in "RemoveAccess".
             await _personProjectService.GiveProjectAccessToPlant(person.Id, plantId);
         }
 
