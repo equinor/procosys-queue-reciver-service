@@ -2,7 +2,7 @@
 
 namespace QueueReceiver.Core.Interfaces
 {
-    public interface IPlantService
+    public interface IPlantService //TODO: Use type Guid in methods
     {
         Task<string?> GetPlantId(string plantOid);
     }
