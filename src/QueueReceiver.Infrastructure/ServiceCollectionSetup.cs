@@ -18,7 +18,7 @@ namespace QueueReceiver.Infrastructure
                 new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider()
             });
 
-        public static void AddDbContext(this IServiceCollection services, IConfiguration configuration)
+        public static void AddDbContext(this IServiceCollection services, IConfiguration configuration) //TODO: Consider string connectionString as argument to make it more explicit what it needs and easier to unit test.
         {
             services.AddDbContext<QueueReceiverServiceContext>(options =>
                        {
@@ -28,7 +28,7 @@ namespace QueueReceiver.Infrastructure
             services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<QueueReceiverServiceContext>());
         }
 
-        public static void AddQueueClient(this IServiceCollection services, IConfiguration configuration)
+        public static void AddQueueClient(this IServiceCollection services, IConfiguration configuration)//TODO: Consider two strings as argument to make it more explicit what it needs and easier to unit test.
         {
             services.AddSingleton<IQueueClient>(_ =>
             {

@@ -26,7 +26,7 @@ namespace QueueReceiver.Worker
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation($"Worker running at: { DateTimeOffset.Now}");
-                await Task.Delay(10000000, stoppingToken);
+                await Task.Delay(10000000, stoppingToken); //TODO: Use timespan overload instead to make it easier to read. Timespan.FromSeconds(...)
             }
 
             await _entryPointService.DisposeQueue();
