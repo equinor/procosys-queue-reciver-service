@@ -2,7 +2,7 @@
 
 namespace QueueReceiver.Core.Models
 {
-    [Table("PROJECT")]
+    [Table("PROJECT")]//TODO: I assume these annotations are for the ORM. There are already entityconfigurations in the infrastructure project that use the fluent api. Move this to the entity configuration files to keep all related configuration in one place.
     public class Project
     {
         [Column("PROJECT_ID")]

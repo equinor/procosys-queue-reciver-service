@@ -2,7 +2,7 @@
 {
     public class AdPerson
     {
-        public AdPerson(string oid, string username, string email)
+        public AdPerson(string oid, string username, string email) //TODO: Remove all property setters and accept all information in constructor. At least remove the setters for oid and username.
         {
             Oid = oid;
             Username = username;

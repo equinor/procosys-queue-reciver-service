@@ -2,11 +2,11 @@
 
 namespace QueueReceiver.Core.Models
 {
-    [Table("PERSONPROJECT_HISTORY_OP")]
+    [Table("PERSONPROJECT_HISTORY_OP")]//TODO: I assume these annotations are for the ORM. There are already entityconfigurations in the infrastructure project that use the fluent api. Move this to the entity configuration files to keep all related configuration in one place.
     public class PersonProjectHistoryOperation
     {
 
-        public PersonProjectHistoryOperation()
+        public PersonProjectHistoryOperation() //TODO: If this is for the ORM, at least make it protected. It also complains that there are uninitialized non-nullable properties in the class
         {
         }
 
@@ -15,7 +15,7 @@ namespace QueueReceiver.Core.Models
             long projectId,
             long personId,
             string updatedByUser,
-            PersonProjectHistory personProjectHistory)
+            PersonProjectHistory personProjectHistory) // TODO: Remove some property setters?
         {
             OperationType = operationType;
             ProjectId = projectId;

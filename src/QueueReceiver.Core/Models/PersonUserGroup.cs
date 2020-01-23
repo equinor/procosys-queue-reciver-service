@@ -2,10 +2,10 @@
 
 namespace QueueReceiver.Core.Models
 {
-    [Table("PERSONUSERGROUP")]
+    [Table("PERSONUSERGROUP")]//TODO: I assume these annotations are for the ORM. There are already entityconfigurations in the infrastructure project that use the fluent api. Move this to the entity configuration files to keep all related configuration in one place.
     public class PersonUserGroup
     {
-        public PersonUserGroup(long personId, long userGroupId, string plantId, long createdById)
+        public PersonUserGroup(long personId, long userGroupId, string plantId, long createdById) //TODO: Remove some property setters?
         {
             PersonId = personId;
             UserGroupId = userGroupId;

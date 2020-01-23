@@ -2,10 +2,10 @@
 
 namespace QueueReceiver.Core.Models
 {
-    [Table("PERSON")]
+    [Table("PERSON")] //TODO: I assume these annotations are for the ORM. There are already entityconfigurations in the infrastructure project that use the fluent api. Move this to the entity configuration files to keep all related configuration in one place.
     public class Person
     {
-        public Person(string userName, string email)
+        public Person(string userName, string email) // TODO: If username and email are not supposed to be changed, remove the setters on the properties.
         {
             UserName = userName;
             Email = email;

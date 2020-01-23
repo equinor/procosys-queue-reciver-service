@@ -10,7 +10,7 @@ namespace QueueReceiver.Infrastructure.EntityConfiguration
         public QueueReceiverServiceContext(DbContextOptions<QueueReceiverServiceContext> options)
             : base(options){}
 
-        public QueueReceiverServiceContext()
+        public QueueReceiverServiceContext() //TODO: Is this needed? Remove
         {
         }
 
