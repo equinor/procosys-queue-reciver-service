@@ -12,7 +12,7 @@ namespace QueueReceiver.Core.Models
         }
 
         [JsonProperty("groupId")]
-        public string PlantOid { get; set; }
+        public string PlantOid { get; }
 
         [JsonProperty("members")]
         public List<Member> Members { get; }

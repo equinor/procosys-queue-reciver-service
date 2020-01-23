@@ -46,7 +46,7 @@ namespace QueueReceiver.Core.Services
 
         private async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
-            var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body)); //TODO: Use the new System.Text.Json namespace to handle JSON messages.
+            var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
             _logger.LogInformation($"Processing message : { accessInfo }");
 
             await _accessService.HandleRequest(accessInfo);
