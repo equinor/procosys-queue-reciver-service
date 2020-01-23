@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.EntityConfiguration;
+using QueueReceiver.Infrastructure.Data;
 using QueueReceiver.Infrastructure.Repositories;
 
 namespace QueueReceiver.UnitTests.Infrastructure.Repositories

@@ -7,9 +7,9 @@ using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
 using System;
 using System.Diagnostics;
-using QueueReceiver.Infrastructure.EntityConfiguration;
 using System.IO;
 using System.Net;
+using QueueReceiver.Infrastructure.Data;
 
 namespace QueueReceiver.Worker
 {
@@ -22,8 +22,8 @@ namespace QueueReceiver.Worker
 
         public static void Main(string[] args)
         {
-            WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80"); //TODO move this to infrastructure and add as variable
-            CreateHostBuilder(args).Build().Run();
+            WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80"); //TODO move this to infrastructure and add as variable.
+            CreateHostBuilder(args).Build().Run(); //TODO: Split this between Build() and Run() and get configuration in between and use that to set the proxy.
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

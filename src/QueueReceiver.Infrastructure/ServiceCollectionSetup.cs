@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Services;
-using QueueReceiver.Infrastructure.EntityConfiguration;
+using QueueReceiver.Infrastructure.Data;
 using QueueReceiver.Infrastructure.Repositories;
 
 namespace QueueReceiver.Infrastructure

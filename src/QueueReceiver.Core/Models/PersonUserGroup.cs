@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
+﻿
 namespace QueueReceiver.Core.Models
 {
-    [Table("PERSONUSERGROUP")]
     public class PersonUserGroup
     {
         public PersonUserGroup(long personId, long userGroupId, string plantId, long createdById)
@@ -13,16 +11,12 @@ namespace QueueReceiver.Core.Models
             CreatedById = createdById;
         }
 
-        [Column("PERSON_ID")]
-        public long PersonId { get; set; }
+        public long PersonId { get; }
 
-        [Column("USERGROUP_ID")]
-        public long UserGroupId { get; set; }
+        public long UserGroupId { get; }
 
-        [Column("PROJECTSCHEMA")]
-        public string PlantId { get; set; }
+        public string PlantId { get; }
 
-        [Column("CREATEDBY_ID")]
-        public long CreatedById { get; set; }
+        public long CreatedById { get; }
     }
 }
