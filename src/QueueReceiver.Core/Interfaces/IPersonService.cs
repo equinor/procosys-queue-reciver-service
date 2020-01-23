@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Interfaces
 {
-    public interface IPersonService //TODO: Use Guid as parameter type in methods
+    public interface IPersonService
     {
         Task<Person?> UpdateWithOidIfNotFound(string userOid);
         Task<Person> CreateIfNotExist(string userOid);

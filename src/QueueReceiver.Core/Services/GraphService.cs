@@ -52,7 +52,7 @@ namespace QueueReceiver.Core.Services
             return null;
         }
 
-        private async Task<AuthenticationResult> GetAccessToken() // TODO: Accept interface through DI to make it testable
+        private async Task<AuthenticationResult> GetAccessToken()
         {
             var authority = _settings.Authority;
             var graphUrl = _settings.GraphUrl;

@@ -51,7 +51,6 @@ namespace QueueReceiver.Core.Services
 
             await _accessService.HandleRequest(accessInfo);
 
-            //TODO consider moving to its own class, to be able to test, 
             //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock
             string lockToken = message.SystemProperties.LockToken;
             await _queueClient.CompleteAsync(lockToken);
