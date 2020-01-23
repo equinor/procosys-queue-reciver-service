@@ -22,8 +22,8 @@ namespace QueueReceiver.Worker
 
         public static void Main(string[] args)
         {
-            WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80"); //TODO move this to infrastructure and add as variable
-            CreateHostBuilder(args).Build().Run();
+            WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80"); //TODO move this to infrastructure and add as variable.
+            CreateHostBuilder(args).Build().Run(); //TODO: Split this between Build() and Run() and get configuration in between and use that to set the proxy.
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

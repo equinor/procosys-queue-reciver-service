@@ -5,7 +5,7 @@ using System;
 
 namespace QueueReceiver.Core.Services
 {
-    public class PersonProjectHistoryService : IPersonProjectHistoryService
+    public class PersonProjectHistoryService : IPersonProjectHistoryService //TODO: Perhaps this class and its method can be made static? Is it really a service? It's more a helper class
     {
         public PersonProjectHistory CreatePersonProjectHistory(long personId)
         {
