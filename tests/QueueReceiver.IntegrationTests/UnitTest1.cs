@@ -46,11 +46,10 @@ namespace QueueReceiver.IntegrationTests
                 return queueClient;
             });
 
-            services.AddSingleton<IEntryPointService, EntryPointService>();
             var serviceProvider = services.BuildServiceProvider();
             var service = serviceProvider.GetService<IHostedService>() as Worker.Worker;
 
-            var entryPointService = serviceProvider.GetService<IEntryPointService>() as EntryPointService;
+          //  var entryPointService = serviceProvider.GetService<IEntryPointService>() as EntryPointService;
 
             await service.StartAsync(CancellationToken.None);
             var isExecuted = false;
