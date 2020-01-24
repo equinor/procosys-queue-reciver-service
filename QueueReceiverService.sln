@@ -20,6 +20,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueueReceiver.Infrastructur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueueReceiver.Core.UnitTests", "tests\QueueReceiver.Core.UnitTests\QueueReceiver.Core.UnitTests.csproj", "{A030655E-069D-4D6B-86EB-14D7B85EE503}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueueReceiver.IntegrationTests", "tests\QueueReceiver.IntegrationTests\QueueReceiver.IntegrationTests.csproj", "{57F62015-4EF5-4690-A180-C469891285E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{A030655E-069D-4D6B-86EB-14D7B85EE503}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A030655E-069D-4D6B-86EB-14D7B85EE503}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A030655E-069D-4D6B-86EB-14D7B85EE503}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57F62015-4EF5-4690-A180-C469891285E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57F62015-4EF5-4690-A180-C469891285E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57F62015-4EF5-4690-A180-C469891285E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57F62015-4EF5-4690-A180-C469891285E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,6 +62,7 @@ Global
 		{5848828B-3998-44A2-A2F8-31525CA4E4C8} = {61B6D8C6-F591-426F-B858-9C826A32433D}
 		{23D8798A-3457-4BE6-8E9E-A9EFD3752C5B} = {BC65202D-64E0-4603-B335-8E5F36C67431}
 		{A030655E-069D-4D6B-86EB-14D7B85EE503} = {BC65202D-64E0-4603-B335-8E5F36C67431}
+		{57F62015-4EF5-4690-A180-C469891285E8} = {BC65202D-64E0-4603-B335-8E5F36C67431}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {840D546D-9B22-4171-A343-61BDFC85E445}
