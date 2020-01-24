@@ -1,13 +1,12 @@
 ﻿using QueueReceiver.Core.Constants;
-using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using System;
 
 namespace QueueReceiver.Core.Services
 {
-    public class PersonProjectHistoryService : IPersonProjectHistoryService //TODO: Perhaps this class and its method can be made static? Is it really a service? It's more a helper class
+    public static class PersonProjectHistoryHelper
     {
-        public PersonProjectHistory CreatePersonProjectHistory(long personId)
+        public static PersonProjectHistory CreatePersonProjectHistory(long personId)
         {
             var personProjectHistory = new PersonProjectHistory()
             {
@@ -19,19 +18,19 @@ namespace QueueReceiver.Core.Services
             return personProjectHistory;
         }
 
-        public void LogAddAccess(long personId, PersonProjectHistory personProjectHistory, long projectId)
+        public static void LogAddAccess(long personId, PersonProjectHistory personProjectHistory, long projectId)
             => LogInsert(personId, personProjectHistory, projectId, "INSERT");
 
-        public void LogDefaultUserGroup(long personId, PersonProjectHistory personProjectHistory, long projectId)
+        public static void LogDefaultUserGroup(long personId, PersonProjectHistory personProjectHistory, long projectId)
             => LogUpdate(personId, personProjectHistory, projectId, "User role", "Read", "N", "Y");
 
-        public void LogUnvoidProjects(long personId, PersonProjectHistory personProjectHistory, long projectId)
+        public static void LogUnvoidProjects(long personId, PersonProjectHistory personProjectHistory, long projectId)
             => LogUpdate(personId, personProjectHistory, projectId, "UPDATE", "ISVOIDED", "Y", "N");
 
-        public void LogVoidProjects(long personId, PersonProjectHistory personProjectHistory, long projectId)
+        public static void LogVoidProjects(long personId, PersonProjectHistory personProjectHistory, long projectId)
             => LogUpdate(personId, personProjectHistory, projectId, "UPDATE", "ISVOIDED", "N", "Y");
 
-        private void LogInsert(long personId, PersonProjectHistory personProjectHistory, long projectId, string operationType)
+        private static void LogInsert(long personId, PersonProjectHistory personProjectHistory, long projectId, string operationType)
         {
             var ppho = new PersonProjectHistoryOperation(
                 operationType,
@@ -43,7 +42,7 @@ namespace QueueReceiver.Core.Services
             personProjectHistory.PersonProjectHistoryOperations.Add(ppho);
         }
 
-        private void LogUpdate(long personId, PersonProjectHistory personProjectHistory, long projectId,
+        private static void LogUpdate(long personId, PersonProjectHistory personProjectHistory, long projectId,
                                       string operationType, string fieldName, string oldValue, string newValue)
         {
             var ppho = new PersonProjectHistoryOperation(

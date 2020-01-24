@@ -58,7 +58,6 @@ namespace QueueReceiver.Infrastructure
             services.AddScoped<IGraphService, GraphService>();
             services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IPersonProjectService, PersonProjectService>();
-            services.AddScoped<IPersonProjectHistoryService, PersonProjectHistoryService>();
         }
     }
 }

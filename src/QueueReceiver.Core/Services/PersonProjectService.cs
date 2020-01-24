@@ -14,7 +14,6 @@ namespace QueueReceiver.Core.Services
         private readonly IPersonRestrictionRoleRepository _personRestrictionRoleRepository;
         private readonly IRestrictionRoleRepository _restrictionRoleRepository;
         private readonly IPersonProjectHistoryRepository _personProjectHistoryRepository;
-        private readonly IPersonProjectHistoryService _personProjectHistoryService;
 
         public PersonProjectService(
             IPersonProjectRepository personProjectRepository,
@@ -23,8 +22,7 @@ namespace QueueReceiver.Core.Services
             IUserGroupRepository userGroupRepository,
             IPersonRestrictionRoleRepository personRestrictionRoleRepository,
             IRestrictionRoleRepository restrictionRoleRepository,
-            IPersonProjectHistoryRepository personProjectHistoryRepository,
-            IPersonProjectHistoryService personProjectHistoryService
+            IPersonProjectHistoryRepository personProjectHistoryRepository
         )
         {
             _personProjectRepository = personProjectRepository;
@@ -34,7 +32,6 @@ namespace QueueReceiver.Core.Services
             _personRestrictionRoleRepository = personRestrictionRoleRepository;
             _restrictionRoleRepository = restrictionRoleRepository;
             _personProjectHistoryRepository = personProjectHistoryRepository;
-            _personProjectHistoryService = personProjectHistoryService;
         }
 
         public async Task GiveProjectAccessToPlant(long personId, string plantId)
@@ -42,7 +39,7 @@ namespace QueueReceiver.Core.Services
             var updated = false;
             var unvoided = false;
 
-            var personProjectHistory = _personProjectHistoryService.CreatePersonProjectHistory(personId);
+            var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory(personId);
             var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
 
             projects.ForEach(async project =>
@@ -73,18 +70,18 @@ namespace QueueReceiver.Core.Services
 
                 projects.ForEach(p =>
                 {
-                    _personProjectHistoryService.LogAddAccess(personId, personProjectHistory, p.ProjectId);
+                    PersonProjectHistoryHelper.LogAddAccess(personId, personProjectHistory, p.ProjectId);
 
                     if (p.IsMainProject)
                     {
-                        _personProjectHistoryService.LogDefaultUserGroup(personId, personProjectHistory, p.ProjectId);
+                        PersonProjectHistoryHelper.LogDefaultUserGroup(personId, personProjectHistory, p.ProjectId);
                     }
                 });
             }
 
             if (unvoided)
             {
-                projects.ForEach(p => _personProjectHistoryService.LogUnvoidProjects(personId, personProjectHistory, p.ProjectId));
+                projects.ForEach(p => PersonProjectHistoryHelper.LogUnvoidProjects(personId, personProjectHistory, p.ProjectId));
             }
 
             if (unvoided || updated)
@@ -95,9 +92,9 @@ namespace QueueReceiver.Core.Services
 
         public void RemoveAccessToPlant(long personId, string plantId)
         {
-            var personProjectHistory = _personProjectHistoryService.CreatePersonProjectHistory(personId);
+            var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory(personId);
             var projects = _personProjectRepository.VoidPersonProjects(plantId, personId).Select(pp=> pp.Project!).ToList();
-            projects.ForEach(p => _personProjectHistoryService.LogVoidProjects(personId, personProjectHistory, p.ProjectId));
+            projects.ForEach(p => PersonProjectHistoryHelper.LogVoidProjects(personId, personProjectHistory, p.ProjectId));
         }
     }
 }
