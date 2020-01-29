@@ -68,12 +68,14 @@ stages:
         if (!$i) {Write-Host "invalid filepath or file is empty"}
         else {Write-Host "File validated OK"}
 
-        $package = Select-Xml -Path $path -xPath $xPath | Select-Object -ExpandProperty Node | where {$_.VersionPrefix -eq "$element"} # Make sure $_.VersionPrefix to the correct value for the setting you want to retrieve
-        if (!$package) {Write-Host "Could not read xml value"} # Validate if value can be read from xml
+        $xmlData = [xml](Get-Content $path) # Get content from xml file
+
+        $version = ($xmlData.ChildNodes.SelectNodes("$xPath") | Select-Object $element).$element
+        if (!$version) {Write-Host "Could not read xml value"} # Validates if value can be read from xml
 
         # Set variable
-        "##vso[task.setvariable variable=${{ variables.variableName }};isOutput=true]$($package.Version)"
-        Write-Host "Setting variable named ${{ variables.variableName }} with value $($package.Version) "
+        "##vso[task.setvariable variable=${{ variables.variableName }};isOutput=true]$($version)"
+        Write-Host "Setting variable named ${{ variables.variableName }} with value $($version) "
       name: getVersion # Use as prefix in variable referance. Example $(getVersion.packageVersion)
 
   - job:
