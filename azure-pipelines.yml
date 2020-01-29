@@ -68,7 +68,7 @@ stages:
         if (!$i) {Write-Host "invalid filepath or file is empty"}
         else {Write-Host "File validated OK"}
 
-        $package = Select-Xml -Path $path -xPath $xPath | Select-Object -ExpandProperty Node | where {$_.Include -eq "$element"}
+        $package = Select-Xml -Path $path -xPath $xPath | Select-Object -ExpandProperty Node | where {$_.VersionPrefix -eq "$element"} # Make sure $_.VersionPrefix to the correct value for the setting you want to retrieve
         if (!$package) {Write-Host "Could not read xml value"} # Validate if value can be read from xml
 
         # Set variable
@@ -78,6 +78,7 @@ stages:
 
   - job:
     displayName: 
+    dependsOn: getVersion
     pool:
       vmImage: $(vmImageName)
     steps:
