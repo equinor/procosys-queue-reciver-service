@@ -48,16 +48,6 @@ stages:
      )
     )
   jobs:
-  - job: 'getVersion'
-    variables:
-      filePath: 'src/QueueReceiver.Worker/QueueReceiver.Worker.csproj' # Relative path in the repo. Example: project/src/worker.csproj
-      node: '/Project/PropertyGroup' # Name of the xml node. Example: /Project/ItemGroup/PackageReference
-      nodeElement: 'VersionPrefix' # Name of the package. Example: "Microsoft.Extensions.Hosting.Abstractions"
-      variableName: 'packageVersion' # Name of the pipeline variable used as suffix in variable referenace. Example $(getVersion.packageVersion)
-    pool: 
-      vmImage: 'windows-latest'
-    steps:
-
   - job:
     displayName: 
     dependsOn: getVersion
