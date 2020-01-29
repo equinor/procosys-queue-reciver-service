@@ -58,11 +58,14 @@ stages:
       vmImage: 'windows-latest'
     steps:
     - powershell: |
-        # Set powershell variables and get json value
-        $path = "${{ variables.filePath }}"
-        $xPath = "${{ variables.node }}"
-        $element = "${{ variables.nodeElement }}"
+        # Set powershell variables
+        $path = "src/QueueReceiver.Worker/QueueReceiver.Worker.csproj"
+        $xPath = "/Project/PropertyGroup"
+        $element = "VersionPrefix"
+        $variableName = "packageVersion" # Name of the pipeline variable used as suffix in variable referenace. Example $(getVersion.packageVersion)
 
+        # Get version from XML file
+        
         # Check if file contains data
         $i = Get-Content $path
         if (!$i) {Write-Host "invalid filepath or file is empty"}
@@ -74,8 +77,8 @@ stages:
         if (!$version) {Write-Host "Could not read xml value"} # Validates if value can be read from xml
 
         # Set variable
-        "##vso[task.setvariable variable=${{ variables.variableName }};isOutput=true]$($version)"
-        Write-Host "Setting variable named ${{ variables.variableName }} with value $($version) "
+        "##vso[task.setvariable variable=$variableName;isOutput=true]$($version)"
+        Write-Host "Setting variable named $variableName with value $($version) "
       name: getVersion # Use as prefix in variable referance. Example $(getVersion.packageVersion)
 
   - job:
