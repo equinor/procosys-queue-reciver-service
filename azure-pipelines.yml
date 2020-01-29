@@ -86,7 +86,7 @@ stages:
       displayName: 'dotnet publish $(buildConfiguration)'
     - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -p:NuspecProperties=version=$(getVersion.packageVersion) -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\releases
       displayName: 'Create NuGet Package - Release Version'
-    - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -p:NuspecProperties=version=1.0.4-"$(Build.BuildNumber)" -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\prereleases
+    - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -p:NuspecProperties=version=$(getVersion.packageVersion)-"$(Build.BuildNumber)" -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\prereleases
       displayName: 'Create NuGet Package - Prerelease Version'
     
     - publish: '$(Build.ArtifactStagingDirectory)/packages'
