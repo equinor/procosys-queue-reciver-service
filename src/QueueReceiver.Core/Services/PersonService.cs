@@ -36,7 +36,22 @@ namespace QueueReceiver.Core.Services
                                                                 aadPerson.MobileNumber,
                                                                 aadPerson.GivenName,
                                                                 aadPerson.Surname);
-            if(person != null)
+
+            //Find by only full name and set reconcile?
+
+
+            //find by username/email/shortname and set reconcile?
+
+            if(person != null && person.Oid !=null)
+            {
+                //TODO
+                //reconsile
+                //Create person?
+
+
+            }
+
+            else if(person != null)
             {
                 person.Oid = aadPerson.Oid;
             }
