@@ -21,8 +21,7 @@ namespace QueueReceiver.Core.Models
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }
-        [Column("MOBILEPHONENO")]
-        public string? MobilePhoneNumber { get; set; }
 
+        public string? MobilePhoneNumber { get; set; }
     }
 }

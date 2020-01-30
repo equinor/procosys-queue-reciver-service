@@ -29,13 +29,12 @@ namespace QueueReceiver.Infrastructure.Repositories
            mobileNumber = mobileNumber.Replace(" ", "");
 
             return await _persons.FirstOrDefaultAsync(p =>
-            p.MobilePhoneNumber != null
-             &&  (mobileNumber.Equals(p.MobilePhoneNumber.Replace(" ", ""))
-                || mobileNumber.Equals("+47" + p.MobilePhoneNumber.Replace(" ", "")))
-             && givenName.Equals(p.FirstName)
-             && surname.Equals(p.LastName));
+                p.MobilePhoneNumber != null
+                &&  (mobileNumber.Equals(p.MobilePhoneNumber.Replace(" ", ""))
+                    || mobileNumber.Equals("+47" + p.MobilePhoneNumber.Replace(" ", "")))
+                && givenName.Equals(p.FirstName)
+                && surname.Equals(p.LastName));
         }
-
 
         public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids)
         {
@@ -46,7 +45,6 @@ namespace QueueReceiver.Infrastructure.Repositories
         public async Task<Person?> FindByUserOid(string userOid) =>
            await _persons.FirstOrDefaultAsync(person =>
                 userOid.Equals(person.Oid, OrdinalIgnoreCase));
-
     }
 }
 

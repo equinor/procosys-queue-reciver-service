@@ -25,20 +25,20 @@ namespace QueueReceiver.Core.Services
                 return person;
             }
 
-            var aadPerson = await _graphService.GetPersonByOid(userOid);
+            var adPerson = await _graphService.GetPersonByOid(userOid);
 
-            if (aadPerson == null || aadPerson.MobileNumber == null || aadPerson.GivenName == null || aadPerson.Surname == null)
+            if (adPerson == null || adPerson.MobileNumber == null || adPerson.GivenName == null || adPerson.Surname == null)
             {
                 return null;
             }
 
             person = await _personRepository.FindByMobileNumberAndName(
-                                                                aadPerson.MobileNumber,
-                                                                aadPerson.GivenName,
-                                                                aadPerson.Surname);
+                                                                adPerson.MobileNumber,
+                                                                adPerson.GivenName,
+                                                                adPerson.Surname);
             if(person != null)
             {
-                person.Oid = aadPerson.Oid;
+                person.Oid = adPerson.Oid;
             }
             return person;
         }
@@ -46,7 +46,9 @@ namespace QueueReceiver.Core.Services
         public async Task FindAndUpdate(AdPerson aadPerson)
         {
             if (aadPerson.MobileNumber == null || aadPerson.GivenName == null || aadPerson.Surname == null)
+            {
                 return;
+            }
 
             Person? person = await _personRepository.FindByMobileNumberAndName(
                                                                 aadPerson.MobileNumber,
@@ -93,9 +95,7 @@ namespace QueueReceiver.Core.Services
                     });
         }
 
-        public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids)
-        {
-            return _personRepository.GetAllNotInDb(oids);
-        }
+        public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids) 
+            => _personRepository.GetAllNotInDb(oids);
     }
 }

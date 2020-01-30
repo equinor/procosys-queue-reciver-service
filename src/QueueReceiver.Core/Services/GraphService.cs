@@ -44,8 +44,7 @@ namespace QueueReceiver.Core.Services
         public async Task<AdPerson?> GetPersonByOid(string userOid)
         {
             var graphClient = await CreateClient();
-            try
-            {
+         
                 _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
                 var user = await graphClient.Users[userOid].Request().GetAsync();
                 var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
@@ -54,13 +53,6 @@ namespace QueueReceiver.Core.Services
                     Surname = user.Surname
                 };
                 return adPerson;
-            }
-            catch (Exception e)
-            {
-                _log.LogError(e.Message);
-            }
-
-            return null;
         }
 
         private async Task<GraphServiceClient> CreateClient()
