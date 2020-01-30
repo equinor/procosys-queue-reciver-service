@@ -1,8 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockQueryable.Moq;
 using Moq;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.EntityConfiguration;
+using QueueReceiver.Infrastructure.Data;
 using QueueReceiver.Infrastructure.Repositories;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +52,7 @@ namespace QueueReceiver.Infrastructure.UnitTests.Repositories
             };
 
             var mockSet = projects.AsQueryable().BuildMockDbSet();
-            var mockContext = new Mock<QueueReceiverServiceContext>();
+            var mockContext = new Mock<QueueReceiverServiceContext>(new DbContextOptions<QueueReceiverServiceContext>());
             mockContext.Setup(cxt => cxt.Projects).Returns(mockSet.Object);
 
             var repository = new ProjectRepository(mockContext.Object);

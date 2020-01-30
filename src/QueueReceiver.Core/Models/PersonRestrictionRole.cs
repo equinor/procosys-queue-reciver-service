@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace QueueReceiver.Core.Models
+﻿namespace QueueReceiver.Core.Models
 {
-    [Table("PERSONRESTRICTIONROLE")]
     public class PersonRestrictionRole
     {
         public PersonRestrictionRole(string plantId, string restrictionRole, long personId)
@@ -12,13 +9,10 @@ namespace QueueReceiver.Core.Models
             PersonId = personId;
         }
 
-        [Column("RESTRICTIONROLE")]
-        public string RestrictionRole { get; set; }
+        public string RestrictionRole { get; }
 
-        [Column("PERSON_ID")]
-        public long PersonId { get; set; }
+        public long PersonId { get; }
 
-        [Column("PROJECTSCHEMA")]
-        public string PlantId { get; set; }
+        public string PlantId { get; }
     }
 }

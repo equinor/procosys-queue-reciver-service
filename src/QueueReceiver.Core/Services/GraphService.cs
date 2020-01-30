@@ -25,7 +25,7 @@ namespace QueueReceiver.Core.Services
         {
             AuthenticationResult auth = await GetAccessToken();
 
-            var graphClient = new GraphServiceClient(
+            var graphClient = new GraphServiceClient( //TODO: Don't new up here, accept interface through DI to make it testable.
                 new DelegateAuthenticationProvider(
                     (requestMessage) =>
                     {

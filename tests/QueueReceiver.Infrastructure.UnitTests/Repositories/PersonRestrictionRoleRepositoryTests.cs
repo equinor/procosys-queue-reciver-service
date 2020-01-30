@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -6,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.EntityConfiguration;
+using QueueReceiver.Infrastructure.Data;
 using QueueReceiver.Infrastructure.Repositories;
 
 namespace QueueReceiver.UnitTests.Infrastructure.Repositories
@@ -22,7 +23,7 @@ namespace QueueReceiver.UnitTests.Infrastructure.Repositories
         public async Task AddSync_DoesNothing_IfRoleAlreadyExists()
         {
             //Arrange
-            var mockContext = new Mock<QueueReceiverServiceContext>();
+            var mockContext = new Mock<QueueReceiverServiceContext>(new DbContextOptions<QueueReceiverServiceContext>());
             mockContext.Setup(cxt => cxt.PersonRestrictionRoles
                     .Find(plantId, restrictionRole, personId))
                     .Returns(new PersonRestrictionRole(plantId, restrictionRole, personId));

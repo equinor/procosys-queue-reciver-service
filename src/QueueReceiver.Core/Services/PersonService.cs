@@ -29,7 +29,7 @@ namespace QueueReceiver.Core.Services
 
             if (adPerson == null)
             {
-                return person;
+                return null;
             }
 
             person = await FindUserByEmailOrUserName(adPerson);
