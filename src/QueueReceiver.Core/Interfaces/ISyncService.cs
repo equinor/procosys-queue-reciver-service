@@ -2,7 +2,7 @@
 
 namespace QueueReceiver.Core.Interfaces
 {
-   public interface ISyncService
+    public interface ISyncService
     {
         Task ExcecuteOidSync();
     }

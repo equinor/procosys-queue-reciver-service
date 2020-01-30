@@ -92,7 +92,7 @@ namespace QueueReceiver.Core.Services
             {
                 try
                 {
-                return await _graphService.GetPersonByOid(m);
+                    return await _graphService.GetPersonByOid(m);
                 }
                 catch (Exception e)
                 {
@@ -112,13 +112,13 @@ namespace QueueReceiver.Core.Services
                 int count = ((resultList.Count - i) < batchSize) ? resultList.Count - i - 1 : batchSize;
 
                 sw.Restart();
-                Console.WriteLine($"Adding from {i} to {i+count}");
-                foreach (var aadPerson in resultList.GetRange(i,count))
+                Console.WriteLine($"Adding from {i} to {i + count}");
+                foreach (var aadPerson in resultList.GetRange(i, count))
                 {
                     await _personService.FindAndUpdate(aadPerson);
                 }
 
-                Console.Write($"Starting save  from {i} to {i+count} ");
+                Console.Write($"Starting save  from {i} to {i + count} ");
                 var added = await _unitOfWork.SaveChangesAsync();
                 Console.WriteLine($" added {added} persons with oid to the db :  {sw.ElapsedMilliseconds} ms");
             }

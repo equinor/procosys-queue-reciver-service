@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GroupSyncer
 {
-   public class Program
+    public class Program
     {
         static async Task Main(string[] args)
         {

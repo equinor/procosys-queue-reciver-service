@@ -8,7 +8,7 @@ namespace QueueReceiver.Core.Interfaces
     {
         Task<Person?> FindByUserOid(string userOid);
         //Task<Person> FindByUserEmail(string userEmail);
-       // Task<Person> FindByUsername(string userName);
+        // Task<Person> FindByUsername(string userName);
         Task<Person> AddPerson(Person person);
         Task<Person?> FindByMobileNumberAndName(string mobileNumber, string givenName, string surname);
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);

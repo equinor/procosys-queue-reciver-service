@@ -26,11 +26,11 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<Person?> FindByMobileNumberAndName(string mobileNumber, string givenName, string surname)
         {
-           mobileNumber = mobileNumber.Replace(" ", "");
+            mobileNumber = mobileNumber.Replace(" ", "");
 
             return await _persons.FirstOrDefaultAsync(p =>
                 p.MobilePhoneNumber != null
-                &&  (mobileNumber.Equals(p.MobilePhoneNumber.Replace(" ", ""))
+                && (mobileNumber.Equals(p.MobilePhoneNumber.Replace(" ", ""))
                     || mobileNumber.Equals("+47" + p.MobilePhoneNumber.Replace(" ", "")))
                 && givenName.Equals(p.FirstName)
                 && surname.Equals(p.LastName));

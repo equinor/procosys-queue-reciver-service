@@ -44,15 +44,15 @@ namespace QueueReceiver.Core.Services
         public async Task<AdPerson?> GetPersonByOid(string userOid)
         {
             var graphClient = await CreateClient();
-         
-                _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
-                var user = await graphClient.Users[userOid].Request().GetAsync();
-                var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
-                {
-                    GivenName = user.GivenName,
-                    Surname = user.Surname
-                };
-                return adPerson;
+
+            _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
+            var user = await graphClient.Users[userOid].Request().GetAsync();
+            var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
+            {
+                GivenName = user.GivenName,
+                Surname = user.Surname
+            };
+            return adPerson;
         }
 
         private async Task<GraphServiceClient> CreateClient()
