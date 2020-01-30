@@ -17,7 +17,7 @@ namespace QueueReceiver.Core.Services
             _graphService = graphService;
         }
 
-        public async Task<Person?> FindOrUpdate(string userOid)
+        public async Task<Person?> UpdateWithOidIfNotFound(string userOid)
         {
             var person = await _personRepository.FindByUserOid(userOid);
             if(person != null)
@@ -27,7 +27,7 @@ namespace QueueReceiver.Core.Services
 
             var aadPerson = await _graphService.GetPersonByOid(userOid);
 
-            if (aadPerson.MobileNumber == null || aadPerson.GivenName == null || aadPerson.Surname == null)
+            if (aadPerson == null || aadPerson.MobileNumber == null || aadPerson.GivenName == null || aadPerson.Surname == null)
             {
                 return null;
             }

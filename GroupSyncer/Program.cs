@@ -6,7 +6,7 @@ using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
-using QueueReceiver.Infrastructure.EntityConfiguration;
+using QueueReceiver.Infrastructure.Data;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -35,7 +35,7 @@ namespace GroupSyncer
                 .AddSingleton(graphSettings)
                 .AddServices()
                 .AddRepositories()
-                .AddDbContext(config)
+                .AddDbContext(config["ConnectionString"])
                 .BuildServiceProvider();
 
             var syncService = services.GetService<ISyncService>();

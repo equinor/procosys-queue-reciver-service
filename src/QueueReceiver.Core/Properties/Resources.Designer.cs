@@ -61,6 +61,15 @@ namespace QueueReceiver.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adding access for person with id: {0}, to plant {1}.
+        /// </summary>
+        internal static string AddAccess {
+            get {
+                return ResourceManager.GetString("AddAccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Group not relevant, removing message from queue.
         /// </summary>
         internal static string GroupDoesNotExist {

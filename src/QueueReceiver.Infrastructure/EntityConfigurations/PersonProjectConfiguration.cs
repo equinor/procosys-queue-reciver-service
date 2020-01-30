@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using QueueReceiver.Core.Models;
 
-namespace QueueReceiver.Infrastructure.EntityConfiguration
+namespace QueueReceiver.Infrastructure.EntityConfigurations
 {
     public class PersonProjectConfiguration : IEntityTypeConfiguration<PersonProject>
     {
@@ -17,6 +17,12 @@ namespace QueueReceiver.Infrastructure.EntityConfiguration
                 .HasConversion(
                     b => b ? 'Y' : 'N',
                     c => c.Equals('Y'));
+
+            builder.ToTable("PERSONPROJECT");
+            builder.Property(pp => pp.ProjectId).HasColumnName("PROJECT_ID");
+            builder.Property(pp => pp.PersonId).HasColumnName("PERSON_ID");
+            builder.Property(pp => pp.CreatedById).HasColumnName("CREATEDBY_ID");
+            builder.Property(pp => pp.IsVoided).HasColumnName("ISVOIDED");
         }
     }
 }

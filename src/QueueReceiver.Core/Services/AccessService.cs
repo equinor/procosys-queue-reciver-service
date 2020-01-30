@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using QueueReceiver.Core.Properties;
 using System.Globalization;
+using System;
 
 namespace QueueReceiver.Core.Services
 {
@@ -46,13 +47,13 @@ namespace QueueReceiver.Core.Services
 
           var syncPersonTableTasks = accessInfo.Members.Select(async member =>
             {
-                if (!member.ShouldRemove)
+                if (member.ShouldVoid)
                 {
-                   await _personService.CreateIfNotExist(member.UserOid);
+                    await _personService.UpdateWithOidIfNotFound(member.UserOid);
                 }
                 else
                 {
-                    await _personService.FindOrUpdate(member.UserOid);
+                   await _personService.CreateIfNotExist(member.UserOid);
                 }
             });
             await Task.WhenAll(syncPersonTableTasks);
@@ -60,13 +61,13 @@ namespace QueueReceiver.Core.Services
 
             var syncAccessTasks = accessInfo.Members.Select(async member =>
             {
-                if (member.ShouldRemove)
+                if (member.ShouldVoid)
                 {
-                    await RemoveAccess(member, plantId);
+                    await RemoveAccess(member.UserOid, plantId);
                 }
                 else
                 {
-                    await GiveAccess(member, plantId);
+                    await GiveAccess(member.UserOid, plantId);
                 }
             });
 
@@ -74,9 +75,9 @@ namespace QueueReceiver.Core.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
-        private async Task RemoveAccess(Member member, string plantId)
+        private async Task RemoveAccess(string userOid, string plantId)
         {
-            Person? person = await _personService.FindByOid(member.UserOid);
+            Person? person = await _personService.FindByOid(userOid);
 
             if (person == null)
             {
@@ -89,16 +90,16 @@ namespace QueueReceiver.Core.Services
              _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
-        private async Task GiveAccess(Member member, string plantId)
+        private async Task GiveAccess(string userOid, string plantId)
         {
-            Person? person = await _personService.FindByOid(member.UserOid);
+            Person? person = await _personService.FindByOid(userOid);
 
             if (person == null)
             {
-                _logger.LogError(Resources.PersonWasNotFoundOrCreated,member.UserOid);
+                _logger.LogError(Resources.PersonWasNotFoundOrCreated, userOid);
                 return;
             }
-            _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantId}");
+            _logger.LogInformation(Resources.AddAccess, person.Id, plantId);
             await _personProjectService.GiveProjectAccessToPlant(person.Id, plantId);
         }
 

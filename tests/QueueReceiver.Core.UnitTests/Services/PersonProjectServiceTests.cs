@@ -18,8 +18,8 @@ namespace QueueReceiver.Core.UnitTests.Services
             Mock<IUserGroupRepository>,
             Mock<IPersonRestrictionRoleRepository>,
             Mock<IRestrictionRoleRepository>,
-            Mock<IPersonProjectHistoryRepository>,
-            Mock<IPersonProjectHistoryService>)
+            Mock<IPersonProjectHistoryRepository>
+            )
 
             Factory()
         {
@@ -30,7 +30,6 @@ namespace QueueReceiver.Core.UnitTests.Services
             var personRestrictionRoleRepository = new Mock<IPersonRestrictionRoleRepository>();
             var restrictionRoleRepository = new Mock<IRestrictionRoleRepository>();
             var personProjectHistoryRepository = new Mock<IPersonProjectHistoryRepository>();
-            var personProjectHistoryService = new Mock<IPersonProjectHistoryService>();
 
             var service = new PersonProjectService(
                 personProjectRepository.Object,
@@ -39,11 +38,10 @@ namespace QueueReceiver.Core.UnitTests.Services
                 userGroupRepository.Object,
                 personRestrictionRoleRepository.Object,
                 restrictionRoleRepository.Object,
-                personProjectHistoryRepository.Object,
-                personProjectHistoryService.Object);
+                personProjectHistoryRepository.Object);
 
             return (service, personProjectRepository, projectRepository, personUserGroupRepository, userGroupRepository,
-                personRestrictionRoleRepository, restrictionRoleRepository, personProjectHistoryRepository, personProjectHistoryService);
+                personRestrictionRoleRepository, restrictionRoleRepository, personProjectHistoryRepository);
         }
 
         [TestMethod]
@@ -54,7 +52,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const long personId = 2;
             const long projectId = 15;
 
-            var(service, personProjectRepository, projectRepository, _, _, _, _, _, _) = Factory();
+            var(service, personProjectRepository, projectRepository, _, _, _, _, _) = Factory();
 
             projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
                 .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
@@ -74,7 +72,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const long personId = 2;
             const long projectId = 4;
 
-            var (service, personProjectRepository, projectRepository, _, _, _, _, _, _) = Factory();
+            var (service, personProjectRepository, projectRepository, _, _, _, _, _) = Factory();
 
             personProjectRepository.Setup(ppr => ppr.VoidPersonProjects(plantId,personId))
                 .Returns(new List<PersonProject>

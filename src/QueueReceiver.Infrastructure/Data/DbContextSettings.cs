@@ -1,4 +1,4 @@
-﻿namespace QueueReceiver.Infrastructure.EntityConfiguration
+﻿namespace QueueReceiver.Infrastructure.Data
 {
     public class DbContextSettings
     {

@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.EntityConfiguration;
+using QueueReceiver.Infrastructure.Data;
 using QueueReceiver.Infrastructure.Repositories;
 using System.Threading.Tasks;
 
@@ -22,7 +23,7 @@ namespace QueueReceiver.Infrastructure.UnitTests.Repositories
         public async Task AddAsync_DoesNothing_IfGroupAlreadyExists()
         {
             //Arrange
-            var mockContext = new Mock<QueueReceiverServiceContext>();
+            var mockContext = new Mock<QueueReceiverServiceContext>(new DbContextOptions<QueueReceiverServiceContext>());
             mockContext.Setup(cxt => cxt.PersonUserGroups
                     .Find(plantId, personId, userGroupId))
                     .Returns(new PersonUserGroup(personId, userGroupId, plantId, createdById));

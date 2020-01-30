@@ -1,16 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace QueueReceiver.Core.Models
+﻿namespace QueueReceiver.Core.Models
 {
-    [Table("PERSONPROJECT_HISTORY_OP")]
     public class PersonProjectHistoryOperation
     {
-        #pragma warning disable CS8618 // Non-nullable field needed for EF core.
-        public PersonProjectHistoryOperation()
-        {
-        }
-        #pragma warning restore CS8618 
-
         public PersonProjectHistoryOperation(
             string operationType,
             long projectId,
@@ -25,33 +16,29 @@ namespace QueueReceiver.Core.Models
             PersonProjectHistory = personProjectHistory;
         }
 
-        [Column("PERSONPROJECT_HISTORY_OP_ID")]
         public long Id { get; set; }
 
-        [Column("OPERATION_TYPE")]
-        public string OperationType { get; set; }
+        public string OperationType { get; internal set; }
 
-        [Column("OLD_VALUE")]
         public string? OldValue { get; set; }
 
-        [Column("NEW_VALUE")]
         public string? NewValue { get; set; }
 
-        [Column("FIELD_NAME")]
         public string? FieldName { get; set; }
 
-        [Column("PROJECT_ID")]
-        public long ProjectId { get; set; }
+        public long ProjectId { get; internal set; }
 
-        [Column("PERSON_ID")]
-        public long PersonId { get; set; }
+        public long PersonId { get; internal set; }
 
-        [Column("LAST_UPDATEDBYUSER")]
-        public string UpdatedByUser { get; set; }
+        public string UpdatedByUser { get; internal set; }
 
-        [Column("PERSONPROJECT_HISTORY_ID")]
         public long PersonProjectHistoryId { get; set; }
 
-        public PersonProjectHistory PersonProjectHistory { get; set; }
+        public PersonProjectHistory PersonProjectHistory { get; internal set; }
+
+        #pragma warning disable CS8618 //ORM.
+        protected PersonProjectHistoryOperation()
+        {
+        }
     }
 }

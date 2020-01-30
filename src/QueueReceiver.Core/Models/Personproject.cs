@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace QueueReceiver.Core.Models
+﻿namespace QueueReceiver.Core.Models
 {
-    [Table("PERSONPROJECT")]
     public class PersonProject
     {
         public PersonProject(long projectId, long personId, long createdById)
@@ -12,16 +9,12 @@ namespace QueueReceiver.Core.Models
             CreatedById = createdById;
         }
 
-        [Column("PROJECT_ID")]
-        public long ProjectId { get; set; }
+        public long ProjectId { get; }
 
-        [Column("PERSON_ID")]
-        public long PersonId { get; set; }
+        public long PersonId { get; }
 
-        [Column("CREATEDBY_ID")]
-        public long CreatedById { get; set; }
+        public long CreatedById { get; }
 
-        [Column("ISVOIDED")]
         public bool IsVoided { get; set; }
 
         public virtual Project? Project { get; set; }

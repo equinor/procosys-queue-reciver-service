@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
-using QueueReceiver.Infrastructure.EntityConfiguration;
+using QueueReceiver.Infrastructure.Data;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Infrastructure.Repositories

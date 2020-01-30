@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Settings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -44,19 +45,26 @@ namespace QueueReceiver.Core.Services
             //return result;
         }
 
-        public async Task<AdPerson> GetPersonByOid(string userOid)
+        public async Task<AdPerson?> GetPersonByOid(string userOid)
         {
             var graphClient = await CreateClient();
-
-            _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
-            var user = await graphClient.Users[userOid].Request().GetAsync();
-            var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
+            try
             {
-                GivenName = user.GivenName,
-                Surname = user.Surname,
-                MobileNumber = user.MobilePhone
-            };
-            return adPerson;
+                _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
+                var user = await graphClient.Users[userOid].Request().GetAsync();
+                var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
+                {
+                    GivenName = user.GivenName,
+                    Surname = user.Surname
+                };
+                return adPerson;
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e.Message);
+            }
+
+            return null;
         }
 
         private async Task<GraphServiceClient> CreateClient()

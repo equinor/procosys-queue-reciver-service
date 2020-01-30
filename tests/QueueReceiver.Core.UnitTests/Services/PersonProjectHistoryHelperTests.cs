@@ -7,25 +7,17 @@ using QueueReceiver.Core.Services;
 namespace QueueReceiver.Core.UnitTests.Services
 {
     [TestClass]
-    public class PersonProjectHistoryServiceTests
+    public class PersonProjectHistoryHelperTests
     {
-        private static PersonProjectHistoryService 
-
-            Factory()
-        {
-            var service = new PersonProjectHistoryService();
-            return service;
-        }
 
         [TestMethod]
         public void LogAddAccess()
         {
             //Arrange
-            var service = Factory();
             var personProjectHistory = new PersonProjectHistory() { Id = 123 };
 
             //Act
-            service.LogAddAccess(0001, personProjectHistory, 321);
+            PersonProjectHistoryHelper.LogAddAccess(0001, personProjectHistory, 321);
 
             //Assert
             var personProjectHistoryOperation = personProjectHistory.PersonProjectHistoryOperations.FirstOrDefault();
@@ -42,11 +34,10 @@ namespace QueueReceiver.Core.UnitTests.Services
         public void LogDefaultUserGroup()
         {
             //Arrange
-            var service = Factory();
             var personProjectHistory = new PersonProjectHistory() { Id = 234 };
 
             //Act
-            service.LogDefaultUserGroup(0002, personProjectHistory, 432);
+            PersonProjectHistoryHelper.LogDefaultUserGroup(0002, personProjectHistory, 432);
 
             //Assert
             var personProjectHistoryOperation = personProjectHistory.PersonProjectHistoryOperations.FirstOrDefault();
@@ -63,11 +54,10 @@ namespace QueueReceiver.Core.UnitTests.Services
         public void LogVoidProjects()
         {
             //Arrange
-            var service = Factory();
             var personProjectHistory = new PersonProjectHistory() { Id = 345 };
 
             //Act
-            service.LogVoidProjects(0003, personProjectHistory, 543);
+            PersonProjectHistoryHelper.LogVoidProjects(0003, personProjectHistory, 543);
 
             //Assert
             var personProjectHistoryOperation = personProjectHistory.PersonProjectHistoryOperations.FirstOrDefault();
@@ -84,11 +74,10 @@ namespace QueueReceiver.Core.UnitTests.Services
         public void LogUnvoidProjects()
         {
             //Arrange
-            var service = Factory();
             var personProjectHistory = new PersonProjectHistory() { Id = 456 };
 
             //Act
-            service.LogUnvoidProjects(0004, personProjectHistory, 654);
+            PersonProjectHistoryHelper.LogUnvoidProjects(0004, personProjectHistory, 654);
 
             //Assert
             var personProjectHistoryOperations = personProjectHistory.PersonProjectHistoryOperations.FirstOrDefault();
