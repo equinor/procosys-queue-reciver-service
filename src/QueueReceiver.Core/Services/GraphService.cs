@@ -23,11 +23,11 @@ namespace QueueReceiver.Core.Services
             _log = logger;
         }
 
-        public async Task<IEnumerable<string>> GetMemberOids(string oid)
+        public async Task<IEnumerable<string>> GetMemberOids(string groupOid)
         {
             var graphClient = await CreateClient();
 
-            var members = await graphClient.Groups[oid].Members
+            var members = await graphClient.Groups[groupOid].Members
                 .Request()
                 .GetAsync();
             var result = members.Select(m => m.Id).ToList();
@@ -39,10 +39,6 @@ namespace QueueReceiver.Core.Services
             }
 
             return result;
-          
-
-            //TODO itterate all pages
-            //return result;
         }
 
         public async Task<AdPerson?> GetPersonByOid(string userOid)
