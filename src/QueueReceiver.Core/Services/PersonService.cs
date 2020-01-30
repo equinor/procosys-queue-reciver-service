@@ -50,7 +50,7 @@ namespace QueueReceiver.Core.Services
                 return;
             }
 
-            Person? person = await _personRepository.FindByMobileNumberAndName(
+            var person = await _personRepository.FindByMobileNumberAndName(
                                                                 aadPerson.MobileNumber,
                                                                 aadPerson.GivenName,
                                                                 aadPerson.Surname);
