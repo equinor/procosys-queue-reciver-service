@@ -37,18 +37,7 @@ namespace QueueReceiver.Core.Services
                                                                 adPerson.GivenName,
                                                                 adPerson.Surname);
 
-            //Find by only full name and set reconcile?
-
-            //find by username/email/shortname and set reconcile?
-
-            if(person?.Oid != null)
-            {
-                //TODO
-                //reconsile
-                //Create person?
-
-            }
-            else if(person != null)
+            if(person != null)
             {
                 person.Oid = adPerson.Oid;
             }
@@ -88,22 +77,38 @@ namespace QueueReceiver.Core.Services
             {
                 throw new Exception($"{userOid} not found in graph. Queue out of sync");
             }
-            /**
-             * The section checking if the user already exists can be removed once the 
-             * database is fully migrated and all users have an OID
-             **/
+
             person = await _personRepository.FindByMobileNumberAndName(adPerson.MobileNumber, adPerson.GivenName, adPerson.Surname);
+
+            if (person?.Oid != null)
+            {
+                return await CreatePerson(adPerson, shouldReconcile: true);
+            }
+
             if (person != null)
             {
                 person.Oid = userOid;
                 return person;
             }
+
+            var shouldReconcile = ShouldReconcile(adPerson);
+            return await CreatePerson(adPerson,shouldReconcile);
+        }
+
+        private bool ShouldReconcile(AdPerson adPerson)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task<Person> CreatePerson(AdPerson adPerson, bool shouldReconcile)
+        {
             return await _personRepository.AddPerson(
                     new Person(adPerson.Username, adPerson.Email)
                     {
                         Oid = adPerson.Oid,
                         FirstName = adPerson.GivenName,
-                        LastName = adPerson.Surname
+                        LastName = adPerson.Surname,
+                        Reconcile = shouldReconcile
                     });
         }
 
