@@ -93,7 +93,7 @@ namespace QueueReceiver.Core.Services
         public void RemoveAccessToPlant(long personId, string plantId)
         {
             var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory(personId);
-            var projects = _personProjectRepository.VoidPersonProjects(plantId, personId).Select(pp=> pp.Project!).ToList();
+            var projects = _personProjectRepository.VoidPersonProjects(plantId, personId).Select(pp => pp.Project!).ToList();
             projects.ForEach(p => PersonProjectHistoryHelper.LogVoidProjects(personId, personProjectHistory, p.ProjectId));
         }
     }

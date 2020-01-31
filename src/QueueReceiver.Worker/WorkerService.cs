@@ -26,7 +26,7 @@ namespace QueueReceiver.Worker
                 scope.ServiceProvider
                     .GetRequiredService<IEntryPointService>();
 
-            _logger.LogInformation($"Worker service at: {DateTimeOffset.Now}" );
+            _logger.LogInformation($"Worker service at: {DateTimeOffset.Now}");
             await entryPointService.InitializeQueue();
 
             while (!stoppingToken.IsCancellationRequested)

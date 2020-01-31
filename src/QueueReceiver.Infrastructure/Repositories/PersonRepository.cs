@@ -26,16 +26,15 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<Person?> FindByMobileNumberAndName(string mobileNumber, string givenName, string surname)
         {
-           mobileNumber = mobileNumber.Replace(" ", "");
+            mobileNumber = mobileNumber.Replace(" ", "");
 
             return await _persons.FirstOrDefaultAsync(p =>
-            p.MobilePhoneNumber != null
-             &&  (mobileNumber.Equals(p.MobilePhoneNumber.Replace(" ", ""))
-                || mobileNumber.Equals("+47" + p.MobilePhoneNumber.Replace(" ", "")))
-             && givenName.Equals(p.FirstName)
-             && surname.Equals(p.LastName));
+                p.MobilePhoneNumber != null
+                && (mobileNumber.Equals(p.MobilePhoneNumber.Replace(" ", ""))
+                    || mobileNumber.Equals("+47" + p.MobilePhoneNumber.Replace(" ", "")))
+                && givenName.Equals(p.FirstName)
+                && surname.Equals(p.LastName));
         }
-
 
         public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids)
         {
@@ -47,23 +46,28 @@ namespace QueueReceiver.Infrastructure.Repositories
            await _persons.FirstOrDefaultAsync(person =>
                 userOid.Equals(person.Oid, OrdinalIgnoreCase));
 
+        public IEnumerable<Person> FindUsersWithMobileNumber(string mobileNumber) =>
+            _persons.Where(person => mobileNumber.Equals(person.MobilePhoneNumber));
+
+        public IEnumerable<Person> FindUsersWithFullName(string firstName, string lastName) =>
+             _persons.Where(person =>
+                firstName.Equals(person.FirstName, OrdinalIgnoreCase)
+                && lastName.Equals(person.LastName,OrdinalIgnoreCase));
+
+        public IEnumerable<Person> FindUsersWithEmail(string userEmail) =>
+             _persons.Where(person =>
+                    userEmail.Equals(person.Email, OrdinalIgnoreCase));
+
+        public async Task<Person> FindByUsername(string userName)
+        {
+            var shortName = userName.Substring(0, userName.IndexOf('@', OrdinalIgnoreCase));
+            return await _persons
+                .SingleOrDefaultAsync(person =>
+                     userName.Equals(person.UserName, OrdinalIgnoreCase)
+                     || shortName.Equals(person.UserName, OrdinalIgnoreCase)
+                     );
+        }
     }
 }
 
-/**
-public async Task<Person> FindByUserEmail(string userEmail) =>
-await _persons.SingleOrDefaultAsync(person =>
-userEmail.Equals(person.Email, OrdinalIgnoreCase));
-
-public async Task<Person> FindByUsername(string userName)
-{
-    var shortName = userName.Substring(0, userName.IndexOf('@', OrdinalIgnoreCase));
-    return await _persons
-        .SingleOrDefaultAsync(person =>
-             userName.Equals(person.UserName, OrdinalIgnoreCase)
-             || shortName.Equals(person.UserName, OrdinalIgnoreCase)
-             );
-}
-
-**/
 

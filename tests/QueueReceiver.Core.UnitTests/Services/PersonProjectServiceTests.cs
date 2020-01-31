@@ -52,7 +52,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const long personId = 2;
             const long projectId = 15;
 
-            var(service, personProjectRepository, projectRepository, _, _, _, _, _) = Factory();
+            var (service, personProjectRepository, projectRepository, _, _, _, _, _) = Factory();
 
             projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
                 .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
@@ -74,11 +74,11 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             var (service, personProjectRepository, projectRepository, _, _, _, _, _) = Factory();
 
-            personProjectRepository.Setup(ppr => ppr.VoidPersonProjects(plantId,personId))
+            personProjectRepository.Setup(ppr => ppr.VoidPersonProjects(plantId, personId))
                 .Returns(new List<PersonProject>
                             { new PersonProject(projectId, personId, 123)
                                 {
-                                    Project = new Project { PlantId = plantId, ProjectId = projectId } 
+                                    Project = new Project { PlantId = plantId, ProjectId = projectId }
                                 }
                              }
                 );

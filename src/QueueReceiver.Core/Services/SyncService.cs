@@ -83,12 +83,24 @@ namespace QueueReceiver.Core.Services
 
             sw.Restart();
             Console.Write("Removing members not already in db members ");
-            var allNotInDb = _personService.GetAllNotInDb(allMembers);
+            var allNotInDb = _personService.GetAllNotInDb(allMembers).ToList();
             Console.WriteLine($"{allMembers.Count - allNotInDb.Count()} removed : {sw.ElapsedMilliseconds} ms");
 
             sw.Restart();
             Console.Write("Finding info on members in graph");
-            var tasks = allNotInDb.Select(async m => await _graphService.GetPersonByOid(m));
+            var tasks = allNotInDb.Select(async m =>
+            {
+                try
+                {
+                    return await _graphService.GetPersonByOid(m);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                }
+
+                return null;
+            });
             var results = await Task.WhenAll(tasks);
             Console.WriteLine($" : {sw.ElapsedMilliseconds} ms");
 
@@ -100,13 +112,13 @@ namespace QueueReceiver.Core.Services
                 int count = ((resultList.Count - i) < batchSize) ? resultList.Count - i - 1 : batchSize;
 
                 sw.Restart();
-                Console.WriteLine($"Adding from {i} to {i+count}");
-                foreach (var aadPerson in resultList.GetRange(i,count))
+                Console.WriteLine($"Adding from {i} to {i + count}");
+                foreach (var aadPerson in resultList.GetRange(i, count))
                 {
                     await _personService.FindAndUpdate(aadPerson);
                 }
 
-                Console.Write($"Starting save  from {i} to {i+count} ");
+                Console.Write($"Starting save  from {i} to {i + count} ");
                 var added = await _unitOfWork.SaveChangesAsync();
                 Console.WriteLine($" added {added} persons with oid to the db :  {sw.ElapsedMilliseconds} ms");
             }
@@ -120,8 +132,9 @@ namespace QueueReceiver.Core.Services
             {
                 Console.WriteLine($"finding members in {oid}");
                 var newMembers = await _graphService.GetMemberOids(oid);
-                Console.WriteLine($" found: {newMembers.Count()}, adding new memebers to set");
-                allMembers.UnionWith(newMembers);
+                var newmemberList = newMembers.ToList();
+                Console.WriteLine($" found: {newmemberList.Count}, adding new memebers to set");
+                allMembers.UnionWith(newmemberList);
             }
             return allMembers;
         }

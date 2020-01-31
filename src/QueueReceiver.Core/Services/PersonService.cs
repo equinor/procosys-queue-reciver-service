@@ -20,40 +20,37 @@ namespace QueueReceiver.Core.Services
         public async Task<Person?> UpdateWithOidIfNotFound(string userOid)
         {
             var person = await _personRepository.FindByUserOid(userOid);
-            if(person != null)
+            if (person != null)
             {
                 return person;
             }
 
-            var aadPerson = await _graphService.GetPersonByOid(userOid);
+            var adPerson = await _graphService.GetPersonByOid(userOid);
 
-            if (aadPerson == null || aadPerson.MobileNumber == null || aadPerson.GivenName == null || aadPerson.Surname == null)
+            if (adPerson == null || adPerson.MobileNumber == null || adPerson.GivenName == null || adPerson.Surname == null)
             {
                 return null;
             }
 
             person = await _personRepository.FindByMobileNumberAndName(
-                                                                aadPerson.MobileNumber,
-                                                                aadPerson.GivenName,
-                                                                aadPerson.Surname);
+                                                                adPerson.MobileNumber,
+                                                                adPerson.GivenName,
+                                                                adPerson.Surname);
 
             //Find by only full name and set reconcile?
 
-
             //find by username/email/shortname and set reconcile?
 
-            if(person != null && person.Oid !=null)
+            if(person?.Oid != null)
             {
                 //TODO
                 //reconsile
                 //Create person?
 
-
             }
-
             else if(person != null)
             {
-                person.Oid = aadPerson.Oid;
+                person.Oid = adPerson.Oid;
             }
             return person;
         }
@@ -61,9 +58,11 @@ namespace QueueReceiver.Core.Services
         public async Task FindAndUpdate(AdPerson aadPerson)
         {
             if (aadPerson.MobileNumber == null || aadPerson.GivenName == null || aadPerson.Surname == null)
+            {
                 return;
+            }
 
-            Person? person = await _personRepository.FindByMobileNumberAndName(
+            var person = await _personRepository.FindByMobileNumberAndName(
                                                                 aadPerson.MobileNumber,
                                                                 aadPerson.GivenName,
                                                                 aadPerson.Surname);
@@ -85,7 +84,7 @@ namespace QueueReceiver.Core.Services
 
             var adPerson = await _graphService.GetPersonByOid(userOid);
 
-            if(adPerson == null)
+            if (adPerson == null)
             {
                 throw new Exception($"{userOid} not found in graph. Queue out of sync");
             }
@@ -93,7 +92,7 @@ namespace QueueReceiver.Core.Services
              * The section checking if the user already exists can be removed once the 
              * database is fully migrated and all users have an OID
              **/
-            person = await _personRepository.FindByMobileNumberAndName(adPerson.MobileNumber,adPerson.GivenName,adPerson.Surname);
+            person = await _personRepository.FindByMobileNumberAndName(adPerson.MobileNumber, adPerson.GivenName, adPerson.Surname);
             if (person != null)
             {
                 person.Oid = userOid;
@@ -109,8 +108,6 @@ namespace QueueReceiver.Core.Services
         }
 
         public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids)
-        {
-            return _personRepository.GetAllNotInDb(oids);
-        }
+            => _personRepository.GetAllNotInDb(oids);
     }
 }

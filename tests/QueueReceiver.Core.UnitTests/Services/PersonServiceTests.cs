@@ -56,7 +56,7 @@ namespace QueueReceiver.Core.UnitTests.Services
                     GivenName = GivenName,
                     Surname = Surname
                 }));
-            _personRepository.Setup(repo => repo.FindByMobileNumberAndName(MobileNo,GivenName,Surname))
+            _personRepository.Setup(repo => repo.FindByMobileNumberAndName(MobileNo, GivenName, Surname))
                 .Returns(Task.FromResult<Person?>(new Person("tull", "tøys") { Id = SomeId }));
 
             //Act

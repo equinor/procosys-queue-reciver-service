@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.FileExtensions;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Services;
@@ -13,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GroupSyncer
 {
-   public class Program
+    public class Program
     {
         static async Task Main(string[] args)
         {

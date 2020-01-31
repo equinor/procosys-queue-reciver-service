@@ -6,6 +6,6 @@ namespace QueueReceiver.Core.Interfaces
     public interface IPlantRepository
     {
         Task<string?> GetPlantIdByOid(string plantOid);
-        IEnumerable<string> GetAllInernalAndAffiliateOids();
+        IEnumerable<string> GetAllInternalAndAffiliateOids();
     }
 }
