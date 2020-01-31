@@ -10,6 +10,6 @@ namespace QueueReceiver.Core.Interfaces
         Task<Person> CreateIfNotExist(string userOid);
         Task<Person?> FindByOid(string userOid);
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
-        Task FindAndUpdate(AdPerson aadPerson);
+        Task<Person?> FindAndUpdate(AdPerson aadPerson);
     }
 }

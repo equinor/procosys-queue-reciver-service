@@ -84,7 +84,7 @@ namespace QueueReceiver.Core.Services
             sw.Restart();
             Console.Write("Removing members not already in db members ");
             var allNotInDb = _personService.GetAllNotInDb(allMembers).ToList();
-            Console.WriteLine($"{allMembers.Count - allNotInDb.Count()} removed : {sw.ElapsedMilliseconds} ms");
+            Console.WriteLine($"{allMembers.Count - allNotInDb.Count} removed : {sw.ElapsedMilliseconds} ms");
 
             sw.Restart();
             Console.Write("Finding info on members in graph");

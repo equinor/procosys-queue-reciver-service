@@ -27,28 +27,14 @@ namespace QueueReceiver.Core.Services
 
             var adPerson = await _graphService.GetPersonByOid(userOid);
 
-            if (adPerson == null || adPerson.MobileNumber == null || adPerson.GivenName == null || adPerson.Surname == null)
-            {
-                return null;
-            }
-
-            person = await _personRepository.FindByMobileNumberAndName(
-                                                                adPerson.MobileNumber,
-                                                                adPerson.GivenName,
-                                                                adPerson.Surname);
-
-            if(person != null)
-            {
-                person.Oid = adPerson.Oid;
-            }
-            return person;
+            return adPerson != null ? await FindAndUpdate(adPerson) : null;
         }
 
-        public async Task FindAndUpdate(AdPerson aadPerson)
+        public async Task<Person?> FindAndUpdate(AdPerson aadPerson)
         {
             if (aadPerson.MobileNumber == null || aadPerson.GivenName == null || aadPerson.Surname == null)
             {
-                return;
+                return null;
             }
 
             var person = await _personRepository.FindByMobileNumberAndName(
@@ -59,6 +45,7 @@ namespace QueueReceiver.Core.Services
             {
                 person.Oid = aadPerson.Oid;
             }
+            return person;
         }
 
         public async Task<Person?> FindByOid(string userOid) => await _personRepository.FindByUserOid(userOid);
@@ -78,7 +65,10 @@ namespace QueueReceiver.Core.Services
                 throw new Exception($"{userOid} not found in graph. Queue out of sync");
             }
 
-            person = await _personRepository.FindByMobileNumberAndName(adPerson.MobileNumber, adPerson.GivenName, adPerson.Surname);
+            person = await _personRepository.FindByMobileNumberAndName(
+                                                            adPerson.MobileNumber,
+                                                            adPerson.GivenName,
+                                                            adPerson.Surname);
 
             if (person?.Oid != null)
             {
@@ -91,13 +81,15 @@ namespace QueueReceiver.Core.Services
                 return person;
             }
 
-            var shouldReconcile = ShouldReconcile(adPerson);
+            var shouldReconcile = await ShouldReconcile(adPerson);
             return await CreatePerson(adPerson,shouldReconcile);
         }
 
-        private bool ShouldReconcile(AdPerson adPerson)
+        private async Task<bool> ShouldReconcile(AdPerson adPerson)
         {
-            throw new NotImplementedException();
+            return await _personRepository.FindByFullName(adPerson.GivenName, adPerson.Surname) != null
+                || await _personRepository.FindByMobileNumber(adPerson.MobileNumber) != null
+                || await _personRepository.FindByUsername(adPerson.Username) != null;
         }
 
         private async Task<Person> CreatePerson(AdPerson adPerson, bool shouldReconcile)

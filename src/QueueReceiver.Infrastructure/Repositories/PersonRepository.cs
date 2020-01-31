@@ -30,8 +30,7 @@ namespace QueueReceiver.Infrastructure.Repositories
 
             return await _persons.FirstOrDefaultAsync(p =>
                 p.MobilePhoneNumber != null
-                && (mobileNumber.Equals(p.MobilePhoneNumber.Replace(" ", ""))
-                    || mobileNumber.Equals("+47" + p.MobilePhoneNumber.Replace(" ", "")))
+                && MobileNumberIsEqal(mobileNumber, p.MobilePhoneNumber)
                 && givenName.Equals(p.FirstName)
                 && surname.Equals(p.LastName));
         }
@@ -46,16 +45,18 @@ namespace QueueReceiver.Infrastructure.Repositories
            await _persons.FirstOrDefaultAsync(person =>
                 userOid.Equals(person.Oid, OrdinalIgnoreCase));
 
-        public IEnumerable<Person> FindUsersWithMobileNumber(string mobileNumber) =>
-            _persons.Where(person => mobileNumber.Equals(person.MobilePhoneNumber));
+        public async Task<Person?> FindByMobileNumber(string mobileNumber) =>
+            await _persons.FirstOrDefaultAsync(p =>
+                p.MobilePhoneNumber != null
+                && MobileNumberIsEqal(mobileNumber, p.MobilePhoneNumber));
 
-        public IEnumerable<Person> FindUsersWithFullName(string firstName, string lastName) =>
-             _persons.Where(person =>
+        public async Task<Person?> FindByFullName(string firstName, string lastName) =>
+            await _persons.FirstOrDefaultAsync(person =>
                 firstName.Equals(person.FirstName, OrdinalIgnoreCase)
                 && lastName.Equals(person.LastName,OrdinalIgnoreCase));
 
-        public IEnumerable<Person> FindUsersWithEmail(string userEmail) =>
-             _persons.Where(person =>
+        public async Task<Person?> FindByEmail(string userEmail) =>
+           await  _persons.FirstOrDefaultAsync(person =>
                     userEmail.Equals(person.Email, OrdinalIgnoreCase));
 
         public async Task<Person> FindByUsername(string userName)
@@ -67,6 +68,9 @@ namespace QueueReceiver.Infrastructure.Repositories
                      || shortName.Equals(person.UserName, OrdinalIgnoreCase)
                      );
         }
+
+        private static bool MobileNumberIsEqal(string a, string b)
+             => a.Equals(b.Replace(" ", "")) || a.Equals("+47" + b.Replace(" ", ""));
     }
 }
 
