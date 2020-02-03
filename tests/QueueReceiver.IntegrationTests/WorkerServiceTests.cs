@@ -42,7 +42,6 @@ namespace QueueReceiver.IntegrationTests
             var queueClient = new QueueClient(connectionString, "intergrationtest");
             queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
 
-
             var accessServiceMock = new Mock<IAccessService>();
             var serviceLocatorMock = new Mock<IServiceLocator>();
             var scopeMock = new Mock<IServiceScope>();
