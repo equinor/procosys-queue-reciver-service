@@ -50,7 +50,7 @@ namespace QueueReceiver.Core.Services
                 projectId,
                 personId,
                 PersonProjectHistoryConstants.UpdatedBy,
-                personProjectHistory) 
+                personProjectHistory)
             {
                 OldValue = oldValue,
                 NewValue = newValue,

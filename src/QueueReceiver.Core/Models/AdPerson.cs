@@ -12,7 +12,8 @@
         public string Oid { get; }
         public string Username { get; }
         public string Email { get; }
-        public string? GivenName { get; set; }
-        public string? Surname { get; set; }
+        public string GivenName { get; set; } = null!;
+        public string Surname { get; set; } = null!;
+        public string MobileNumber { get; set; } = null!;
     }
 }

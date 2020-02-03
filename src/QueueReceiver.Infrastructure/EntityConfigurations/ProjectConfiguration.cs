@@ -10,12 +10,12 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
         {
             builder.ToTable("PROJECT");
             builder.Property(p => p.ProjectId).HasColumnName("PROJECT_ID");
-            builder.Property(p => p.ProjectId).HasColumnName("PROJECTSCHEMA");
+            builder.Property(p => p.PlantId).HasColumnName("PROJECTSCHEMA");
             builder.Property(p => p.IsVoided).HasColumnName("ISVOIDED")
                 .HasConversion(
                     b => b ? 'Y' : 'N',
                     c => c.Equals('Y'));
-            builder.Property(p => p.ProjectId).HasColumnName("PARENT_PROJECT_ID");
+            builder.Property(p => p.ParentProjectId).HasColumnName("PARENT_PROJECT_ID");
             builder.Property(p => p.IsMainProject).HasColumnName("ISMAINPROJECT")
                 .HasConversion(
                 b => b ? 'Y' : 'N',

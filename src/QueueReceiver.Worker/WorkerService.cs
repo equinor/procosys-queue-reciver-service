@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace QueueReceiver.Worker
 {
-    public class Worker : BackgroundService
+    public class WorkerService : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly ILogger<WorkerService> _logger;
         private readonly IServiceProvider _serviceProvider;
 
-        public Worker(ILogger<Worker> logger, IServiceProvider serviceProvider)
+        public WorkerService(ILogger<WorkerService> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
@@ -26,7 +26,7 @@ namespace QueueReceiver.Worker
                 scope.ServiceProvider
                     .GetRequiredService<IEntryPointService>();
 
-            _logger.LogInformation($"Worker service at: {DateTimeOffset.Now}" );
+            _logger.LogInformation($"Worker service at: {DateTimeOffset.Now}");
             await entryPointService.InitializeQueue();
 
             while (!stoppingToken.IsCancellationRequested)
