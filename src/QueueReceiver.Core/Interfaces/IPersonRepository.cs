@@ -13,5 +13,8 @@ namespace QueueReceiver.Core.Interfaces
         Task<Person?> FindByMobileNumberAndName(string mobileNumber, string givenName, string surname);
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
         Task<Person?> FindByMobileNumber(string mobileNumber);
+        Task<Person?> FindByFullName(string firstName, string lastName);
+        Task<Person?> FindByEmail(string userEmail);
+        Task<Person> FindByUsername(string userName);
     }
 }
