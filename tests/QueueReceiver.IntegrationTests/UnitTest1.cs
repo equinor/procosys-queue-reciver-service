@@ -11,6 +11,7 @@ using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
 using QueueReceiver.Infrastructure.Data;
+using QueueReceiver.Worker;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -54,20 +55,19 @@ namespace QueueReceiver.IntegrationTests
             //    personProjectHistoryRepository.Object);
 
             var queueClientMock = new Mock<IQueueClient>(); //TODO
-
-
-            var accessService = new Mock<AccessService>();// (personService, personProjectService, plantService, accessServiceLogger.Object, unitOfWork.Object);
+            var accessServiceMock = new Mock<IAccessService>();// (personService, personProjectService, plantService, accessServiceLogger.Object, unitOfWork.Object);
 
             var serviceProvider = new Mock<IServiceProvider>();
-            var logger = new Mock<ILogger<Worker.Worker>>();
+            var logger = new Mock<ILogger<WorkerService>>();
             var serviceScope = new Mock<IServiceScope>();
 
-            serviceScope.Setup(ss => ss.ServiceProvider.GetRequiredService<IEntryPointService>())
-                .Returns(new EntryPointService(queueClientMock.Object, accessService.Object, EntryServiceLogger.Object));
-
+            serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
             serviceProvider.Setup(sp => sp.CreateScope()).Returns(serviceScope.Object);
 
-            var workerService = new Worker.Worker(logger.Object,serviceProvider.Object);
+            serviceProvider.Setup(ss => ss.GetService(typeof(IEntryPointService)))
+                .Returns(new EntryPointService(queueClientMock.Object, accessServiceMock.Object, EntryServiceLogger.Object));
+
+            var workerService = new WorkerService(logger.Object,serviceProvider.Object);
             //var service = serviceProvider.GetService<IHostedService>() as Worker.Worker;
 
           //  var entryPointService = serviceProvider.GetService<IEntryPointService>() as EntryPointService;
@@ -78,7 +78,7 @@ namespace QueueReceiver.IntegrationTests
             await Task.Delay(10000);
             Assert.IsTrue(isExecuted);
 
-            accessService.Verify(acs => acs.HandleRequest(accessInfo), Times.Once);
+            accessServiceMock.Verify(acs => acs.HandleRequest(accessInfo), Times.Once);
 
             await workerService.StopAsync(CancellationToken.None);
         }
