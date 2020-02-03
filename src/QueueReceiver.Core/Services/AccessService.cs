@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using QueueReceiver.Core.Properties;
 using System.Globalization;
-using System;
 
 namespace QueueReceiver.Core.Services
 {
