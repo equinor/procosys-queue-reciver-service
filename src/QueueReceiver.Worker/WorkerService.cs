@@ -27,7 +27,7 @@ namespace QueueReceiver.Worker
                     .GetRequiredService<IEntryPointService>();
 
             _logger.LogInformation($"Worker service at: {DateTimeOffset.Now}");
-            await entryPointService.InitializeQueue();
+            await entryPointService.InitializeQueueAsync();
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -35,7 +35,7 @@ namespace QueueReceiver.Worker
                 await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
             }
 
-            await entryPointService.DisposeQueue();
+            await entryPointService.DisposeQueueAsync();
             _logger.LogInformation($"Worker service stopping at: at: { DateTimeOffset.Now}");
         }
     }

@@ -67,7 +67,7 @@ namespace QueueReceiver.IntegrationTests
             {
                 var (service, graphMock) = Factory(context);
                 var accessInfo = new AccessInfo(PlantOid, new List<Member>() { new Member(memberOid, false) });
-                await service.HandleRequest(accessInfo);
+                await service.HandleRequestAsync(accessInfo);
             }
 
             using (var context = new QueueReceiverServiceContext(options))

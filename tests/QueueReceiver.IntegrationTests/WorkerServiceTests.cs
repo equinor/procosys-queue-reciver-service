@@ -78,7 +78,7 @@ namespace QueueReceiver.IntegrationTests
             await Task.Delay(MillisecondsDelay);
 
             //Assert
-            accessServiceMock.Verify(acs => acs.HandleRequest(It.IsAny<AccessInfo>()), Times.Once);
+            accessServiceMock.Verify(acs => acs.HandleRequestAsync(It.IsAny<AccessInfo>()), Times.Once);
 
             await workerService.StopAsync(CancellationToken.None);
         }

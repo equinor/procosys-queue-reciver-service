@@ -20,10 +20,7 @@ namespace QueueReceiver.Core.Services
             return _scope!.ServiceProvider.GetService<T>();
         }
 
-        public IServiceScope CreateScope()
-        {
-            return _factory.CreateScope();
-        }
+        public IServiceScope CreateScope() => _factory.CreateScope();
 
         public void Dispose()
         {

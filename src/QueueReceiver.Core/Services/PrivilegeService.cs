@@ -22,12 +22,12 @@ namespace QueueReceiver.Core.Services
             _personUserGroupRepository = personUserGroupRepository;
         }
 
-        public async Task GivePrivlieges(string plantId, long personId)
+        public async Task GivePrivilegesAsync(string plantId, long personId)
         {
-            var userGroupId = await _userGroupRepository.FindIdByUserGroupName(PersonProjectConstants.DefaultUserGroup);
+            var userGroupId = await _userGroupRepository.FindIdByUserGroupNameAsync(PersonProjectConstants.DefaultUserGroup);
             await _personUserGroupRepository.AddIfNotExistAsync(userGroupId, plantId, personId);
 
-            var restrictionRole = await _restrictionRoleRepository.FindRestrictionRole(PersonProjectConstants.DefaultRestrictionRole, plantId);
+            var restrictionRole = await _restrictionRoleRepository.FindRestrictionRoleAsync(PersonProjectConstants.DefaultRestrictionRole, plantId);
             await _personRestrictionRoleRepository.AddIfNotExistAsync(plantId, restrictionRole, personId);
         }
     }

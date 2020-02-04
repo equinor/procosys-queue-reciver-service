@@ -25,13 +25,13 @@ namespace QueueReceiver.Core.Services
             _logger = logger;
         }
 
-        public Task InitializeQueue()
+        public Task InitializeQueueAsync()
         {
             RegisterOnMessageHandlerAndReceiveMessages();
             return Task.CompletedTask;
         }
 
-        public async Task DisposeQueue()
+        public async Task DisposeQueueAsync()
             => await _queueClient.CloseAsync();
 
         private void RegisterOnMessageHandlerAndReceiveMessages()
@@ -49,7 +49,7 @@ namespace QueueReceiver.Core.Services
             var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
             _logger.LogInformation($"Processing message : { accessInfo }");
 
-            await _accessService.HandleRequest(accessInfo);
+            await _accessService.HandleRequestAsync(accessInfo);
 
             //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock
             string lockToken = message.SystemProperties.LockToken;

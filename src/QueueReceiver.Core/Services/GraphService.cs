@@ -23,7 +23,7 @@ namespace QueueReceiver.Core.Services
             _log = logger;
         }
 
-        public async Task<IEnumerable<string>> GetMemberOids(string groupOid)
+        public async Task<IEnumerable<string>> GetMemberOidsAsync(string groupOid)
         {
             var graphClient = await CreateClient();
 
@@ -41,7 +41,7 @@ namespace QueueReceiver.Core.Services
             return result;
         }
 
-        public async Task<AdPerson?> GetAdPersonByOid(string userOid)
+        public async Task<AdPerson?> GetAdPersonByOidAsync(string userOid)
         {
             var graphClient = await CreateClient();
 

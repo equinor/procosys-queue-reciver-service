@@ -14,7 +14,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         public RestrictionRoleRepository(QueueReceiverServiceContext context)
             => _restrictionRoles = context.RestrictionRoles;
 
-        public async Task<string> FindRestrictionRole(string name, string plant) =>
+        public async Task<string> FindRestrictionRoleAsync(string name, string plant) =>
             await _restrictionRoles.Where(restrictionRole
                     => name.Equals(restrictionRole.RestrictionRoleId) && plant.Equals(restrictionRole.PlantId))
                     .Select(restrictionRole => restrictionRole.RestrictionRoleId)

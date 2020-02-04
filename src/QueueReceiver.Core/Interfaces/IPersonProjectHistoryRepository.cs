@@ -7,7 +7,7 @@ namespace QueueReceiver.Core.Interfaces
 {
     public interface IPersonProjectHistoryRepository
     {
-        Task<List<PersonProjectHistory>> GetPersonProjectHistoryById(int id);
+        Task<List<PersonProjectHistory>> GetPersonProjectHistoryByIdAsync(int id);
         Task AddAsync(PersonProjectHistory personProjHisId);
     }
 }

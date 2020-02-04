@@ -70,7 +70,7 @@ namespace QueueReceiver.Core.Services
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
-        public async Task ExcecuteOidSync()
+        public async Task ExcecuteOidUpdateAsync()
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -92,7 +92,7 @@ namespace QueueReceiver.Core.Services
             {
                 try
                 {
-                    return await _graphService.GetAdPersonByOid(m);
+                    return await _graphService.GetAdPersonByOidAsync(m);
                 }
                 catch (Exception e)
                 {
@@ -115,7 +115,7 @@ namespace QueueReceiver.Core.Services
                 Console.WriteLine($"Adding from {i} to {i + count}");
                 foreach (var adPerson in resultList.GetRange(i, count))
                 {
-                    await _personService.FindAndUpdate(adPerson);
+                    await _personService.FindAndUpdateAsync(adPerson);
                 }
 
                 Console.Write($"Starting save  from {i} to {i + count} ");
@@ -131,7 +131,7 @@ namespace QueueReceiver.Core.Services
             foreach (var oid in groupOids)
             {
                 Console.WriteLine($"finding members in {oid}");
-                var newMembers = await _graphService.GetMemberOids(oid);
+                var newMembers = await _graphService.GetMemberOidsAsync(oid);
                 var newmemberList = newMembers.ToList();
                 Console.WriteLine($" found: {newmemberList.Count}, adding new memebers to set");
                 allMembers.UnionWith(newmemberList);

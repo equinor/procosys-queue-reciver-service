@@ -52,11 +52,11 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             var (service, personProjectRepository, projectRepository, _, _, _, _, _) = Factory();
 
-            projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
+            projectRepository.Setup(pr => pr.GetParentProjectsByPlantAsync(plantId))
                 .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
 
             //Act
-            await service.GiveProjectAccessToPlant(personId, plantId);
+            await service.GiveProjectAccessToPlantAsync(personId, plantId);
 
             //Assert
             personProjectRepository.Verify(ppr => ppr.AddAsync(projectId, personId), Times.Once);

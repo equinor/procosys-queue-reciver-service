@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <IsPackable>false</IsPackable>
 
     <UserSecretsId>d2b6205a-7783-469d-a578-0070a927ad44</UserSecretsId>

@@ -5,6 +5,6 @@ namespace QueueReceiver.Core.Interfaces
 {
     public interface IAccessService
     {
-        Task HandleRequest(AccessInfo accessInfo);
+        Task HandleRequestAsync(AccessInfo accessInfo);
     }
 }

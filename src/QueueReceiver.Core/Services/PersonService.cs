@@ -17,27 +17,27 @@ namespace QueueReceiver.Core.Services
             _graphService = graphService;
         }
 
-        public async Task<Person?> UpdateWithOidIfNotFound(string userOid)
+        public async Task<Person?> UpdateWithOidIfNotFoundAsync(string userOid)
         {
-            var person = await _personRepository.FindByUserOid(userOid);
+            var person = await _personRepository.FindByUserOidAsync(userOid);
             if (person != null)
             {
                 return person;
             }
 
-            var adPerson = await _graphService.GetAdPersonByOid(userOid);
+            var adPerson = await _graphService.GetAdPersonByOidAsync(userOid);
 
-            return adPerson != null ? await FindAndUpdate(adPerson) : null;
+            return adPerson != null ? await FindAndUpdateAsync(adPerson) : null;
         }
 
-        public async Task<Person?> FindAndUpdate(AdPerson adPerson)
+        public async Task<Person?> FindAndUpdateAsync(AdPerson adPerson)
         {
             if (adPerson.MobileNumber == null || adPerson.GivenName == null || adPerson.Surname == null)
             {
                 return null;
             }
 
-            var person = await _personRepository.FindByMobileNumberAndName(
+            var person = await _personRepository.FindByMobileNumberAndNameAsync(
                                                                 adPerson.MobileNumber,
                                                                 adPerson.GivenName,
                                                                 adPerson.Surname);
@@ -48,24 +48,24 @@ namespace QueueReceiver.Core.Services
             return person;
         }
 
-        public async Task<Person?> FindByOid(string userOid) => await _personRepository.FindByUserOid(userOid);
+        public async Task<Person?> FindByOidAsync(string userOid) => await _personRepository.FindByUserOidAsync(userOid);
 
-        public async Task<Person> CreateIfNotExist(string userOid)
+        public async Task<Person> CreateIfNotExistAsync(string userOid)
         {
-            var person = await _personRepository.FindByUserOid(userOid);
+            var person = await _personRepository.FindByUserOidAsync(userOid);
             if (person != null)
             {
                 return person;
             }
 
-            var adPerson = await _graphService.GetAdPersonByOid(userOid);
+            var adPerson = await _graphService.GetAdPersonByOidAsync(userOid);
 
             if (adPerson == null)
             {
                 throw new Exception($"{userOid} not found in graph. Queue out of sync");
             }
 
-            person = await _personRepository.FindByMobileNumberAndName(
+            person = await _personRepository.FindByMobileNumberAndNameAsync(
                                                             adPerson.MobileNumber,
                                                             adPerson.GivenName,
                                                             adPerson.Surname);
@@ -87,14 +87,14 @@ namespace QueueReceiver.Core.Services
 
         private async Task<bool> ShouldReconcile(AdPerson adPerson)
         {
-            return await _personRepository.FindByFullName(adPerson.GivenName, adPerson.Surname) != null
-                || await _personRepository.FindByMobileNumber(adPerson.MobileNumber) != null
-                || await _personRepository.FindByUsername(adPerson.Username) != null;
+            return await _personRepository.FindByFullNameAsync(adPerson.GivenName, adPerson.Surname) != null
+                || await _personRepository.FindByMobileNumberAsync(adPerson.MobileNumber) != null
+                || await _personRepository.FindByUsernameAsync(adPerson.Username) != null;
         }
 
         private async Task<Person> CreatePerson(AdPerson adPerson, bool shouldReconcile)
         {
-            return await _personRepository.AddPerson(
+            return await _personRepository.AddPersonAsync(
                     new Person(adPerson.Username, adPerson.Email)
                     {
                         Oid = adPerson.Oid,

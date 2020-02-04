@@ -1,5 +1,4 @@
-﻿using QueueReceiver.Core.Constants;
-using QueueReceiver.Core.Interfaces;
+﻿using QueueReceiver.Core.Interfaces;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,13 +25,13 @@ namespace QueueReceiver.Core.Services
             _personProjectHistoryRepository = personProjectHistoryRepository;
         }
 
-        public async Task GiveProjectAccessToPlant(long personId, string plantId)
+        public async Task GiveProjectAccessToPlantAsync(long personId, string plantId)
         {
             var updated = false;
             var unvoided = false;
 
             var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory(personId);
-            var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
+            var projects = await _projectRepository.GetParentProjectsByPlantAsync(plantId);
 
             projects.ForEach(async project =>
             {
@@ -54,7 +53,7 @@ namespace QueueReceiver.Core.Services
 
             if (updated)
             {
-               await _privilegeService.GivePrivlieges(plantId, personId);
+               await _privilegeService.GivePrivilegesAsync(plantId, personId);
 
                 projects.ForEach(p =>
                 {

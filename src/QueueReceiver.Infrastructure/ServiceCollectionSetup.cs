@@ -53,6 +53,7 @@ namespace QueueReceiver.Infrastructure
             .AddScoped<IPlantService, PlantService>()
             .AddScoped<IGraphService, GraphService>()
             .AddScoped<IPersonService, PersonService>()
-            .AddScoped<IPersonProjectService, PersonProjectService>();
+            .AddScoped<IPersonProjectService, PersonProjectService>()
+            .AddScoped<IPrivilegeService,PrivilegeService>();
     }
 }

@@ -39,16 +39,16 @@ namespace QueueReceiver.Core.UnitTests.Services
         {
             //Arrange
             const string plantOidThatDoesntExists = "SomePlantThatDoesNotExist";
-            _plantService.Setup(plantService => plantService.GetPlantId(plantOidThatDoesntExists))
+            _plantService.Setup(plantService => plantService.GetPlantIdAsync(plantOidThatDoesntExists))
                 .Returns(Task.FromResult<string?>(null));
             var accessInfo = new AccessInfo(plantOidThatDoesntExists, new List<Member>());
 
             //Act
-            await _service.HandleRequest(accessInfo);
+            await _service.HandleRequestAsync(accessInfo);
 
             //Assert
-            _plantService.Verify(_ => _.GetPlantId(plantOidThatDoesntExists), Times.Once);
-            _personService.Verify(_ => _.CreateIfNotExist(It.IsAny<string>()), Times.Never);
+            _plantService.Verify(_ => _.GetPlantIdAsync(plantOidThatDoesntExists), Times.Once);
+            _personService.Verify(_ => _.CreateIfNotExistAsync(It.IsAny<string>()), Times.Never);
         }
 
         [TestMethod]
@@ -59,11 +59,11 @@ namespace QueueReceiver.Core.UnitTests.Services
             const long somePersonId = 12;
             const string somePlantId = "testPlant";
             const string plantOidThatExists = "SomePlantThatExist";
-            _plantService.Setup(plantService => plantService.GetPlantId(plantOidThatExists))
+            _plantService.Setup(plantService => plantService.GetPlantIdAsync(plantOidThatExists))
                 .Returns(Task.FromResult(somePlantId)!);
-            _personService.Setup(personService => personService.UpdateWithOidIfNotFound(someOid))
+            _personService.Setup(personService => personService.UpdateWithOidIfNotFoundAsync(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
-            _personService.Setup(PersonService => PersonService.FindByOid(someOid))
+            _personService.Setup(PersonService => PersonService.FindByOidAsync(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
 
             var accessInfo = new AccessInfo(plantOidThatExists, new List<Member>
@@ -72,10 +72,10 @@ namespace QueueReceiver.Core.UnitTests.Services
                 });
 
             //Act
-            await _service.HandleRequest(accessInfo);
+            await _service.HandleRequestAsync(accessInfo);
 
             //Assert
-            _personProjectService.Verify(_ => _.GiveProjectAccessToPlant(somePersonId, It.IsAny<string>()), Times.Once);
+            _personProjectService.Verify(_ => _.GiveProjectAccessToPlantAsync(somePersonId, It.IsAny<string>()), Times.Once);
         }
 
         [TestMethod]
@@ -86,11 +86,11 @@ namespace QueueReceiver.Core.UnitTests.Services
             const long somePersonId = 12;
             const string somePlantId = "testPlant";
             const string plantOidThatExists = "SomePlantThatExist";
-            _plantService.Setup(plantService => plantService.GetPlantId(plantOidThatExists))
+            _plantService.Setup(plantService => plantService.GetPlantIdAsync(plantOidThatExists))
                 .Returns(Task.FromResult(somePlantId)!);
-            _personService.Setup(personService => personService.UpdateWithOidIfNotFound(someOid))
+            _personService.Setup(personService => personService.UpdateWithOidIfNotFoundAsync(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
-            _personService.Setup(PersonService => PersonService.FindByOid(someOid))
+            _personService.Setup(PersonService => PersonService.FindByOidAsync(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
 
             var accessInfo = new AccessInfo(plantOidThatExists, new List<Member>
@@ -99,10 +99,10 @@ namespace QueueReceiver.Core.UnitTests.Services
                 });
 
             //Act
-            await _service.HandleRequest(accessInfo);
+            await _service.HandleRequestAsync(accessInfo);
 
             //Assert
-            _personService.Verify(_ => _.UpdateWithOidIfNotFound(someOid), Times.Once);
+            _personService.Verify(_ => _.UpdateWithOidIfNotFoundAsync(someOid), Times.Once);
             _personProjectService.Verify(_ => _.RemoveAccessToPlant(somePersonId, It.IsAny<string>()), Times.Once);
         }
 
@@ -110,7 +110,7 @@ namespace QueueReceiver.Core.UnitTests.Services
         public async Task HandleRequest_returns_early_when_removing_access_for_user_not_in_db()
         {
             //Arrange
-            _plantService.Setup(plantService => plantService.GetPlantId(It.IsAny<string>()))
+            _plantService.Setup(plantService => plantService.GetPlantIdAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult<string?>("anyPlantOid"));
 
             var accessInfo = new AccessInfo(
@@ -119,7 +119,7 @@ namespace QueueReceiver.Core.UnitTests.Services
                 );
 
             //Act
-            await _service.HandleRequest(accessInfo);
+            await _service.HandleRequestAsync(accessInfo);
 
             //Assert
             _personProjectService.Verify(_ => _.RemoveAccessToPlant(It.IsAny<long>(), It.IsAny<string>()), Times.Never);

@@ -17,7 +17,6 @@ namespace QueueReceiver.Core.UnitTests.Services
     {
         private static (EntryPointService,
             TestableQueueClient,
-            Mock<ILogger<EntryPointService>>,
             Mock<IAccessService>)
             Factory()
         {
@@ -26,15 +25,15 @@ namespace QueueReceiver.Core.UnitTests.Services
             var accessService = new Mock<IAccessService>();
             var service = new EntryPointService(queueClient, accessService.Object, logger.Object);
 
-            return (service, queueClient, logger, accessService);
+            return (service, queueClient,  accessService);
         }
 
         [TestMethod]
         public async Task InitializeQueueTest()
         {
-            var (service, queueClient, logger, accessService) = Factory();
+            var (service, queueClient, accessService) = Factory();
 
-            accessService.Setup(acs => acs.HandleRequest(It.IsAny<AccessInfo>()))
+            accessService.Setup(acs => acs.HandleRequestAsync(It.IsAny<AccessInfo>()))
                 .ThrowsAsync(new InternalTestFailureException("!"));
 
             var accessInfo = new AccessInfo("test",
@@ -45,7 +44,7 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(accessInfo)));
 
-            await service.InitializeQueue();
+            await service.InitializeQueueAsync();
 
             try
             {

@@ -6,6 +6,6 @@ namespace QueueReceiver.Core.Interfaces
 {
     public interface IProjectRepository
     {
-        Task<List<Project>> GetParentProjectsByPlant(string plantId);
+        Task<List<Project>> GetParentProjectsByPlantAsync(string plantId);
     }
 }
