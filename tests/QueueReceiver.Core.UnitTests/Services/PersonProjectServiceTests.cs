@@ -30,14 +30,12 @@ namespace QueueReceiver.Core.UnitTests.Services
             var personRestrictionRoleRepository = new Mock<IPersonRestrictionRoleRepository>();
             var restrictionRoleRepository = new Mock<IRestrictionRoleRepository>();
             var personProjectHistoryRepository = new Mock<IPersonProjectHistoryRepository>();
+            var privilegeService = new Mock<IPrivilegeService>();
 
             var service = new PersonProjectService(
                 personProjectRepository.Object,
                 projectRepository.Object,
-                personUserGroupRepository.Object,
-                userGroupRepository.Object,
-                personRestrictionRoleRepository.Object,
-                restrictionRoleRepository.Object,
+                privilegeService.Object,
                 personProjectHistoryRepository.Object);
 
             return (service, personProjectRepository, projectRepository, personUserGroupRepository, userGroupRepository,
