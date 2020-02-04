@@ -4,9 +4,11 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Settings;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System;
 
 namespace QueueReceiver.Core.Services
 {
@@ -21,35 +23,48 @@ namespace QueueReceiver.Core.Services
             _log = logger;
         }
 
+        public async Task<IEnumerable<string>> GetMemberOids(string groupOid)
+        {
+            var graphClient = await CreateClient();
+
+            var members = await graphClient.Groups[groupOid].Members
+                .Request()
+                .GetAsync();
+            var result = members.Select(m => m.Id).ToList();
+
+            while (members.NextPageRequest != null)
+            {
+                members = await members.NextPageRequest.GetAsync();
+                result.AddRange(members.Select(m => m.Id));
+            }
+
+            return result;
+        }
+
         public async Task<AdPerson?> GetPersonByOid(string userOid)
         {
+            var graphClient = await CreateClient();
+
+            _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
+            var user = await graphClient.Users[userOid].Request().GetAsync();
+            var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
+            {
+                GivenName = user.GivenName,
+                Surname = user.Surname
+            };
+            return adPerson;
+        }
+
+        private async Task<GraphServiceClient> CreateClient()
+        {
             AuthenticationResult auth = await GetAccessToken();
-
-            var graphClient = new GraphServiceClient( //TODO: Don't new up here, accept interface through DI to make it testable.
-                new DelegateAuthenticationProvider(
-                    (requestMessage) =>
-                    {
-                        requestMessage.Headers.Authorization =
-                            new AuthenticationHeaderValue("bearer", auth.AccessToken);
-                        return Task.FromResult(0);
-                    }));
-            try
-            {
-                _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
-                var user = await graphClient.Users[userOid].Request().GetAsync();
-                var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
-                {
-                    GivenName = user.GivenName,
-                    Surname = user.Surname
-                };
-                return adPerson;
-            }
-            catch (Exception e)
-            {
-                _log.LogError(e.Message);
-            }
-
-            return null;
+            return new GraphServiceClient(
+                   new DelegateAuthenticationProvider(
+                      (requestMessage) =>
+                      {
+                          requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", auth.AccessToken);
+                          return Task.FromResult(0);
+                      }));
         }
 
         private async Task<AuthenticationResult> GetAccessToken()

@@ -1,4 +1,5 @@
 ﻿using QueueReceiver.Core.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Interfaces
@@ -8,5 +9,7 @@ namespace QueueReceiver.Core.Interfaces
         Task<Person?> UpdateWithOidIfNotFound(string userOid);
         Task<Person> CreateIfNotExist(string userOid);
         Task<Person?> FindByOid(string userOid);
+        IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
+        Task FindAndUpdate(AdPerson aadPerson);
     }
 }

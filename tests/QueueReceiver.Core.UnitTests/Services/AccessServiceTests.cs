@@ -18,6 +18,7 @@ namespace QueueReceiver.Core.UnitTests.Services
         private readonly Mock<ILogger<AccessService>> _logger;
         private readonly Mock<IUnitOfWork> _unitOfWork;
         private readonly IAccessService _service;
+
         public AccessServiceTests()
         {
             _personService = new Mock<IPersonService>();

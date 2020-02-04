@@ -1,8 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using QueueReceiver.Core.Interfaces;
-using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
 using System;
@@ -53,7 +51,7 @@ namespace QueueReceiver.Worker
                 hostContext.Configuration.Bind(nameof(GraphSettings), graphSettings);
                 services.AddSingleton(graphSettings);
 
-                services.AddHostedService<Worker>();
+                services.AddHostedService<WorkerService>();
             });
     }
 }

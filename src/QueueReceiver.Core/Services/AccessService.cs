@@ -45,17 +45,17 @@ namespace QueueReceiver.Core.Services
                 return;
             }
 
-          var syncPersonTableTasks = accessInfo.Members.Select(async member =>
-            {
-                if (member.ShouldVoid)
-                {
-                    await _personService.UpdateWithOidIfNotFound(member.UserOid);
-                }
-                else
-                {
-                   await _personService.CreateIfNotExist(member.UserOid);
-                }
-            });
+            var syncPersonTableTasks = accessInfo.Members.Select(async member =>
+              {
+                  if (member.ShouldVoid)
+                  {
+                      await _personService.UpdateWithOidIfNotFound(member.UserOid);
+                  }
+                  else
+                  {
+                      await _personService.CreateIfNotExist(member.UserOid);
+                  }
+              });
             await Task.WhenAll(syncPersonTableTasks);
             await _unitOfWork.SaveChangesAsync();
 
@@ -87,7 +87,7 @@ namespace QueueReceiver.Core.Services
             _logger.LogInformation(string.Format(
                 CultureInfo.InvariantCulture,
                 Resources.RemoveAccess, person.Id, plantId));
-             _personProjectService.RemoveAccessToPlant(person.Id, plantId);
+            _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
         private async Task GiveAccess(string userOid, string plantId)

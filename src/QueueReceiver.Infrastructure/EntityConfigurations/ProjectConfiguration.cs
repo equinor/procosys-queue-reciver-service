@@ -15,7 +15,7 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
                 .HasConversion(
                     b => b ? 'Y' : 'N',
                     c => c.Equals('Y'));
-            builder.Property(p => p.ProjectId).HasColumnName("PARENT_PROJECT_ID");
+            builder.Property(p => p.ParentProjectId).HasColumnName("PARENT_PROJECT_ID");
             builder.Property(p => p.IsMainProject).HasColumnName("ISMAINPROJECT")
                 .HasConversion(
                 b => b ? 'Y' : 'N',

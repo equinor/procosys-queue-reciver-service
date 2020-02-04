@@ -17,7 +17,7 @@ namespace QueueReceiver.Infrastructure.Repositories
             _personUserGroups = context.PersonUserGroups;
         }
 
-       public async Task AddIfNotExistAsync(long userGroupId, string plantId, long personId)
+        public async Task AddIfNotExistAsync(long userGroupId, string plantId, long personId)
         {
             var createdById = _settings.PersonProjectCreatedId;
             var pug = new PersonUserGroup(personId, userGroupId, plantId, createdById);
