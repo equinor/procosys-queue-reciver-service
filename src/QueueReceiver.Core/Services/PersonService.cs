@@ -25,25 +25,25 @@ namespace QueueReceiver.Core.Services
                 return person;
             }
 
-            var adPerson = await _graphService.GetPersonByOid(userOid);
+            var adPerson = await _graphService.GetAdPersonByOid(userOid);
 
             return adPerson != null ? await FindAndUpdate(adPerson) : null;
         }
 
-        public async Task<Person?> FindAndUpdate(AdPerson aadPerson)
+        public async Task<Person?> FindAndUpdate(AdPerson adPerson)
         {
-            if (aadPerson.MobileNumber == null || aadPerson.GivenName == null || aadPerson.Surname == null)
+            if (adPerson.MobileNumber == null || adPerson.GivenName == null || adPerson.Surname == null)
             {
                 return null;
             }
 
             var person = await _personRepository.FindByMobileNumberAndName(
-                                                                aadPerson.MobileNumber,
-                                                                aadPerson.GivenName,
-                                                                aadPerson.Surname);
+                                                                adPerson.MobileNumber,
+                                                                adPerson.GivenName,
+                                                                adPerson.Surname);
             if (person != null)
             {
-                person.Oid = aadPerson.Oid;
+                person.Oid = adPerson.Oid;
             }
             return person;
         }
@@ -58,7 +58,7 @@ namespace QueueReceiver.Core.Services
                 return person;
             }
 
-            var adPerson = await _graphService.GetPersonByOid(userOid);
+            var adPerson = await _graphService.GetAdPersonByOid(userOid);
 
             if (adPerson == null)
             {
