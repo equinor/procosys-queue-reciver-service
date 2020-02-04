@@ -33,34 +33,49 @@ namespace QueueReceiver.IntegrationTests
             Configuration = builder.Build();
         }
 
-        [TestMethod]
-        public async Task EntryPointService_HandlesMessagesCorrectly()
+        #region Facory Methods
+        private (WorkerService, QueueClient, Mock<IAccessService>) Factory()
         {
-            var EntryServiceLogger = new Mock<ILogger<EntryPointService>>();
-
-            string connectionString = Configuration["ServiceBusConnectionString"];
-            var queueClient = new QueueClient(connectionString, "intergrationtest");
-            queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
-
+            var queueClient = CreateQueueClient();
             var accessServiceMock = new Mock<IAccessService>();
             var serviceLocatorMock = new Mock<IServiceLocator>();
             var scopeMock = new Mock<IServiceScope>();
-            var logger = new Mock<ILogger<WorkerService>>();
-
             serviceLocatorMock.Setup(sp => sp.CreateScope()).Returns(scopeMock.Object);
             var serviceProviderMock = new Mock<IServiceProvider>();
-            scopeMock.Setup(s => s.ServiceProvider)
-                .Returns(serviceProviderMock.Object);
-
+            scopeMock.Setup(s => s.ServiceProvider).Returns(serviceProviderMock.Object);
+            var EntryServiceLogger = new Mock<ILogger<EntryPointService>>();
+            var entryPointService = new EntryPointService(queueClient, accessServiceMock.Object, EntryServiceLogger.Object);
             serviceProviderMock.Setup(sp => sp.GetService(typeof(IEntryPointService)))
-                .Returns(new EntryPointService(queueClient, accessServiceMock.Object, EntryServiceLogger.Object));
-            var workerService = new WorkerService(logger.Object, serviceLocatorMock.Object);
-            await workerService.StartAsync(CancellationToken.None);
-            Message testMessage = CreateTestMessage();
-            await queueClient.SendAsync(testMessage);
+                .Returns(entryPointService);
 
+            var workerServiceLogger = new Mock<ILogger<WorkerService>>();
+            var workerService = new WorkerService(workerServiceLogger.Object, serviceLocatorMock.Object);
+
+            return (workerService, queueClient, accessServiceMock);
+        }
+
+        private QueueClient CreateQueueClient()
+        {
+            string connectionString = Configuration["ServiceBusConnectionString"];
+            var queueClient = new QueueClient(connectionString, "intergrationtest");
+            queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
+            return queueClient;
+        }
+        #endregion
+
+        [TestMethod]
+        public async Task EntryPointService_HandlesMessagesCorrectly_UsingRealQueue()
+        {
+            //Arrange
+            var (workerService, queueClient, accessServiceMock) = Factory();
+
+            //Act
+            await workerService.StartAsync(CancellationToken.None);
+            var testMessage = CreateTestMessage();
+            await queueClient.SendAsync(testMessage);
             await Task.Delay(MillisecondsDelay);
 
+            //Assert
             accessServiceMock.Verify(acs => acs.HandleRequest(It.IsAny<AccessInfo>()), Times.Once);
 
             await workerService.StopAsync(CancellationToken.None);
