@@ -26,7 +26,6 @@ namespace QueueReceiver.Core.UnitTests.Services
             var accessService = new Mock<IAccessService>();
             var service = new EntryPointService(queueClient, accessService.Object, logger.Object);
 
-            //var accessService = SetupCreateScope(serviceLocator);
             return (service, queueClient, logger, accessService);
         }
 
