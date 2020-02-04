@@ -9,28 +9,20 @@ namespace QueueReceiver.Core.Services
     {
         private readonly IPersonProjectRepository _personProjectRepository;
         private readonly IProjectRepository _projectRepository;
-        private readonly IPersonUserGroupRepository _personUserGroupRepository;
-        private readonly IUserGroupRepository _userGroupRepository;
-        private readonly IPersonRestrictionRoleRepository _personRestrictionRoleRepository;
-        private readonly IRestrictionRoleRepository _restrictionRoleRepository;
+        private readonly IPrivilegeService _privilegeService;
         private readonly IPersonProjectHistoryRepository _personProjectHistoryRepository;
+        
 
         public PersonProjectService(
             IPersonProjectRepository personProjectRepository,
             IProjectRepository projectRepository,
-            IPersonUserGroupRepository personUserGroupRepository,
-            IUserGroupRepository userGroupRepository,
-            IPersonRestrictionRoleRepository personRestrictionRoleRepository,
-            IRestrictionRoleRepository restrictionRoleRepository,
+            IPrivilegeService privilegeService,
             IPersonProjectHistoryRepository personProjectHistoryRepository
         )
         {
             _personProjectRepository = personProjectRepository;
             _projectRepository = projectRepository;
-            _personUserGroupRepository = personUserGroupRepository;
-            _userGroupRepository = userGroupRepository;
-            _personRestrictionRoleRepository = personRestrictionRoleRepository;
-            _restrictionRoleRepository = restrictionRoleRepository;
+            _privilegeService = privilegeService;
             _personProjectHistoryRepository = personProjectHistoryRepository;
         }
 
@@ -62,11 +54,7 @@ namespace QueueReceiver.Core.Services
 
             if (updated)
             {
-                var userGroupId = await _userGroupRepository.FindIdByUserGroupName(PersonProjectConstants.DefaultUserGroup);
-                await _personUserGroupRepository.AddIfNotExistAsync(userGroupId, plantId, personId);
-
-                var restrictionRole = await _restrictionRoleRepository.FindRestrictionRole(PersonProjectConstants.DefaultRestrictionRole, plantId);
-                await _personRestrictionRoleRepository.AddIfNotExistAsync(plantId, restrictionRole, personId);
+               await _privilegeService.GivePrivlieges(plantId, personId);
 
                 projects.ForEach(p =>
                 {
