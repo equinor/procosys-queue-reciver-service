@@ -49,7 +49,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string SomeOid = "someOid";
             const string MobileNo = "762982109";
 
-            _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
+            _graphService.Setup(graphService => graphService.GetAdPersonByOid(SomeOid))
                 .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, "anything", "anyEmail")
                 {
                     MobileNumber = MobileNo,
@@ -71,7 +71,7 @@ namespace QueueReceiver.Core.UnitTests.Services
         {
             //Arrange
             const string SomeOid = "someOid";
-            _graphService.Setup(graphService => graphService.GetPersonByOid(SomeOid))
+            _graphService.Setup(graphService => graphService.GetAdPersonByOid(SomeOid))
                 .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
 
             //Act

@@ -84,7 +84,7 @@ namespace QueueReceiver.Core.Services
             sw.Restart();
             Console.Write("Removing members not already in db members ");
             var allNotInDb = _personService.GetAllNotInDb(allMembers).ToList();
-            Console.WriteLine($"{allMembers.Count - allNotInDb.Count()} removed : {sw.ElapsedMilliseconds} ms");
+            Console.WriteLine($"{allMembers.Count - allNotInDb.Count} removed : {sw.ElapsedMilliseconds} ms");
 
             sw.Restart();
             Console.Write("Finding info on members in graph");
@@ -92,7 +92,7 @@ namespace QueueReceiver.Core.Services
             {
                 try
                 {
-                    return await _graphService.GetPersonByOid(m);
+                    return await _graphService.GetAdPersonByOid(m);
                 }
                 catch (Exception e)
                 {
@@ -113,9 +113,9 @@ namespace QueueReceiver.Core.Services
 
                 sw.Restart();
                 Console.WriteLine($"Adding from {i} to {i + count}");
-                foreach (var aadPerson in resultList.GetRange(i, count))
+                foreach (var adPerson in resultList.GetRange(i, count))
                 {
-                    await _personService.FindAndUpdate(aadPerson);
+                    await _personService.FindAndUpdate(adPerson);
                 }
 
                 Console.Write($"Starting save  from {i} to {i + count} ");

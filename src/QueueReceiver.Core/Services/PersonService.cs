@@ -25,14 +25,19 @@ namespace QueueReceiver.Core.Services
                 return person;
             }
 
-            var adPerson = await _graphService.GetPersonByOid(userOid);
+            var adPerson = await _graphService.GetAdPersonByOid(userOid);
 
-            if (adPerson == null || adPerson.MobileNumber == null || adPerson.GivenName == null || adPerson.Surname == null)
+            return adPerson != null ? await FindAndUpdate(adPerson) : null;
+        }
+
+        public async Task<Person?> FindAndUpdate(AdPerson adPerson)
+        {
+            if (adPerson.MobileNumber == null || adPerson.GivenName == null || adPerson.Surname == null)
             {
                 return null;
             }
 
-            person = await _personRepository.FindByMobileNumberAndName(
+            var person = await _personRepository.FindByMobileNumberAndName(
                                                                 adPerson.MobileNumber,
                                                                 adPerson.GivenName,
                                                                 adPerson.Surname);
@@ -41,23 +46,6 @@ namespace QueueReceiver.Core.Services
                 person.Oid = adPerson.Oid;
             }
             return person;
-        }
-
-        public async Task FindAndUpdate(AdPerson aadPerson)
-        {
-            if (aadPerson.MobileNumber == null || aadPerson.GivenName == null || aadPerson.Surname == null)
-            {
-                return;
-            }
-
-            var person = await _personRepository.FindByMobileNumberAndName(
-                                                                aadPerson.MobileNumber,
-                                                                aadPerson.GivenName,
-                                                                aadPerson.Surname);
-            if (person != null)
-            {
-                person.Oid = aadPerson.Oid;
-            }
         }
 
         public async Task<Person?> FindByOid(string userOid) => await _personRepository.FindByUserOid(userOid);
@@ -70,28 +58,49 @@ namespace QueueReceiver.Core.Services
                 return person;
             }
 
-            var adPerson = await _graphService.GetPersonByOid(userOid);
+            var adPerson = await _graphService.GetAdPersonByOid(userOid);
 
             if (adPerson == null)
             {
                 throw new Exception($"{userOid} not found in graph. Queue out of sync");
             }
-            /**
-             * The section checking if the user already exists can be removed once the 
-             * database is fully migrated and all users have an OID
-             **/
-            person = await _personRepository.FindByMobileNumberAndName(adPerson.MobileNumber, adPerson.GivenName, adPerson.Surname);
+
+            person = await _personRepository.FindByMobileNumberAndName(
+                                                            adPerson.MobileNumber,
+                                                            adPerson.GivenName,
+                                                            adPerson.Surname);
+
+            if (person?.Oid != null)
+            {
+                return await CreatePerson(adPerson, shouldReconcile: true);
+            }
+
             if (person != null)
             {
                 person.Oid = userOid;
                 return person;
             }
+
+            var shouldReconcile = await ShouldReconcile(adPerson);
+            return await CreatePerson(adPerson,shouldReconcile);
+        }
+
+        private async Task<bool> ShouldReconcile(AdPerson adPerson)
+        {
+            return await _personRepository.FindByFullName(adPerson.GivenName, adPerson.Surname) != null
+                || await _personRepository.FindByMobileNumber(adPerson.MobileNumber) != null
+                || await _personRepository.FindByUsername(adPerson.Username) != null;
+        }
+
+        private async Task<Person> CreatePerson(AdPerson adPerson, bool shouldReconcile)
+        {
             return await _personRepository.AddPerson(
                     new Person(adPerson.Username, adPerson.Email)
                     {
                         Oid = adPerson.Oid,
                         FirstName = adPerson.GivenName,
-                        LastName = adPerson.Surname
+                        LastName = adPerson.Surname,
+                        Reconcile = shouldReconcile
                     });
         }
 

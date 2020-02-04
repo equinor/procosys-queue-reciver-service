@@ -30,8 +30,7 @@ namespace QueueReceiver.Infrastructure.Repositories
 
             return await _persons.FirstOrDefaultAsync(p =>
                 p.MobilePhoneNumber != null
-                && (mobileNumber.Equals(p.MobilePhoneNumber.Replace(" ", ""))
-                    || mobileNumber.Equals("+47" + p.MobilePhoneNumber.Replace(" ", "")))
+                && MobileNumberIsEqal(mobileNumber, p.MobilePhoneNumber)
                 && givenName.Equals(p.FirstName)
                 && surname.Equals(p.LastName));
         }
@@ -45,23 +44,34 @@ namespace QueueReceiver.Infrastructure.Repositories
         public async Task<Person?> FindByUserOid(string userOid) =>
            await _persons.FirstOrDefaultAsync(person =>
                 userOid.Equals(person.Oid, OrdinalIgnoreCase));
+
+        public async Task<Person?> FindByMobileNumber(string mobileNumber) =>
+            await _persons.FirstOrDefaultAsync(p =>
+                p.MobilePhoneNumber != null
+                && MobileNumberIsEqal(mobileNumber, p.MobilePhoneNumber));
+
+        public async Task<Person?> FindByFullName(string firstName, string lastName) =>
+            await _persons.FirstOrDefaultAsync(person =>
+                firstName.Equals(person.FirstName, OrdinalIgnoreCase)
+                && lastName.Equals(person.LastName,OrdinalIgnoreCase));
+
+        public async Task<Person?> FindByEmail(string userEmail) =>
+           await  _persons.FirstOrDefaultAsync(person =>
+                    userEmail.Equals(person.Email, OrdinalIgnoreCase));
+
+        public async Task<Person> FindByUsername(string userName)
+        {
+            var shortName = userName.Substring(0, userName.IndexOf('@', OrdinalIgnoreCase));
+            return await _persons
+                .SingleOrDefaultAsync(person =>
+                     userName.Equals(person.UserName, OrdinalIgnoreCase)
+                     || shortName.Equals(person.UserName, OrdinalIgnoreCase)
+                     );
+        }
+
+        private static bool MobileNumberIsEqal(string a, string b)
+             => a.Equals(b.Replace(" ", "")) || a.Equals("+47" + b.Replace(" ", ""));
     }
 }
 
-/**
-public async Task<Person> FindByUserEmail(string userEmail) =>
-await _persons.SingleOrDefaultAsync(person =>
-userEmail.Equals(person.Email, OrdinalIgnoreCase));
-
-public async Task<Person> FindByUsername(string userName)
-{
-    var shortName = userName.Substring(0, userName.IndexOf('@', OrdinalIgnoreCase));
-    return await _persons
-        .SingleOrDefaultAsync(person =>
-             userName.Equals(person.UserName, OrdinalIgnoreCase)
-             || shortName.Equals(person.UserName, OrdinalIgnoreCase)
-             );
-}
-
-**/
 
