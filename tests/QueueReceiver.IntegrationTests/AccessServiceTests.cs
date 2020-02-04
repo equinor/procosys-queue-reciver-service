@@ -16,7 +16,7 @@ namespace QueueReceiver.IntegrationTests
     [TestClass]
     public class AccessServiceTests
     {
-
+        #region Setup Service
         public static (AccessService,Mock<IGraphService>) Factory(QueueReceiverServiceContext context)
         {
             var personRepository = new PersonRepository(context);
@@ -40,6 +40,7 @@ namespace QueueReceiver.IntegrationTests
 
             return (service, graphServiceMock);
         }
+        #endregion
 
         [TestMethod]
         public async Task HandleRequest_GivesAccess_WithCorrectInput()
