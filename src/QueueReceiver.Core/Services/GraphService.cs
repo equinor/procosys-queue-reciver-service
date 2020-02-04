@@ -41,7 +41,7 @@ namespace QueueReceiver.Core.Services
             return result;
         }
 
-        public async Task<AdPerson?> GetPersonByOid(string userOid)
+        public async Task<AdPerson?> GetAdPersonByOid(string userOid)
         {
             var graphClient = await CreateClient();
 

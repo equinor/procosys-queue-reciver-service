@@ -6,7 +6,7 @@ namespace QueueReceiver.Core.Interfaces
 {
     public interface IGraphService
     {
-        Task<AdPerson?> GetPersonByOid(string userOid);
+        Task<AdPerson?> GetAdPersonByOid(string userOid);
         Task<IEnumerable<string>> GetMemberOids(string groupOid);
     }
 }
