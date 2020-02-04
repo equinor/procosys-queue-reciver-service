@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using QueueReceiver.Core.Interfaces;
 
-
 namespace QueueReceiver.Core.Services
 {
     public sealed class ServiceLocator : IServiceLocator

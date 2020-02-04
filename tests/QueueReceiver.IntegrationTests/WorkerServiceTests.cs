@@ -28,7 +28,8 @@ namespace QueueReceiver.IntegrationTests
         {
             WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80");
             var builder = new ConfigurationBuilder()
-                .AddUserSecrets<WorkerServiceTests>();
+                 .AddJsonFile("appsettings.integrationtests.json", optional: false, reloadOnChange: true);
+                 .AddUserSecrets<WorkerServiceTests>();
 
             Configuration = builder.Build();
         }

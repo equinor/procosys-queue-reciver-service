@@ -78,8 +78,6 @@ namespace QueueReceiver.Core.UnitTests.Services
             _personProjectService.Verify(_ => _.GiveProjectAccessToPlant(somePersonId, It.IsAny<string>()), Times.Once);
         }
 
-
-
         [TestMethod]
         public async Task HandleRequest_successfully_removes_access()
         {
