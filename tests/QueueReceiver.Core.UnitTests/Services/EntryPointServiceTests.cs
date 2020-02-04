@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.ServiceBus;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -7,7 +6,6 @@ using Newtonsoft.Json;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Services;
-using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,13 +44,13 @@ namespace QueueReceiver.Core.UnitTests.Services
                     new Member("testOid",false)
                 });
 
-            Mock<Message> message = new Mock<Message>(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(accessInfo)));
+            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(accessInfo)));
 
             await service.InitializeQueue();
 
             try
             {
-                await queueClient.SendMessage(message.Object, default);
+                await queueClient.SendMessage(message, default);
             }
             catch (InternalTestFailureException e)
             {
