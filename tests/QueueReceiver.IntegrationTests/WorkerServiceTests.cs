@@ -30,6 +30,7 @@ namespace QueueReceiver.IntegrationTests
             var builder = new ConfigurationBuilder()
                  .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                  .AddJsonFile("appsettings.integrationtests.json", optional: false, reloadOnChange: true)
+                 .AddEnvironmentVariables()
                  .AddUserSecrets<WorkerServiceTests>();
 
             Configuration = builder.Build();
