@@ -26,12 +26,17 @@ namespace QueueReceiver.IntegrationTests
 
         public WorkerServiceTests()
         {
-            //WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80");
             var builder = new ConfigurationBuilder()
                  .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                 .AddEnvironmentVariables()
                  .AddUserSecrets<WorkerServiceTests>();
 
             Configuration = builder.Build();
+
+            if(Configuration["WithoutProxyForTest"] != "true")
+            {
+                WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80");
+            }
         }
 
         #region Facory Methods
@@ -57,7 +62,7 @@ namespace QueueReceiver.IntegrationTests
 
         private QueueClient CreateQueueClient()
         {
-            string connectionString = Configuration["ServiceBusConnectionString"]; 
+            string connectionString = Configuration["ServiceBusConnectionString"];
             var queueClient = new QueueClient(connectionString, "intergrationtest");
             queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
             return queueClient;
