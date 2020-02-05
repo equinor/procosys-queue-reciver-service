@@ -13,7 +13,7 @@ variables:
   System.Debug: 'true'
   vmImageName: 'windows-latest'
   buildConfiguration: 'Release'
-  ServiceBusConnectionString: $(ServiceBusConnectionString)
+  ServiceBusConnectionString: $(pipelineServiceBusConnnectionString)
 
 stages:
   
@@ -27,7 +27,7 @@ stages:
     - script: dotnet build --configuration $(buildConfiguration)
       displayName: 'dotnet build $(buildConfiguration)'
 
-    # - script: SET ServiceBusConnectionString=$(ServiceBusConnectionString)
+    - script: SET ServiceBusConnectionString=$(pipelineServiceBusConnnectionString)
     
     - task: DotNetCoreCLI@2
       displayName: 'dotnet test $(buildConfiguration)'
