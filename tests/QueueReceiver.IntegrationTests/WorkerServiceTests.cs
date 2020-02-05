@@ -26,10 +26,9 @@ namespace QueueReceiver.IntegrationTests
 
         public WorkerServiceTests()
         {
+            //WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80");
             var builder = new ConfigurationBuilder()
                  .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                 //.AddJsonFile("appsettings.integrationtests.json", optional: false, reloadOnChange: true)
-                 .AddEnvironmentVariables()
                  .AddUserSecrets<WorkerServiceTests>();
 
             Configuration = builder.Build();
@@ -58,20 +57,9 @@ namespace QueueReceiver.IntegrationTests
 
         private QueueClient CreateQueueClient()
         {
-
-            //string variable = Configuration["ServiceBusConnectionString"];
-            //if (!string.IsNullOrWhiteSpace(variable))
-            //{
-            //    WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80");
-            //    Environment.SetEnvironmentVariable("ServiceBusConnectionString", variable);
-            //}
-            string connectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
+            string connectionString = Configuration["ServiceBusConnectionString"]; 
             var queueClient = new QueueClient(connectionString, "intergrationtest");
             queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
-            //if (!string.IsNullOrWhiteSpace(variable))
-            //{
-            //    queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
-            //}
             return queueClient;
         }
         #endregion
