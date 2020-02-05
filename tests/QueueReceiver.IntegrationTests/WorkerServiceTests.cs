@@ -59,19 +59,19 @@ namespace QueueReceiver.IntegrationTests
         private QueueClient CreateQueueClient()
         {
 
-            string variable = Configuration["ServiceBusConnectionString"];
-            if (!string.IsNullOrWhiteSpace(variable))
-            {
-                WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80");
-                Environment.SetEnvironmentVariable("ServiceBusConnectionString", variable);
-            }
+            //string variable = Configuration["ServiceBusConnectionString"];
+            //if (!string.IsNullOrWhiteSpace(variable))
+            //{
+            //    WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80");
+            //    Environment.SetEnvironmentVariable("ServiceBusConnectionString", variable);
+            //}
             string connectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
             var queueClient = new QueueClient(connectionString, "intergrationtest");
-            queueClient.ServiceBusConnection.TransportType = TransportType.Amqp;
-            if (!string.IsNullOrWhiteSpace(variable))
-            {
-                queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
-            }
+            queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
+            //if (!string.IsNullOrWhiteSpace(variable))
+            //{
+            //    queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
+            //}
             return queueClient;
         }
         #endregion
