@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using QueueReceiver.Core.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Interfaces
@@ -7,5 +9,7 @@ namespace QueueReceiver.Core.Interfaces
     {
         Task<string?> GetPlantId(string plantOid);
         IEnumerable<string> GetAllGroupOids();
+        List<Plant> GetAllPlants();
+        List<string> GetAllMemberOidsByPlant(string plantId);
     }
 }

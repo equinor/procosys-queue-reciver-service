@@ -27,5 +27,20 @@ namespace QueueReceiver.Infrastructure.Repositories
                 .Where(plant => plantOid.Equals(plant.InternalGroupId) || plantOid.Equals(plant.AffiliateGroupId))
                 .Select(plant => plant.PlantId)
                 .SingleOrDefaultAsync<string?>();
+
+        public List<Plant> GetAllPlants() => _plants.ToList(); //where clause aff and int group ids
+
+        public List<string> GetMemberOidsByPlant(string plantId)
+        {
+            var affiliates = _plants.Where(plant => plant.AffiliateGroupId != null && plant.PlantId == plantId)
+                .Select(plant => plant.AffiliateGroupId)
+                .AsNoTracking();
+
+            var inter = _plants.Where(plant => plant.InternalGroupId != null && plant.PlantId == plantId)
+                .Select(plant => plant.InternalGroupId)
+                .AsNoTracking();
+            
+            return affiliates.Concat(inter).ToList();
+        }
     }
 }

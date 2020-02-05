@@ -1,5 +1,4 @@
 ﻿using QueueReceiver.Core.Interfaces;
-using QueueReceiver.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,58 +14,56 @@ namespace QueueReceiver.Core.Services
         private readonly IGraphService _graphService;
         private readonly IPersonService _personService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IAccessService _accessService;
 
         public SyncService(IPlantService plantService, IGraphService graphService,
-            IPersonService personService, IUnitOfWork unitOfWork)
+            IPersonService personService, IUnitOfWork unitOfWork, IAccessService accessService)
         {
             _plantService = plantService;
             _graphService = graphService;
             _personService = personService;
             _unitOfWork = unitOfWork;
+            _accessService = accessService;
         }
 
-        public async Task ExcecuteAccessSync()
+        public async Task StartAccessSync()
         {
-            //Find all groups we want to sync
-            //List<Plant> plants = _plantService.GetAllPlants();
+            var plants = _plantService.GetAllPlants();
 
-            //plants.ForEach(async plant =>
-            //{
-            //    var AdMemberOids = await GetMemberOidsFromGroups(new string[] { plant.AffiliateGroupId, plant.InternalGroupId });
+            plants.ForEach(async plant =>
+            {
+                //var PcsDbMemberOids = _plantService.GetAllMemberOidsByPlant(plant.PlantId);
+                var personOidsWithAccessToPlant = _personService.GetMembersWithAccessToPlant(plant.PlantId).ToList();
+                var adMemberOids = await GetMemberOidsFromGroups(new string[] { plant.AffiliateGroupId, plant.InternalGroupId });
 
-            // //   List<string> dbMemberOids = _plantService.getAllMemberOids(plant.PlantId);
+                var membersInAdNotInDb = adMemberOids.Except(personOidsWithAccessToPlant);
+                var membersInDbNotInAd = personOidsWithAccessToPlant.Except(adMemberOids).ToList();
 
-            //    //var membersInDbNotInAd = dbMemberOids.Except(AdMemberOids).ToList();
-            //    //var membersInAdNotInDb = AdMemberOids.Except(dbMemberOids).ToList();
+                if (membersInAdNotInDb.Any())
+                {
+                    foreach (var member in membersInAdNotInDb)
+                    { await _accessService.GiveAccess(member, plant.PlantId); }
+                }
 
-            //    if (membersInAdNotInDb.Any())
-            //    {
-            //        //GiveAccess;
-            //    }
-            //    if (membersInDbNotInAd.Any())
-            //    {
-            //        //RemoveAccess;
-            //    }
+                if (membersInDbNotInAd.Any())
+                {
+                    foreach (var member in membersInDbNotInAd)
+                    { await _accessService.RemoveAccess(member, plant.PlantId); }
+                }
 
-            //});
+            });
 
-            /**
-             * 
-             * do smt with queue (ie. empty queue and pause queue service)?
-             * 
-             * For each plant
-             *   Find group members in graph with that plant id (internal/affiliate)
-             *   for each member in plant(from graph)
-             *   {
-             *     find members in db thats not in graph
-             *       void access
-             *       
-             *     find members in graph thats not in db,
-             *       add/unvoid access
-             *    }  
-             *    
-             *    do smt with queue(ie. empty deadletter queue, start service)?
-             * */
+
+            // lykke pseudo
+            // Step 1: Find all groups we want to sync (all plants or projects??)
+            // Step 2: Find members in PCS, not in Ad
+            // Step 3: Find members in Ad, not in PCS
+            // Step 4: If there are any members found in Ad and not in PCS db, give them access, i.e call OG add access method
+            // Step 5: If there are any members found in PCS db and not in Ad, remove their access, i.e call OG remove access method
+
+            // 1 plant = 1 group or 1 project = 1 group? 
+            // rename methods...
+
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]

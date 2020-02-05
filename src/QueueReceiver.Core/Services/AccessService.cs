@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using QueueReceiver.Core.Properties;
 using System.Globalization;
-using System;
 
 namespace QueueReceiver.Core.Services
 {
@@ -75,7 +74,7 @@ namespace QueueReceiver.Core.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
-        private async Task RemoveAccess(string userOid, string plantId)
+        public async Task RemoveAccess(string userOid, string plantId)
         {
             Person? person = await _personService.FindByOid(userOid);
 
@@ -90,7 +89,7 @@ namespace QueueReceiver.Core.Services
             _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
-        private async Task GiveAccess(string userOid, string plantId)
+        public async Task GiveAccess(string userOid, string plantId)
         {
             Person? person = await _personService.FindByOid(userOid);
 

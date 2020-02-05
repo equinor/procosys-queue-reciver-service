@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using QueueReceiver.Core.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Interfaces
@@ -7,5 +8,7 @@ namespace QueueReceiver.Core.Interfaces
     {
         Task<string?> GetPlantIdByOid(string plantOid);
         IEnumerable<string> GetAllInternalAndAffiliateOids();
+        List<Plant> GetAllPlants();
+        List<string> GetMemberOidsByPlant(string plantId);
     }
 }
