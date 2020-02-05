@@ -27,7 +27,7 @@ stages:
     - script: dotnet build --configuration $(buildConfiguration)
       displayName: 'dotnet build $(buildConfiguration)'
 
-    - script: SET ServiceBusConnectionString=$(pipelineServiceBusConnnectionString)
+   # - script: SET ServiceBusConnectionString=$(pipelineServiceBusConnnectionString)
     
     - task: DotNetCoreCLI@2
       displayName: 'dotnet test $(buildConfiguration)'

@@ -26,7 +26,6 @@ namespace QueueReceiver.IntegrationTests
 
         public WorkerServiceTests()
         {
-            WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80");
             var builder = new ConfigurationBuilder()
                  .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                  //.AddJsonFile("appsettings.integrationtests.json", optional: false, reloadOnChange: true)
@@ -63,7 +62,8 @@ namespace QueueReceiver.IntegrationTests
             string variable = Configuration["ServiceBusConnectionString"];
             if (!string.IsNullOrWhiteSpace(variable))
             {
-            Environment.SetEnvironmentVariable("ServiceBusConnectionString", variable);
+                WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80");
+                Environment.SetEnvironmentVariable("ServiceBusConnectionString", variable);
             }
             string connectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
             var queueClient = new QueueClient(connectionString, "intergrationtest");
