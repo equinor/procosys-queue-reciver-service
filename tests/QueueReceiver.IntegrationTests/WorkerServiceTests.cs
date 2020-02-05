@@ -67,7 +67,7 @@ namespace QueueReceiver.IntegrationTests
             }
             string connectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
             var queueClient = new QueueClient(connectionString, "intergrationtest");
-
+            queueClient.ServiceBusConnection.TransportType = TransportType.Amqp;
             if (!string.IsNullOrWhiteSpace(variable))
             {
                 queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
