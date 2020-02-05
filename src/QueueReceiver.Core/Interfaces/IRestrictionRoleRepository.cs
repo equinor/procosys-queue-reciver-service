@@ -4,6 +4,6 @@ namespace QueueReceiver.Core.Interfaces
 {
     public interface IRestrictionRoleRepository
     {
-        Task<string> FindRestrictionRole(string name, string plant);
+        Task<string> FindRestrictionRoleAsync(string name, string plant);
     }
 }

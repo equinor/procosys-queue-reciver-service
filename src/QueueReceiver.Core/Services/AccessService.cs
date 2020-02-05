@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using QueueReceiver.Core.Properties;
 using System.Globalization;
-using System;
 
 namespace QueueReceiver.Core.Services
 {
@@ -30,9 +29,9 @@ namespace QueueReceiver.Core.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task HandleRequest(AccessInfo accessInfo)
+        public async Task HandleRequestAsync(AccessInfo accessInfo)
         {
-            string? plantId = await _plantService.GetPlantId(accessInfo.PlantOid);
+            string? plantId = await _plantService.GetPlantIdAsync(accessInfo.PlantOid);
 
             if (plantId == null)
             {
@@ -49,11 +48,11 @@ namespace QueueReceiver.Core.Services
               {
                   if (member.ShouldVoid)
                   {
-                      await _personService.UpdateWithOidIfNotFound(member.UserOid);
+                      await _personService.UpdateWithOidIfNotFoundAsync(member.UserOid);
                   }
                   else
                   {
-                      await _personService.CreateIfNotExist(member.UserOid);
+                      await _personService.CreateIfNotExistAsync(member.UserOid);
                   }
               });
             await Task.WhenAll(syncPersonTableTasks);
@@ -77,7 +76,7 @@ namespace QueueReceiver.Core.Services
 
         private async Task RemoveAccess(string userOid, string plantId)
         {
-            Person? person = await _personService.FindByOid(userOid);
+            Person? person = await _personService.FindByOidAsync(userOid);
 
             if (person == null)
             {
@@ -92,7 +91,7 @@ namespace QueueReceiver.Core.Services
 
         private async Task GiveAccess(string userOid, string plantId)
         {
-            Person? person = await _personService.FindByOid(userOid);
+            Person? person = await _personService.FindByOidAsync(userOid);
 
             if (person == null)
             {
@@ -100,7 +99,7 @@ namespace QueueReceiver.Core.Services
                 return;
             }
             _logger.LogInformation(Resources.AddAccess, person.Id, plantId);
-            await _personProjectService.GiveProjectAccessToPlant(person.Id, plantId);
+            await _personProjectService.GiveProjectAccessToPlantAsync(person.Id, plantId);
         }
 
         private static bool MessageHasNoRelevantData(AccessInfo accessInfo)

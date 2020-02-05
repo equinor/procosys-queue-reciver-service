@@ -15,7 +15,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         public ProjectRepository(QueueReceiverServiceContext context)
             => _projects = context.Projects;
 
-        public Task<List<Project>> GetParentProjectsByPlant(string plantId)
+        public Task<List<Project>> GetParentProjectsByPlantAsync(string plantId)
         {
             return _projects
                 .Where(project =>

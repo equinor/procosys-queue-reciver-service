@@ -6,15 +6,13 @@ namespace QueueReceiver.Core.Interfaces
 {
     public interface IPersonRepository
     {
-        Task<Person?> FindByUserOid(string userOid);
-        //Task<Person> FindByUserEmail(string userEmail);
-        // Task<Person> FindByUsername(string userName);
-        Task<Person> AddPerson(Person person);
-        Task<Person?> FindByMobileNumberAndName(string mobileNumber, string givenName, string surname);
+        Task<Person?> FindByUserOidAsync(string userOid);
+        Task<Person> AddPersonAsync(Person person);
+        Task<Person?> FindByMobileNumberAndNameAsync(string mobileNumber, string givenName, string surname);
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
-        Task<Person?> FindByMobileNumber(string mobileNumber);
-        Task<Person?> FindByFullName(string firstName, string lastName);
-        Task<Person?> FindByEmail(string userEmail);
-        Task<Person> FindByUsername(string userName);
+        Task<Person?> FindByMobileNumberAsync(string mobileNumber);
+        Task<Person?> FindByFullNameAsync(string firstName, string lastName);
+        Task<Person?> FindByEmailAsync(string userEmail);
+        Task<Person> FindByUsernameAsync(string userName);
     }
 }

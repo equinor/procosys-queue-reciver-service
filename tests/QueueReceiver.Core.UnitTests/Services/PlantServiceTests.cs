@@ -25,11 +25,11 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string existingPlantOid = "someOid";
             const string existingPlantId = "somePlantId";
 
-            _mockRepository.Setup(r => r.GetPlantIdByOid(existingPlantOid))
+            _mockRepository.Setup(r => r.GetPlantIdByOidAsync(existingPlantOid))
                 .Returns(Task.FromResult<string?>(existingPlantId));
 
             //Act
-            var result = await _plantService.GetPlantId(existingPlantOid);
+            var result = await _plantService.GetPlantIdAsync(existingPlantOid);
 
             //Assert
             Assert.AreEqual(existingPlantId, result);

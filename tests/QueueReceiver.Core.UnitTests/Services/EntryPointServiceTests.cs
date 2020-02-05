@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.ServiceBus;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -7,7 +6,6 @@ using Newtonsoft.Json;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Services;
-using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +17,6 @@ namespace QueueReceiver.Core.UnitTests.Services
     {
         private static (EntryPointService,
             TestableQueueClient,
-            Mock<ILogger<EntryPointService>>,
             Mock<IAccessService>)
             Factory()
         {
@@ -28,16 +25,15 @@ namespace QueueReceiver.Core.UnitTests.Services
             var accessService = new Mock<IAccessService>();
             var service = new EntryPointService(queueClient, accessService.Object, logger.Object);
 
-            //var accessService = SetupCreateScope(serviceLocator);
-            return (service, queueClient, logger, accessService);
+            return (service, queueClient,  accessService);
         }
 
         [TestMethod]
         public async Task InitializeQueueTest()
         {
-            var (service, queueClient, logger, accessService) = Factory();
+            var (service, queueClient, accessService) = Factory();
 
-            accessService.Setup(acs => acs.HandleRequest(It.IsAny<AccessInfo>()))
+            accessService.Setup(acs => acs.HandleRequestAsync(It.IsAny<AccessInfo>()))
                 .ThrowsAsync(new InternalTestFailureException("!"));
 
             var accessInfo = new AccessInfo("test",
@@ -46,13 +42,13 @@ namespace QueueReceiver.Core.UnitTests.Services
                     new Member("testOid",false)
                 });
 
-            Mock<Message> message = new Mock<Message>(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(accessInfo)));
+            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(accessInfo)));
 
-            await service.InitializeQueue();
+            await service.InitializeQueueAsync();
 
             try
             {
-                await queueClient.SendMessage(message.Object, default);
+                await queueClient.SendMessage(message, default);
             }
             catch (InternalTestFailureException e)
             {
