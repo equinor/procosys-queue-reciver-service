@@ -1,5 +1,4 @@
 ﻿using QueueReceiver.Core.Interfaces;
-using QueueReceiver.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,20 +15,21 @@ namespace QueueReceiver.Core.Services
         private readonly IGraphService _graphService;
         private readonly IPersonService _personService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IAccessService _accessService;
 
         public SyncService(IPlantService plantService, IGraphService graphService,
-            IPersonService personService, IUnitOfWork unitOfWork)
+            IPersonService personService, IUnitOfWork unitOfWork, IAccessService accessService)
         {
             _plantService = plantService;
             _graphService = graphService;
             _personService = personService;
             _unitOfWork = unitOfWork;
+            _accessService = accessService;
         }
 
-        public async Task ExcecuteAccessSync()
+        public async Task StartAccessSync()
         {
-            //Find all groups we want to sync
-            //List<Plant> plants = _plantService.GetAllPlants();
+            var plants = _plantService.GetAllPlants();
 
             foreach(var plant in plants)
             {
@@ -61,6 +61,7 @@ namespace QueueReceiver.Core.Services
                 //}
             }
 
+            // //   List<string> dbMemberOids = _plantService.getAllMemberOids(plant.PlantId);
 
             // lykke pseudo
             // Step 1: Find all groups we want to sync (all plants or projects??)
