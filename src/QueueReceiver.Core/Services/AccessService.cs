@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using QueueReceiver.Core.Properties;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace QueueReceiver.Core.Services
 {
@@ -32,33 +33,28 @@ namespace QueueReceiver.Core.Services
         public async Task HandleRequest(AccessInfo accessInfo)
         {
             string? plantId = await _plantService.GetPlantId(accessInfo.PlantOid);
-
-            if (plantId == null)
+           foreach(Member member in accessInfo.Members)
             {
-                _logger.LogInformation(Resources.GroupDoesNotExist);
-                return;
-            }
+                if (plantId == null)
+                {
+                    _logger.LogInformation(Resources.GroupDoesNotExist);
+                    return;
+                }
 
-            if (MessageHasNoRelevantData(accessInfo))
-            {
-                return;
-            }
+                if (MessageHasNoRelevantData(accessInfo))
+                {
+                    return;
+                }
 
-            var syncPersonTableTasks = accessInfo.Members.Select(async member =>
-              {
-                  if (member.ShouldVoid)
-                  {
-                      await _personService.UpdateWithOidIfNotFound(member.UserOid);
-                  }
-                  else
-                  {
-                      await _personService.CreateIfNotExist(member.UserOid);
-                  }
-              });
-            await Task.WhenAll(syncPersonTableTasks);
-            await _unitOfWork.SaveChangesAsync();
+                await UpdateMemberInfo(member);
+            }    
 
-            var syncAccessTasks = accessInfo.Members.Select(async member =>
+            await UpdateMemberAccess(accessInfo.Members, plantId);
+        }
+
+        public async Task UpdateMemberAccess(List<Member> members, string plantId)
+        {
+            var syncAccessTasks = members.Select(async member =>
             {
                 if (member.ShouldVoid)
                 {
@@ -74,7 +70,21 @@ namespace QueueReceiver.Core.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task RemoveAccess(string userOid, string plantId)
+        public async Task UpdateMemberInfo(Member member)
+        {
+                if (member.ShouldVoid)
+                {
+                    await _personService.UpdateWithOidIfNotFound(member.UserOid);
+                }
+                else
+                {
+                    await _personService.CreateIfNotExist(member.UserOid);
+                }
+
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        private async Task RemoveAccess(string userOid, string plantId)
         {
             Person? person = await _personService.FindByOid(userOid);
 
@@ -89,7 +99,7 @@ namespace QueueReceiver.Core.Services
             _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
-        public async Task GiveAccess(string userOid, string plantId)
+        private async Task GiveAccess(string userOid, string plantId)
         {
             Person? person = await _personService.FindByOid(userOid);
 
