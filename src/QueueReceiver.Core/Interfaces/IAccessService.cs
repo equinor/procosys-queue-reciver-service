@@ -9,7 +9,5 @@ namespace QueueReceiver.Core.Interfaces
         Task HandleRequestAsync(AccessInfo accessInfo);
         Task UpdateMemberAccess(List<Member> members, string plantId);
         Task UpdateMemberInfo(Member member);
-        Task GiveAccess(string userOid, string plantId);
-        Task RemoveAccess(string userOid, string plantId);
     }
 }

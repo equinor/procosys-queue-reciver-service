@@ -13,12 +13,19 @@ namespace QueueReceiver.Core.UnitTests.Services
         private readonly Mock<IPersonRepository> _personRepository;
         private readonly Mock<IGraphService> _graphService;
         private readonly IPersonService _service;
+        private readonly Mock<IProjectRepository> _projectRepository;
+        private readonly Mock<IPersonProjectRepository> _personProjectRepository;
 
         public PersonServiceTests()
         {
             _personRepository = new Mock<IPersonRepository>();
             _graphService = new Mock<IGraphService>();
-            _service = new PersonService(_personRepository.Object, _graphService.Object);
+            _projectRepository = new Mock<IProjectRepository>();
+            _personProjectRepository = new Mock<IPersonProjectRepository>();
+            _service = new PersonService(_personRepository.Object,
+                                         _graphService.Object,
+                                         _projectRepository.Object,
+                                         _personProjectRepository.Object);
         }
 
         [TestMethod]
@@ -60,7 +67,7 @@ namespace QueueReceiver.Core.UnitTests.Services
                 .Returns(Task.FromResult<Person?>(new Person("tull", "tøys") { Id = SomeId }));
 
             //Act
-            var person = await _service.CreateIfNotExistAsync(SomeOid);
+            var person = await _service.CreateIfNotExist(SomeOid);
 
             //Assert
             Assert.AreEqual(SomeId, person.Id);
@@ -75,7 +82,7 @@ namespace QueueReceiver.Core.UnitTests.Services
                 .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, "anyUserName", "anyEmail")));
 
             //Act
-            var person = await _service.UpdateWithOidIfNotFoundAsync(SomeOid);
+            var person = await _service.UpdateWithOidIfNotFound(SomeOid);
 
             //Assert
             Assert.IsNull(person);

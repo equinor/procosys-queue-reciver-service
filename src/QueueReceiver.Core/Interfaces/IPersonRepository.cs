@@ -14,5 +14,6 @@ namespace QueueReceiver.Core.Interfaces
         Task<Person?> FindByFullNameAsync(string firstName, string lastName);
         Task<Person?> FindByEmailAsync(string userEmail);
         Task<Person> FindByUsernameAsync(string userName);
+        IEnumerable<string?> GetOidsBasedOnProject(long projectId);
     }
 }

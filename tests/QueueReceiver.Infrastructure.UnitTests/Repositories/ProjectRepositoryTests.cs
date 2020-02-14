@@ -58,7 +58,7 @@ namespace QueueReceiver.Infrastructure.UnitTests.Repositories
             var repository = new ProjectRepository(mockContext.Object);
 
             //Act
-            var result = await repository.GetParentProjectsByPlantAsync(plantA);
+            var result = await repository.GetParentProjectsByPlant(plantA);
 
             //Assert
             Assert.AreEqual(1, result.Count);

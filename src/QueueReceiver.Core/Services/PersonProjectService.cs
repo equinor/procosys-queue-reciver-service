@@ -31,7 +31,7 @@ namespace QueueReceiver.Core.Services
             var unvoided = false;
 
             var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory(personId);
-            var projects = await _projectRepository.GetParentProjectsByPlantAsync(plantId);
+            var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
 
             projects.ForEach(async project =>
             {

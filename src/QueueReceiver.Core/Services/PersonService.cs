@@ -22,7 +22,7 @@ namespace QueueReceiver.Core.Services
             _personProjectRepository = personProjectRepository;
         }
 
-        public async Task<Person?> UpdateWithOidIfNotFoundAsync(string userOid)
+        public async Task<Person?> UpdateWithOidIfNotFound(string userOid)
         {
             var person = await _personRepository.FindByUserOidAsync(userOid);
             if (person != null)
@@ -55,7 +55,7 @@ namespace QueueReceiver.Core.Services
 
         public async Task<Person?> FindByOidAsync(string userOid) => await _personRepository.FindByUserOidAsync(userOid);
 
-        public async Task<Person> CreateIfNotExistAsync(string userOid)
+        public async Task<Person> CreateIfNotExist(string userOid)
         {
             var person = await _personRepository.FindByUserOidAsync(userOid);
             if (person != null)

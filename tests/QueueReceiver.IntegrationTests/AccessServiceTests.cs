@@ -21,7 +21,9 @@ namespace QueueReceiver.IntegrationTests
         {
             var personRepository = new PersonRepository(context);
             var graphServiceMock = new Mock<IGraphService>();
-            var personService = new PersonService(personRepository, graphServiceMock.Object);
+            var projectRepositoryMock = new Mock<IProjectRepository>();
+            var personProjectRepositoryMock = new Mock<IPersonProjectRepository>();
+            var personService = new PersonService(personRepository, graphServiceMock.Object, projectRepositoryMock.Object, personProjectRepositoryMock.Object);
             var settings = new DbContextSettings { PersonProjectCreatedId = 111 };
             var personProjectRepository = new PersonProjectRepository(context, settings);
             var projectRepository = new ProjectRepository(context);

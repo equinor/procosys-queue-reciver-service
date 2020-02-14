@@ -48,7 +48,7 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             //Assert
             _plantService.Verify(_ => _.GetPlantIdAsync(plantOidThatDoesntExists), Times.Once);
-            _personService.Verify(_ => _.CreateIfNotExistAsync(It.IsAny<string>()), Times.Never);
+            _personService.Verify(_ => _.CreateIfNotExist(It.IsAny<string>()), Times.Never);
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string plantOidThatExists = "SomePlantThatExist";
             _plantService.Setup(plantService => plantService.GetPlantIdAsync(plantOidThatExists))
                 .Returns(Task.FromResult(somePlantId)!);
-            _personService.Setup(personService => personService.UpdateWithOidIfNotFoundAsync(someOid))
+            _personService.Setup(personService => personService.UpdateWithOidIfNotFound(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
             _personService.Setup(PersonService => PersonService.FindByOidAsync(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
@@ -88,7 +88,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string plantOidThatExists = "SomePlantThatExist";
             _plantService.Setup(plantService => plantService.GetPlantIdAsync(plantOidThatExists))
                 .Returns(Task.FromResult(somePlantId)!);
-            _personService.Setup(personService => personService.UpdateWithOidIfNotFoundAsync(someOid))
+            _personService.Setup(personService => personService.UpdateWithOidIfNotFound(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
             _personService.Setup(PersonService => PersonService.FindByOidAsync(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
@@ -102,7 +102,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             await _service.HandleRequestAsync(accessInfo);
 
             //Assert
-            _personService.Verify(_ => _.UpdateWithOidIfNotFoundAsync(someOid), Times.Once);
+            _personService.Verify(_ => _.UpdateWithOidIfNotFound(someOid), Times.Once);
             _personProjectService.Verify(_ => _.RemoveAccessToPlant(somePersonId, It.IsAny<string>()), Times.Once);
         }
 
