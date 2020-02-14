@@ -36,7 +36,7 @@
 
         public PersonProjectHistory PersonProjectHistory { get; internal set; }
 
-#pragma warning disable CS8618 //ORM.
+        #pragma warning disable CS8618 //Entity framework requires an empty constructor.
         protected PersonProjectHistoryOperation()
         {
         }

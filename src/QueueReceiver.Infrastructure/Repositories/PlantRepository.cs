@@ -22,7 +22,7 @@ namespace QueueReceiver.Infrastructure.Repositories
             return affiliates.Concat(inter);
         }
 
-        public Task<string?> GetPlantIdByOid(string plantOid)
+        public Task<string?> GetPlantIdByOidAsync(string plantOid)
             => _plants
                 .Where(plant => plantOid.Equals(plant.InternalGroupId) || plantOid.Equals(plant.AffiliateGroupId))
                 .Select(plant => plant.PlantId)

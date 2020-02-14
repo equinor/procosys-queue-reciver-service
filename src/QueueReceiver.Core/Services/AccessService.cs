@@ -30,9 +30,9 @@ namespace QueueReceiver.Core.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task HandleRequest(AccessInfo accessInfo)
+        public async Task HandleRequestAsync(AccessInfo accessInfo)
         {
-            string? plantId = await _plantService.GetPlantId(accessInfo.PlantOid);
+            string? plantId = await _plantService.GetPlantIdAsync(accessInfo.PlantOid);
            foreach(Member member in accessInfo.Members)
             {
                 if (plantId == null)
@@ -86,7 +86,7 @@ namespace QueueReceiver.Core.Services
 
         private async Task RemoveAccess(string userOid, string plantId)
         {
-            Person? person = await _personService.FindByOid(userOid);
+            Person? person = await _personService.FindByOidAsync(userOid);
 
             if (person == null)
             {
@@ -101,7 +101,7 @@ namespace QueueReceiver.Core.Services
 
         private async Task GiveAccess(string userOid, string plantId)
         {
-            Person? person = await _personService.FindByOid(userOid);
+            Person? person = await _personService.FindByOidAsync(userOid);
 
             if (person == null)
             {
@@ -109,7 +109,7 @@ namespace QueueReceiver.Core.Services
                 return;
             }
             _logger.LogInformation(Resources.AddAccess, person.Id, plantId);
-            await _personProjectService.GiveProjectAccessToPlant(person.Id, plantId);
+            await _personProjectService.GiveProjectAccessToPlantAsync(person.Id, plantId);
         }
 
         private static bool MessageHasNoRelevantData(AccessInfo accessInfo)

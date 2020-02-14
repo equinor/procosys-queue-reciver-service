@@ -16,14 +16,14 @@ namespace QueueReceiver.Core.Services
         public IEnumerable<string> GetAllGroupOids()
             => _plantRepository.GetAllInternalAndAffiliateOids();
 
-        public async Task<string?> GetPlantId(string plantOid)
-            => await _plantRepository.GetPlantIdByOid(plantOid);
+
+        public async Task<string?> GetPlantIdAsync(string plantOid)
+            => await _plantRepository.GetPlantIdByOidAsync(plantOid);
 
         public List<Plant> GetAllPlants()
             => _plantRepository.GetAllPlants();
 
         public List<string> GetAllMemberOidsByPlant(string plantId)
             => _plantRepository.GetMemberOidsByPlant(plantId);
-
     }
 }

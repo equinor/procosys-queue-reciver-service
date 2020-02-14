@@ -17,7 +17,7 @@ namespace QueueReceiver.Infrastructure.Repositories
             _personProjectHistories = context.PersonProjectHistories;
         }
 
-        public Task<List<PersonProjectHistory>> GetPersonProjectHistoryById(int id)
+        public Task<List<PersonProjectHistory>> GetPersonProjectHistoryByIdAsync(int id)
         {
             return _personProjectHistories
                 .Where(history =>

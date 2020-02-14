@@ -14,7 +14,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         public UserGroupRepository(QueueReceiverServiceContext context)
             => _userGroups = context.UserGroups;
 
-        public async Task<long> FindIdByUserGroupName(string name)
+        public async Task<long> FindIdByUserGroupNameAsync(string name)
             => await _userGroups
             .Where(userGroup => name.Equals(userGroup.Name))
             .Select(userGroup => userGroup.Id)

@@ -11,23 +11,23 @@ namespace QueueReceiver.Worker
     public class WorkerService : BackgroundService
     {
         private readonly ILogger<WorkerService> _logger;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceLocator _serviceLocator;
 
-        public WorkerService(ILogger<WorkerService> logger, IServiceProvider serviceProvider)
+        public WorkerService(ILogger<WorkerService> logger, IServiceLocator serviceLocator)
         {
             _logger = logger;
-            _serviceProvider = serviceProvider;
+            _serviceLocator = serviceLocator;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using var scope = _serviceProvider.CreateScope();
+            using var scope = _serviceLocator.CreateScope();
             var entryPointService =
                 scope.ServiceProvider
                     .GetRequiredService<IEntryPointService>();
 
             _logger.LogInformation($"Worker service at: {DateTimeOffset.Now}");
-            await entryPointService.InitializeQueue();
+            await entryPointService.InitializeQueueAsync();
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -35,7 +35,7 @@ namespace QueueReceiver.Worker
                 await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
             }
 
-            await entryPointService.DisposeQueue();
+            await entryPointService.DisposeQueueAsync();
             _logger.LogInformation($"Worker service stopping at: at: { DateTimeOffset.Now}");
         }
     }

@@ -30,14 +30,12 @@ namespace QueueReceiver.Core.UnitTests.Services
             var personRestrictionRoleRepository = new Mock<IPersonRestrictionRoleRepository>();
             var restrictionRoleRepository = new Mock<IRestrictionRoleRepository>();
             var personProjectHistoryRepository = new Mock<IPersonProjectHistoryRepository>();
+            var privilegeService = new Mock<IPrivilegeService>();
 
             var service = new PersonProjectService(
                 personProjectRepository.Object,
                 projectRepository.Object,
-                personUserGroupRepository.Object,
-                userGroupRepository.Object,
-                personRestrictionRoleRepository.Object,
-                restrictionRoleRepository.Object,
+                privilegeService.Object,
                 personProjectHistoryRepository.Object);
 
             return (service, personProjectRepository, projectRepository, personUserGroupRepository, userGroupRepository,
@@ -54,11 +52,11 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             var (service, personProjectRepository, projectRepository, _, _, _, _, _) = Factory();
 
-            projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
+            projectRepository.Setup(pr => pr.GetParentProjectsByPlantAsync(plantId))
                 .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
 
             //Act
-            await service.GiveProjectAccessToPlant(personId, plantId);
+            await service.GiveProjectAccessToPlantAsync(personId, plantId);
 
             //Assert
             personProjectRepository.Verify(ppr => ppr.AddAsync(projectId, personId), Times.Once);
