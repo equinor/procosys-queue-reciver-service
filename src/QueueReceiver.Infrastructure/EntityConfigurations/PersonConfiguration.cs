@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Models;
 
 namespace QueueReceiver.Infrastructure.EntityConfigurations
@@ -9,13 +10,16 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
         public void Configure(EntityTypeBuilder<Person> builder)
         {
             builder.ToTable("PERSON");
-            builder.Property(p => p.Id).HasColumnName("PERSON_ID");
+            builder.HasKey(p => p.Id);
+            builder.Property(p => p.Id).HasColumnName("PERSON_ID").ForOracleUseSequenceHiLo(PersonConstants.Sequence);
             builder.Property(p => p.UserName).HasColumnName("USERNAME");
             builder.Property(p => p.Email).HasColumnName("EMAILADDRESS");
             builder.Property(p => p.Oid).HasColumnName("AZURE_OID");
             builder.Property(p => p.FirstName).HasColumnName("FIRSTNAME");
             builder.Property(p => p.LastName).HasColumnName("LASTNAME");
             builder.Property(p => p.MobilePhoneNumber).HasColumnName("MOBILEPHONENO");
+
+            builder.HasMany(p => p.PersonProjects);
 
             builder.Property(p => p.Reconcile).HasColumnName("RECONCILE")
                 .HasConversion(

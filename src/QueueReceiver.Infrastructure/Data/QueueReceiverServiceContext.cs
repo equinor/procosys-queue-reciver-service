@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.EntityConfigurations;
@@ -40,6 +41,11 @@ namespace QueueReceiver.Infrastructure.Data
                 .ApplyConfiguration(new PersonProjectHistoryOperationConfiguration())
                 .ApplyConfiguration(new RestrictionRoleConfiguration())
                 .ApplyConfiguration(new UserGroupConfiguration());
+
+                 modelBuilder.HasSequence(PersonConstants.Sequence).IncrementsBy(1);
+                 modelBuilder.HasSequence(PersonProjectHistoryConstants.Sequence).IncrementsBy(1);
+                 modelBuilder.HasSequence(PersonProjectHistoryOperationConstants.Sequence).IncrementsBy(1);
+                 // Er vi sikre på at disse brukes kun der de skal? 
         }
     }
 }

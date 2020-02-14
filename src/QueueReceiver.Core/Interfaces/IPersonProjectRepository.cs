@@ -9,5 +9,6 @@ namespace QueueReceiver.Core.Interfaces
         List<PersonProject> VoidPersonProjects(string plantId, long personId);
         Task AddAsync(long projectId, long personId);
         Task<PersonProject> GetAsync(long personId, long projectId);
+        IEnumerable<PersonProject> GetByProject(long projectId);
     }
 }

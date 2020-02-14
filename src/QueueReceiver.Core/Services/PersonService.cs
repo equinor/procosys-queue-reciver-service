@@ -3,6 +3,7 @@ using QueueReceiver.Core.Models;
 using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace QueueReceiver.Core.Services
 {
@@ -10,11 +11,15 @@ namespace QueueReceiver.Core.Services
     {
         private readonly IPersonRepository _personRepository;
         private readonly IGraphService _graphService;
+        private readonly IProjectRepository _projectRepository;
+        private readonly IPersonProjectRepository _personProjectRepository;
 
-        public PersonService(IPersonRepository personRepository, IGraphService graphService)
+        public PersonService(IPersonRepository personRepository, IGraphService graphService, IProjectRepository projectRepository, IPersonProjectRepository personProjectRepository)
         {
             _personRepository = personRepository;
             _graphService = graphService;
+            _projectRepository = projectRepository;
+            _personProjectRepository = personProjectRepository;
         }
 
         public async Task<Person?> UpdateWithOidIfNotFoundAsync(string userOid)
@@ -64,11 +69,14 @@ namespace QueueReceiver.Core.Services
             {
                 throw new Exception($"{userOid} not found in graph. Queue out of sync");
             }
-
-            person = await _personRepository.FindByMobileNumberAndNameAsync(
+            if (adPerson.MobileNumber != null && adPerson.GivenName != null && adPerson.Surname != null)
+            {
+                person = await _personRepository.FindByMobileNumberAndNameAsync(
                                                             adPerson.MobileNumber,
                                                             adPerson.GivenName,
                                                             adPerson.Surname);
+            }
+
 
             if (person?.Oid != null)
             {
@@ -94,8 +102,16 @@ namespace QueueReceiver.Core.Services
 
         private async Task<Person> CreatePerson(AdPerson adPerson, bool shouldReconcile)
         {
+            if(adPerson.Email == null || adPerson.Oid == null)
+            {
+                return null; //TODO
+            }
+
+
+            var userName = adPerson.Email.ToUpperInvariant();
             return await _personRepository.AddPersonAsync(
-                    new Person(adPerson.Username, adPerson.Email)
+                    new Person(userName, adPerson.Email)
+
                     {
                         Oid = adPerson.Oid,
                         FirstName = adPerson.GivenName,
@@ -106,5 +122,22 @@ namespace QueueReceiver.Core.Services
 
         public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids)
             => _personRepository.GetAllNotInDb(oids);
+
+        public async Task<IEnumerable<string>> GetMembersWithAccessToPlant(string plantId)
+        {
+            var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
+            var personOids = projects.SelectMany(p => _personRepository.GetOidsBasedOnProject(p.ProjectId)).Distinct();
+
+            
+            if(personOids == null)
+            {
+                return new List<string>();
+            }
+            return personOids;
+            // get all projects for plant
+            // get all persons that have access to projects
+            // return hashset of personOids
+
+        }
     }
 }

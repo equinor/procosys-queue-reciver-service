@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
+using QueueReceiver.Core.Models;
 
 namespace QueueReceiver.Core.Services
 {
@@ -30,43 +31,47 @@ namespace QueueReceiver.Core.Services
             //Find all groups we want to sync
             //List<Plant> plants = _plantService.GetAllPlants();
 
-            //plants.ForEach(async plant =>
-            //{
-            //    var AdMemberOids = await GetMemberOidsFromGroups(new string[] { plant.AffiliateGroupId, plant.InternalGroupId });
+            foreach(var plant in plants)
+            {
+                var dbpersons = await _personService.GetMembersWithAccessToPlant(plant.PlantId);
+                var adMemberOids = await GetMemberOidsFromGroups(new string[] { plant.AffiliateGroupId, plant.InternalGroupId });
+                dbpersons = dbpersons.ToList();
+                var adMemberList = adMemberOids.ToList();
+                var membersInAdNotInDb = adMemberList.Except(dbpersons);
+                var membersInDbNotInAd = dbpersons.Except(adMemberList).ToList();
 
-            // //   List<string> dbMemberOids = _plantService.getAllMemberOids(plant.PlantId);
+                if (membersInAdNotInDb.Any())
+                {
+                    var members = membersInAdNotInDb.Select(miad => new Member(miad, shouldRemove: false)).ToList();
 
-            //    //var membersInDbNotInAd = dbMemberOids.Except(AdMemberOids).ToList();
-            //    //var membersInAdNotInDb = AdMemberOids.Except(dbMemberOids).ToList();
+                    foreach(Member m in members)
+                    {
+                        await _accessService.UpdateMemberInfo(m);
 
-            //    if (membersInAdNotInDb.Any())
-            //    {
-            //        //GiveAccess;
-            //    }
-            //    if (membersInDbNotInAd.Any())
-            //    {
-            //        //RemoveAccess;
-            //    }
+                    }
+                   
+                    await _accessService.UpdateMemberAccess(members, plant.PlantId);
+                }
 
-            //});
+                //if (membersInDbNotInAd.Any()) //TODO: Not for production without check
+                //{
+                //    var members = membersInDbNotInAd.Select(midb => new Member(midb, shouldRemove: true)).ToList();
+                //    await _accessService.UpdateMemberInfo(members);
+                //    await _accessService.UpdateMemberAccess(members, plant.PlantId);
+                //}
+            }
 
-            /**
-             * 
-             * do smt with queue (ie. empty queue and pause queue service)?
-             * 
-             * For each plant
-             *   Find group members in graph with that plant id (internal/affiliate)
-             *   for each member in plant(from graph)
-             *   {
-             *     find members in db thats not in graph
-             *       void access
-             *       
-             *     find members in graph thats not in db,
-             *       add/unvoid access
-             *    }  
-             *    
-             *    do smt with queue(ie. empty deadletter queue, start service)?
-             * */
+
+            // lykke pseudo
+            // Step 1: Find all groups we want to sync (all plants or projects??)
+            // Step 2: Find members in PCS, not in Ad
+            // Step 3: Find members in Ad, not in PCS
+            // Step 4: If there are any members found in Ad and not in PCS db, give them access, i.e call OG add access method
+            // Step 5: If there are any members found in PCS db and not in Ad, remove their access, i.e call OG remove access method
+
+            // 1 plant = 1 group or 1 project = 1 group? 
+            // rename methods...
+
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]

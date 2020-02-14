@@ -41,5 +41,10 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<PersonProject> GetAsync(long projectId, long personId)
             => await _personProjects.FindAsync(projectId, personId);
+
+        public IEnumerable<PersonProject> GetByProject(long projectId)
+        {
+            return _personProjects.Where(pp => pp.ProjectId == projectId);
+        }
     }
 }

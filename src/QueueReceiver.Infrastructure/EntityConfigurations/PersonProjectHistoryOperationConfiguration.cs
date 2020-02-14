@@ -15,6 +15,7 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
             builder.HasOne(ppho => ppho.PersonProjectHistory)
                 .WithMany(pph => pph.PersonProjectHistoryOperations)
                 .HasForeignKey(ppho => ppho.PersonProjectHistoryId);
+            
             builder.ToTable("PERSONPROJECT_HISTORY_OP");
 
             builder.Property(ppho => ppho.Id).HasColumnName("PERSONPROJECT_HISTORY_OP_ID")

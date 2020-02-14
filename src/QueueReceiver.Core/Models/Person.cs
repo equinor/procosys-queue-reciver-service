@@ -1,4 +1,7 @@
 ﻿
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace QueueReceiver.Core.Models
 {
     public class Person
@@ -24,5 +27,7 @@ namespace QueueReceiver.Core.Models
         public string? LastName { get; set; }
 
         public string? MobilePhoneNumber { get; set; }
+
+        public virtual IEnumerable<PersonProject> PersonProjects { get; set; }
     }
 }

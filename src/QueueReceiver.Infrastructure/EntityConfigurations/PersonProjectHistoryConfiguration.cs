@@ -9,10 +9,10 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<PersonProjectHistory> builder)
         {
+            builder.HasKey(pph => pph.Id);
             builder.Property(pph => pph.Id)
                 .ForOracleUseSequenceHiLo(PersonProjectHistoryConstants.Sequence);
 
-            builder.HasKey(pph => pph.Id);
             builder.HasMany(pph => pph.PersonProjectHistoryOperations);
 
             builder.ToTable("PERSONPROJECT_HISTORY");
