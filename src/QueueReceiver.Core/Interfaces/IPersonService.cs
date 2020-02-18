@@ -8,9 +8,10 @@ namespace QueueReceiver.Core.Interfaces
     {
         Task<Person?> UpdateWithOidIfNotFound(string userOid);
         Task<Person> CreateIfNotExist(string userOid);
-        Task<Person?> FindByOidAsync(string userOid);
+        Task<Person?> FindPersonByOidAsync(string userOid);
+        Task<long> GetPersonIdByOidAsync(string userOid);
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
         Task<Person?> FindAndUpdateAsync(AdPerson adPerson);
-        Task<IEnumerable<string>> GetMembersWithAccessToPlant(string plantId);
+        Task<IEnumerable<string>> GetMembersWithOidAndAccessToPlant(string plantId);
     }
 }

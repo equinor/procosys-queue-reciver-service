@@ -49,6 +49,12 @@ namespace QueueReceiver.Infrastructure.Repositories
            await _persons.FirstOrDefaultAsync(person =>
                 userOid.Equals(person.Oid, OrdinalIgnoreCase));
 
+        public async Task<long> FindPersonIdByUserOidAsync(string userOid)
+            => await _persons
+            .Where(person => userOid.Equals(person.Oid))
+            .Select(person => person.Id)
+            .SingleOrDefaultAsync();
+
         public async Task<Person?> FindByMobileNumberAsync(string mobileNumber)
         {
             if (mobileNumber == null) return null;
@@ -87,8 +93,11 @@ namespace QueueReceiver.Infrastructure.Repositories
         public IEnumerable<string?> GetOidsBasedOnProject(long projectId)
         {
             var persons = _persons.Include(p => p.PersonProjects)
-                .Where(p => p.PersonProjects != null && p.PersonProjects
-                    .Select(pp => pp.ProjectId).Contains(projectId)).Distinct().ToList();
+                .Where(p => p.PersonProjects != null 
+                    && p.PersonProjects.Select(pp => pp.ProjectId).Contains(projectId) 
+                    && p.PersonProjects.Any(pp => pp.IsVoided == false))
+                .Distinct()
+                .ToList();
 
             return persons.Where(p => p.Oid != null).Select(p =>  p.Oid);
         }

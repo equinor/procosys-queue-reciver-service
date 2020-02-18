@@ -86,7 +86,7 @@ namespace QueueReceiver.Core.Services
 
         private async Task RemoveAccess(string userOid, string plantId)
         {
-            Person? person = await _personService.FindByOidAsync(userOid);
+            Person? person = await _personService.FindPersonByOidAsync(userOid);
 
             if (person == null)
             {
@@ -101,15 +101,15 @@ namespace QueueReceiver.Core.Services
 
         private async Task GiveAccess(string userOid, string plantId)
         {
-            Person? person = await _personService.FindByOidAsync(userOid);
+            long personId = await _personService.GetPersonIdByOidAsync(userOid);
 
-            if (person == null)
+            if (personId == 0)
             {
                 _logger.LogError(Resources.PersonWasNotFoundOrCreated, userOid);
                 return;
             }
-            _logger.LogInformation(Resources.AddAccess, person.Id, plantId);
-            await _personProjectService.GiveProjectAccessToPlantAsync(person.Id, plantId);
+            _logger.LogInformation(Resources.AddAccess, personId, plantId);
+            await _personProjectService.GiveProjectAccessToPlantAsync(personId, plantId);
         }
 
         private static bool MessageHasNoRelevantData(AccessInfo accessInfo)

@@ -38,7 +38,7 @@ namespace QueueReceiver.Core.UnitTests.Services
                     .Returns(Task.FromResult<Person?>(new Person("", "") { Id = SomeId, Oid = SomeOid }));
 
             //Act
-            var person = await _service.FindByOidAsync(SomeOid);
+            var person = await _service.FindPersonByOidAsync(SomeOid);
 
             //Assert
             Assert.IsNotNull(person);

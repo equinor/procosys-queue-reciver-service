@@ -33,10 +33,11 @@ namespace QueueReceiver.Core.Services
 
             foreach(var plant in plants)
             {
-                var dbpersons = await _personService.GetMembersWithAccessToPlant(plant.PlantId);
+                var dbpersons = await _personService.GetMembersWithOidAndAccessToPlant(plant.PlantId);
                 var adMemberOids = await GetMemberOidsFromGroups(new string[] { plant.AffiliateGroupId, plant.InternalGroupId });
                 dbpersons = dbpersons.ToList();
                 var adMemberList = adMemberOids.ToList();
+
                 var membersInAdNotInDb = adMemberList.Except(dbpersons);
                 var membersInDbNotInAd = dbpersons.Except(adMemberList).ToList();
 
@@ -60,19 +61,6 @@ namespace QueueReceiver.Core.Services
                 //    await _accessService.UpdateMemberAccess(members, plant.PlantId);
                 //}
             }
-
-            // //   List<string> dbMemberOids = _plantService.getAllMemberOids(plant.PlantId);
-
-            // lykke pseudo
-            // Step 1: Find all groups we want to sync (all plants or projects??)
-            // Step 2: Find members in PCS, not in Ad
-            // Step 3: Find members in Ad, not in PCS
-            // Step 4: If there are any members found in Ad and not in PCS db, give them access, i.e call OG add access method
-            // Step 5: If there are any members found in PCS db and not in Ad, remove their access, i.e call OG remove access method
-
-            // 1 plant = 1 group or 1 project = 1 group? 
-            // rename methods...
-
         }
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]

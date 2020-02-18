@@ -22,7 +22,6 @@ namespace QueueReceiver.Infrastructure
                 {
                     options.UseOracle(connectionString);
                     options.UseLoggerFactory(LoggerFactory);
-                    options.EnableSensitiveDataLogging();
                 }).AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<QueueReceiverServiceContext>());
 
         public static void AddQueueClient(this IServiceCollection services, string serviceBusConnectionString, string serviceBusQueueName)

@@ -7,6 +7,7 @@ namespace QueueReceiver.Core.Interfaces
     public interface IPersonRepository
     {
         Task<Person?> FindByUserOidAsync(string userOid);
+        Task<long> FindPersonIdByUserOidAsync(string userOid);
         Task<Person> AddPersonAsync(Person person);
         Task<Person?> FindByMobileNumberAndNameAsync(string mobileNumber, string givenName, string surname);
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);

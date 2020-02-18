@@ -53,7 +53,9 @@ namespace QueueReceiver.Core.Services
             return person;
         }
 
-        public async Task<Person?> FindByOidAsync(string userOid) => await _personRepository.FindByUserOidAsync(userOid);
+        public async Task<Person?> FindPersonByOidAsync(string userOid) => await _personRepository.FindByUserOidAsync(userOid);
+
+        public async Task<long> GetPersonIdByOidAsync(string userOid) => await _personRepository.FindPersonIdByUserOidAsync(userOid);
 
         public async Task<Person> CreateIfNotExist(string userOid)
         {
@@ -106,7 +108,7 @@ namespace QueueReceiver.Core.Services
             {
                 return null; //TODO
             }
-
+             // TODO: What to do if username exists
 
             var userName = adPerson.Email.ToUpperInvariant();
             return await _personRepository.AddPersonAsync(
@@ -123,7 +125,7 @@ namespace QueueReceiver.Core.Services
         public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids)
             => _personRepository.GetAllNotInDb(oids);
 
-        public async Task<IEnumerable<string>> GetMembersWithAccessToPlant(string plantId)
+        public async Task<IEnumerable<string>> GetMembersWithOidAndAccessToPlant(string plantId)
         {
             var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
             var personOids = projects.SelectMany(p => _personRepository.GetOidsBasedOnProject(p.ProjectId)).Distinct();
@@ -134,10 +136,6 @@ namespace QueueReceiver.Core.Services
                 return new List<string>();
             }
             return personOids;
-            // get all projects for plant
-            // get all persons that have access to projects
-            // return hashset of personOids
-
         }
     }
 }
