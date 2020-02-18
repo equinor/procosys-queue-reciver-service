@@ -63,8 +63,8 @@ namespace QueueReceiver.Core.UnitTests.Services
                 .Returns(Task.FromResult(somePlantId)!);
             _personService.Setup(personService => personService.UpdateWithOidIfNotFound(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
-            _personService.Setup(PersonService => PersonService.FindPersonByOidAsync(someOid))
-                .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
+            _personService.Setup(PersonService => PersonService.GetPersonIdByOidAsync(someOid))
+                .Returns(Task.FromResult(somePersonId)!);
 
             var accessInfo = new AccessInfo(plantOidThatExists, new List<Member>
                 {

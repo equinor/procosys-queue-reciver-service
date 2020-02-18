@@ -60,7 +60,6 @@ namespace QueueReceiver.Infrastructure.Repositories
             if (mobileNumber == null) return null;
 
             return await _persons.FirstOrDefaultAsync(p =>
-        
                 p.MobilePhoneNumber != null
                 && MobileNumberIsEqal(mobileNumber, p.MobilePhoneNumber));
         }
@@ -93,9 +92,9 @@ namespace QueueReceiver.Infrastructure.Repositories
         public IEnumerable<string?> GetOidsBasedOnProject(long projectId)
         {
             var persons = _persons.Include(p => p.PersonProjects)
-                .Where(p => p.PersonProjects != null 
-                    && p.PersonProjects.Select(pp => pp.ProjectId).Contains(projectId) 
-                    && p.PersonProjects.Any(pp => pp.IsVoided == false))
+                .Where(p => p.PersonProjects != null
+                    && p.PersonProjects.Select(pp => pp.ProjectId).Contains(projectId)
+                    && p.PersonProjects.Any(pp => !pp.IsVoided))
                 .Distinct()
                 .ToList();
 
