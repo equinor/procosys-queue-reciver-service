@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using QueueReceiver.Core.Interfaces;
@@ -13,15 +14,16 @@ namespace QueueReceiver.Core.Services
     public class EntryPointService : IEntryPointService
     {
         private readonly IQueueClient _queueClient;
-        private readonly IAccessService _accessService;
+        private readonly IServiceLocator _serviceLocator;
         private readonly ILogger<EntryPointService> _logger;
 
+
         public EntryPointService(IQueueClient queueClient,
-            IAccessService accessService,
+            IServiceLocator serviceLocator,
             ILogger<EntryPointService> logger)
         {
             _queueClient = queueClient;
-            _accessService = accessService;
+            _serviceLocator = serviceLocator;
             _logger = logger;
         }
 
@@ -46,10 +48,15 @@ namespace QueueReceiver.Core.Services
 
         private async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
+            using var scope = _serviceLocator.CreateScope();
+            var accessService =
+                scope.ServiceProvider
+                    .GetRequiredService<IAccessService>();
+
             var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
             _logger.LogInformation($"Processing message : { accessInfo }");
 
-            await _accessService.HandleRequestAsync(accessInfo);
+            await accessService.HandleRequestAsync(accessInfo);
 
             //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock
             string lockToken = message.SystemProperties.LockToken;

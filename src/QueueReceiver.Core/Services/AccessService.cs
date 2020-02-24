@@ -21,7 +21,8 @@ namespace QueueReceiver.Core.Services
             IPersonService personService,
             IPersonProjectService personProjectService,
             IPlantService plantService,
-            ILogger<AccessService> logger, IUnitOfWork unitOfWork)
+            ILogger<AccessService> logger,
+            IUnitOfWork unitOfWork)
         {
             _personService = personService;
             _personProjectService = personProjectService;

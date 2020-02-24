@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using QueueReceiver.Core.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,23 +10,18 @@ namespace QueueReceiver.Worker
     public class WorkerService : BackgroundService
     {
         private readonly ILogger<WorkerService> _logger;
-        private readonly IServiceLocator _serviceLocator;
+        private readonly IEntryPointService _entryPointService;
 
-        public WorkerService(ILogger<WorkerService> logger, IServiceLocator serviceLocator)
+        public WorkerService(ILogger<WorkerService> logger, IEntryPointService entryPointService)
         {
             _logger = logger;
-            _serviceLocator = serviceLocator;
+            _entryPointService = entryPointService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using var scope = _serviceLocator.CreateScope();
-            var entryPointService =
-                scope.ServiceProvider
-                    .GetRequiredService<IEntryPointService>();
-
             _logger.LogInformation($"Worker service at: {DateTimeOffset.Now}");
-            await entryPointService.InitializeQueueAsync();
+            await _entryPointService.InitializeQueueAsync();
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -35,7 +29,7 @@ namespace QueueReceiver.Worker
                 await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
             }
 
-            await entryPointService.DisposeQueueAsync();
+            await _entryPointService.DisposeQueueAsync();
             _logger.LogInformation($"Worker service stopping at: at: { DateTimeOffset.Now}");
         }
     }

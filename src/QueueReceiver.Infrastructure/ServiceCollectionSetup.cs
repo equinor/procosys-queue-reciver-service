@@ -48,7 +48,7 @@ namespace QueueReceiver.Infrastructure
 
         public static IServiceCollection AddServices(this IServiceCollection services)
             => services.AddSingleton<IServiceLocator, ServiceLocator>()
-            .AddScoped<IEntryPointService, EntryPointService>()
+            .AddSingleton<IEntryPointService, EntryPointService>()
             .AddScoped<IAccessService, AccessService>()
             .AddScoped<IPlantService, PlantService>()
             .AddScoped<IGraphService, GraphService>()
