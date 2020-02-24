@@ -50,12 +50,12 @@ namespace QueueReceiver.IntegrationTests
             var serviceProviderMock = new Mock<IServiceProvider>();
             scopeMock.Setup(s => s.ServiceProvider).Returns(serviceProviderMock.Object);
             var EntryServiceLogger = new Mock<ILogger<EntryPointService>>();
-            var entryPointService = new EntryPointService(queueClient, accessServiceMock.Object, EntryServiceLogger.Object);
-            serviceProviderMock.Setup(sp => sp.GetService(typeof(IEntryPointService)))
-                .Returns(entryPointService);
+            var entryPointService = new EntryPointService(queueClient, serviceLocatorMock.Object, EntryServiceLogger.Object);
+            serviceProviderMock.Setup(sp => sp.GetService(typeof(IAccessService)))
+                .Returns(accessServiceMock.Object);
 
             var workerServiceLogger = new Mock<ILogger<WorkerService>>();
-            var workerService = new WorkerService(workerServiceLogger.Object, serviceLocatorMock.Object);
+            var workerService = new WorkerService(workerServiceLogger.Object, entryPointService);
 
             return (workerService, queueClient, accessServiceMock);
         }
