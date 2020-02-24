@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using QueueReceiver.Infrastructure.Data;
-using Serilog;
 
 namespace QueueReceiver.Worker
 {
@@ -23,8 +22,6 @@ namespace QueueReceiver.Worker
         {
             WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80"); //TODO move this to infrastructure and add as variable.
             CreateHostBuilder(args).Build().Run(); //TODO: Split this between Build() and Run() and get configuration in between and use that to set the proxy.
-
-            Log.CloseAndFlush();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
