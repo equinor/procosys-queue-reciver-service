@@ -21,10 +21,6 @@ namespace QueueReceiver.Worker
 
         public static void Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.File("log.txt")
-                .CreateLogger();
-
             WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80"); //TODO move this to infrastructure and add as variable.
             CreateHostBuilder(args).Build().Run(); //TODO: Split this between Build() and Run() and get configuration in between and use that to set the proxy.
 
@@ -34,7 +30,6 @@ namespace QueueReceiver.Worker
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
             .UseWindowsService()
-            .UseSerilog()
             .ConfigureAppConfiguration((_, config) =>
             {
                 config = new ConfigurationBuilder()
@@ -60,6 +55,7 @@ namespace QueueReceiver.Worker
                 services.AddSingleton(graphSettings);
 
                 services.AddHostedService<WorkerService>();
+                services.AddApplicationInsightsTelemetryWorkerService();
             });
     }
 }
