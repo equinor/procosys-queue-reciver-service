@@ -34,7 +34,7 @@ namespace QueueReceiver.Core.Services
         public async Task HandleRequestAsync(AccessInfo accessInfo)
         {
             string? plantId = await _plantService.GetPlantIdAsync(accessInfo.PlantOid);
-           foreach(Member member in accessInfo.Members)
+            foreach (Member member in accessInfo.Members)
             {
                 if (plantId == null)
                 {
@@ -48,7 +48,7 @@ namespace QueueReceiver.Core.Services
                 }
 
                 await UpdateMemberInfo(member);
-            }    
+            }
 
             await UpdateMemberAccess(accessInfo.Members, plantId);
         }

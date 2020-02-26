@@ -50,7 +50,8 @@ namespace QueueReceiver.Core.Services
             var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
             {
                 GivenName = user.GivenName,
-                Surname = user.Surname
+                Surname = user.Surname,
+                MobileNumber = user.MobilePhone
             };
             return adPerson;
         }
