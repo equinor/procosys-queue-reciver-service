@@ -34,6 +34,7 @@ namespace QueueReceiver.Core.Services
         public async Task HandleRequestAsync(AccessInfo accessInfo)
         {
             string? plantId = await _plantService.GetPlantIdAsync(accessInfo.PlantOid);
+
             if (plantId == null)
             {
                 _logger.LogInformation(Resources.GroupDoesNotExist);
@@ -48,27 +49,8 @@ namespace QueueReceiver.Core.Services
             foreach (Member member in accessInfo.Members)
             {
                 await UpdateMemberInfo(member);
+                await UpdateMemberAccess(member, plantId);
             }
-
-            await UpdateMemberAccess(accessInfo.Members, plantId);
-        }
-
-        public async Task UpdateMemberAccess(List<Member> members, string plantId)
-        {
-            var syncAccessTasks = members.Select(async member =>
-            {
-                if (member.ShouldVoid)
-                {
-                    await RemoveAccess(member.UserOid, plantId);
-                }
-                else
-                {
-                    await GiveAccess(member.UserOid, plantId);
-                }
-            });
-
-            await Task.WhenAll(syncAccessTasks);
-            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateMemberInfo(Member member)
@@ -82,6 +64,20 @@ namespace QueueReceiver.Core.Services
                     await _personService.CreateIfNotExist(member.UserOid);
                 }
 
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task UpdateMemberAccess(Member member, string plantId)
+        {
+                if (member.ShouldVoid)
+                {
+                    await RemoveAccess(member.UserOid, plantId);
+                }
+                else
+                {
+                    await GiveAccess(member.UserOid, plantId);
+                }
+           
             await _unitOfWork.SaveChangesAsync();
         }
 

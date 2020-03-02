@@ -48,10 +48,8 @@ namespace QueueReceiver.Core.Services
                     foreach(Member m in members)
                     {
                         await _accessService.UpdateMemberInfo(m);
-
+                        await _accessService.UpdateMemberAccess(m, plant.PlantId);
                     }
-                   
-                    await _accessService.UpdateMemberAccess(members, plant.PlantId);
                 }
 
                 //if (membersInDbNotInAd.Any()) //TODO: Not for production without check
