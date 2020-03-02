@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
-using System.Linq;
 using System.Threading.Tasks;
 using QueueReceiver.Core.Properties;
 using System.Globalization;
-using System.Collections.Generic;
 
 namespace QueueReceiver.Core.Services
 {
