@@ -51,7 +51,6 @@ namespace QueueReceiver.Core.Services
                         await _accessService.UpdateMemberAccess(m, plant.PlantId);
                     }
                 }
-
                 //if (membersInDbNotInAd.Any()) //TODO: Not for production without check
                 //{
                 //    var members = membersInDbNotInAd.Select(midb => new Member(midb, shouldRemove: true)).ToList();
