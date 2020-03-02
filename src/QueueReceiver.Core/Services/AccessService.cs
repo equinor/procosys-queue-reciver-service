@@ -34,19 +34,19 @@ namespace QueueReceiver.Core.Services
         public async Task HandleRequestAsync(AccessInfo accessInfo)
         {
             string? plantId = await _plantService.GetPlantIdAsync(accessInfo.PlantOid);
+            if (plantId == null)
+            {
+                _logger.LogInformation(Resources.GroupDoesNotExist);
+                return;
+            }
+
+            if (MessageHasNoRelevantData(accessInfo))
+            {
+                return;
+            }
+
             foreach (Member member in accessInfo.Members)
             {
-                if (plantId == null)
-                {
-                    _logger.LogInformation(Resources.GroupDoesNotExist);
-                    return;
-                }
-
-                if (MessageHasNoRelevantData(accessInfo))
-                {
-                    return;
-                }
-
                 await UpdateMemberInfo(member);
             }
 
