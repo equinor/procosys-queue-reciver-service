@@ -11,7 +11,6 @@ namespace QueueReceiver.Core.Interfaces
         Task<Person?> FindPersonByOidAsync(string userOid);
         Task<long> GetPersonIdByOidAsync(string userOid);
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
-        Task<Person?> FindAndUpdateAsync(AdPerson adPerson);
         Task<IEnumerable<string>> GetMembersWithOidAndAccessToPlant(string plantId);
     }
 }

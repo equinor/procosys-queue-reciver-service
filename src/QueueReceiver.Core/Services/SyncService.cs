@@ -1,10 +1,8 @@
 ﻿using QueueReceiver.Core.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Diagnostics.CodeAnalysis;
 using QueueReceiver.Core.Models;
 
 namespace QueueReceiver.Core.Services
@@ -14,16 +12,14 @@ namespace QueueReceiver.Core.Services
         private readonly IPlantService _plantService;
         private readonly IGraphService _graphService;
         private readonly IPersonService _personService;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IAccessService _accessService;
 
         public SyncService(IPlantService plantService, IGraphService graphService,
-            IPersonService personService, IUnitOfWork unitOfWork, IAccessService accessService)
+            IPersonService personService, IAccessService accessService)
         {
             _plantService = plantService;
             _graphService = graphService;
             _personService = personService;
-            _unitOfWork = unitOfWork;
             _accessService = accessService;
         }
 
@@ -31,7 +27,7 @@ namespace QueueReceiver.Core.Services
         {
             var plants = _plantService.GetAllPlants();
 
-            foreach(var plant in plants)
+            foreach (var plant in plants)
             {
                 var dbpersons = await _personService.GetMembersWithOidAndAccessToPlant(plant.PlantId);
                 var adMemberOids = await GetMemberOidsFromGroups(new string[] { plant.AffiliateGroupId, plant.InternalGroupId });
@@ -45,11 +41,8 @@ namespace QueueReceiver.Core.Services
                 {
                     var members = membersInAdNotInDb.Select(miad => new Member(miad, shouldRemove: false)).ToList();
 
-                    foreach(Member m in members)
-                    {
-                        await _accessService.UpdateMemberInfo(m);
-                        await _accessService.UpdateMemberAccess(m, plant.PlantId);
-                    }
+                    await _accessService.UpdateMemberInfo(members);
+                    await _accessService.UpdateMemberAccess(members, plant.PlantId);
                 }
                 //if (membersInDbNotInAd.Any()) //TODO: Not for production without check
                 //{
@@ -58,62 +51,6 @@ namespace QueueReceiver.Core.Services
                 //    await _accessService.UpdateMemberAccess(members, plant.PlantId);
                 //}
             }
-        }
-
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters")]
-        public async Task ExcecuteOidUpdateAsync()
-        {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            var groupOids = _plantService.GetAllGroupOids();
-            Console.WriteLine($"get all groups took: {sw.ElapsedMilliseconds} ms, found {groupOids.Count()} groups");
-
-            sw.Restart();
-            HashSet<string> allMembers = await GetMemberOidsFromGroups(groupOids);
-            Console.WriteLine($"found {allMembers.Count} members in azureAD:  {sw.ElapsedMilliseconds} ms");
-
-            sw.Restart();
-            Console.Write("Removing members not already in db members ");
-            var allNotInDb = _personService.GetAllNotInDb(allMembers).ToList();
-            Console.WriteLine($"{allMembers.Count - allNotInDb.Count} removed : {sw.ElapsedMilliseconds} ms");
-
-            sw.Restart();
-            Console.Write("Finding info on members in graph");
-            var tasks = allNotInDb.Select(async m =>
-            {
-                try
-                {
-                    return await _graphService.GetAdPersonByOidAsync(m);
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e.Message);
-                }
-
-                return null;
-            });
-            var results = await Task.WhenAll(tasks);
-            Console.WriteLine($" : {sw.ElapsedMilliseconds} ms");
-
-            var resultList = results.ToList();
-            Console.WriteLine($"Checking {resultList.Count} members against db using Name and phonenumer, setting oid");
-            const int batchSize = 10;
-            for (int i = 0; i < resultList.Count; i += batchSize)
-            {
-                int count = ((resultList.Count - i) < batchSize) ? resultList.Count - i - 1 : batchSize;
-
-                sw.Restart();
-                Console.WriteLine($"Adding from {i} to {i + count}");
-                foreach (var adPerson in resultList.GetRange(i, count))
-                {
-                    await _personService.FindAndUpdateAsync(adPerson);
-                }
-
-                Console.Write($"Starting save  from {i} to {i + count} ");
-                var added = await _unitOfWork.SaveChangesAsync();
-                Console.WriteLine($" added {added} persons with oid to the db :  {sw.ElapsedMilliseconds} ms");
-            }
-            sw.Stop();
         }
 
         private async Task<HashSet<string>> GetMemberOidsFromGroups(IEnumerable<string> groupOids)

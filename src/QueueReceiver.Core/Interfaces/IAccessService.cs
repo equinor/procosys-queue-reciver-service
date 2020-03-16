@@ -7,7 +7,7 @@ namespace QueueReceiver.Core.Interfaces
     public interface IAccessService
     {
         Task HandleRequestAsync(AccessInfo accessInfo);
-        Task UpdateMemberAccess(Member member, string plantId);
-        Task UpdateMemberInfo(Member member);
+        Task UpdateMemberInfo(List<Member> members);
+        Task UpdateMemberAccess(List<Member> members, string plantId);
     }
 }

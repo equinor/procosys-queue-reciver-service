@@ -11,6 +11,14 @@ namespace QueueReceiver.Infrastructure
 {
     public static class ServiceCollectionSetup
     {
+        /**
+         * Maximum open cursors in the Pcs database is configured to 300 as per 05.03.2020.
+         * When doing batch updates/inserts, oracle opens a cursor per update/insert to keep track of
+         * the amount of entities updated. The default seems to be 200, but we're setting it explicitly anyway
+         * in case the default changes in the future. This is to avoid ORA-01000: maximum open cursors exceeded.
+         **/
+        private const int MAX_OPEN_CURSORS = 200;
+
         public static readonly LoggerFactory LoggerFactory =
             new LoggerFactory(new[]
             {
@@ -20,8 +28,9 @@ namespace QueueReceiver.Infrastructure
         public static IServiceCollection AddDbContext(this IServiceCollection services, string connectionString)
             => services.AddDbContext<QueueReceiverServiceContext>(options =>
                 {
-                    options.UseOracle(connectionString);
+                    options.UseOracle(connectionString, b => b.MaxBatchSize(MAX_OPEN_CURSORS));
                     options.UseLoggerFactory(LoggerFactory);
+                    options.EnableSensitiveDataLogging();
                 }).AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<QueueReceiverServiceContext>());
 
         public static void AddQueueClient(this IServiceCollection services, string serviceBusConnectionString, string serviceBusQueueName)
@@ -44,7 +53,6 @@ namespace QueueReceiver.Infrastructure
             .AddScoped<IRestrictionRoleRepository, RestrictionRoleRepository>()
             .AddScoped<IPersonRestrictionRoleRepository, PersonRestrictionRoleRepository>()
             .AddScoped<IPersonProjectHistoryRepository, PersonProjectHistoryRepository>();
-
 
         public static IServiceCollection AddServices(this IServiceCollection services)
             => services.AddSingleton<IServiceLocator, ServiceLocator>()

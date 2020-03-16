@@ -15,9 +15,8 @@ namespace QueueReceiver.Core.Services
 
         public T GetService<T>()
         {
-            CreateScope();
-
-            return _scope!.ServiceProvider.GetService<T>();
+            _scope ??= _factory.CreateScope();
+            return _scope.ServiceProvider.GetService<T>();
         }
 
         public IServiceScope CreateScope() => _factory.CreateScope();

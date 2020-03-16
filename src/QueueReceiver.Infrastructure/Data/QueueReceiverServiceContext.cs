@@ -3,12 +3,15 @@ using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.EntityConfigurations;
+using System;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Infrastructure.Data
 {
     public class QueueReceiverServiceContext : DbContext, IUnitOfWork
     {
+        private bool disposed;
+
         public QueueReceiverServiceContext(DbContextOptions<QueueReceiverServiceContext> options)
             : base(options) { }
 
@@ -46,6 +49,8 @@ namespace QueueReceiver.Infrastructure.Data
                  modelBuilder.HasSequence(PersonProjectHistoryConstants.Sequence).IncrementsBy(1);
                  modelBuilder.HasSequence(PersonProjectHistoryOperationConstants.Sequence).IncrementsBy(1);
                  // Er vi sikre på at disse brukes kun der de skal? 
+
+            
         }
     }
 }

@@ -43,17 +43,40 @@ namespace QueueReceiver.Core.Services
 
         public async Task<AdPerson?> GetAdPersonByOidAsync(string userOid)
         {
-            var graphClient = await CreateClient();
+             var graphClient = await CreateClient();
 
             _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
-            var user = await graphClient.Users[userOid].Request().GetAsync();
-            var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
+            try
             {
-                GivenName = user.GivenName,
-                Surname = user.Surname,
-                MobileNumber = user.MobilePhone
-            };
-            return adPerson;
+                var user = await graphClient.Users[userOid].Request().GetAsync();
+                var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
+                {
+                    GivenName = user.GivenName,
+                    Surname = user.Surname,
+                    MobileNumber = user.MobilePhone
+                };
+                return adPerson;
+            }
+            catch (ServiceException)
+            {
+                _log.LogInformation($"User with oid {userOid} not found in user directory");
+                return null;
+            }
+        }
+
+        public async Task<bool> AdPersonFoundInDeletedDirectory(string userOid)
+        {
+            var graphClient = await CreateClient();
+            try
+            {
+                var deletedItem = await graphClient.Directory.DeletedItems[userOid].Request().GetAsync();
+                _log.LogInformation($"User with oid {userOid} found in deleted directory in AAD");
+                return deletedItem != null;    
+            }
+            catch (ServiceException)
+            {
+                return false;
+            }
         }
 
         private async Task<GraphServiceClient> CreateClient()

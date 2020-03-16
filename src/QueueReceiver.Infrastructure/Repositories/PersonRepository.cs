@@ -79,17 +79,16 @@ namespace QueueReceiver.Infrastructure.Repositories
                 userEmail.Equals(person.Email, OrdinalIgnoreCase));
         }
 
-        public async Task<Person> FindByUsernameAsync(string userName)
+        public async Task<bool> SomePersonBasedOnUserNameExists(string userName)
         {
-            var shortName = userName.Substring(0, userName.IndexOf('@', OrdinalIgnoreCase));
-            return await _persons
-                .SingleOrDefaultAsync(person =>
-                     userName.Equals(person.UserName, OrdinalIgnoreCase)
-                     || shortName.Equals(person.UserName, OrdinalIgnoreCase)
-                     );
+            var shortName = userName?.Substring(0, userName.IndexOf('@', OrdinalIgnoreCase));
+
+            return await _persons.AnyAsync(person =>  
+                     string.Equals(shortName, person.UserName, OrdinalIgnoreCase)
+                     || string.Equals(userName, person.UserName, OrdinalIgnoreCase));
         }
 
-        public IEnumerable<string?> GetOidsBasedOnProject(long projectId)
+        public IEnumerable<string> GetOidsBasedOnProject(long projectId)
         {
             var persons = _persons.Include(p => p.PersonProjects)
                 .Where(p => p.PersonProjects != null
@@ -98,7 +97,7 @@ namespace QueueReceiver.Infrastructure.Repositories
                 .Distinct()
                 .ToList();
 
-            return persons.Where(p => p.Oid != null).Select(p =>  p.Oid);
+            return persons.Where(p => p.Oid != null).Select(p => p.Oid!);
         }
 
         private static bool MobileNumberIsEqal(string a, string b)

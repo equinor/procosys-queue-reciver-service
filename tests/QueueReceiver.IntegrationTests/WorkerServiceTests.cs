@@ -46,7 +46,7 @@ namespace QueueReceiver.IntegrationTests
             var accessServiceMock = new Mock<IAccessService>();
             var serviceLocatorMock = new Mock<IServiceLocator>();
             var scopeMock = new Mock<IServiceScope>();
-            serviceLocatorMock.Setup(sp => sp.CreateScope()).Returns(scopeMock.Object);
+            serviceLocatorMock.Setup(sp => sp.GetService<IAccessService>()).Returns(accessServiceMock.Object);
             var serviceProviderMock = new Mock<IServiceProvider>();
             scopeMock.Setup(s => s.ServiceProvider).Returns(serviceProviderMock.Object);
             var EntryServiceLogger = new Mock<ILogger<EntryPointService>>();
@@ -62,6 +62,9 @@ namespace QueueReceiver.IntegrationTests
 
         private QueueClient CreateQueueClient()
         {
+            /**
+             * Using secrets.json when running localy, never push connectionstrings to repo. 
+             * **/
             string connectionString = Configuration["ServiceBusConnectionString"];
             var queueClient = new QueueClient(connectionString, "intergrationtest");
             queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;

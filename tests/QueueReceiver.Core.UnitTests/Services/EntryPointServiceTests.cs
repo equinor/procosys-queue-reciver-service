@@ -35,16 +35,16 @@ namespace QueueReceiver.Core.UnitTests.Services
         [TestMethod]
         public async Task InitializeQueueTest()
         {
-            var (service, queueClient, accessService, serviceLocator) = Factory();
+            var (service, queueClient, accessServiceMock, serviceLocator) = Factory();
 
             var scope = new Mock<IServiceScope>();
             var serviceProviderMock = new Mock<IServiceProvider>();
             serviceProviderMock.Setup(sp => sp.GetService(typeof(IAccessService)))
-                .Returns(accessService.Object);
+                .Returns(accessServiceMock.Object);
             scope.Setup(sc => sc.ServiceProvider).Returns(serviceProviderMock.Object);
 
-            serviceLocator.Setup(sl => sl.CreateScope()).Returns(scope.Object);
-            accessService.Setup(acs => acs.HandleRequestAsync(It.IsAny<AccessInfo>()))
+            serviceLocator.Setup(sl => sl.GetService<IAccessService>()).Returns(accessServiceMock.Object);
+            accessServiceMock.Setup(acs => acs.HandleRequestAsync(It.IsAny<AccessInfo>()))
                 .ThrowsAsync(new InternalTestFailureException("!"));
 
             var accessInfo = new AccessInfo("test",

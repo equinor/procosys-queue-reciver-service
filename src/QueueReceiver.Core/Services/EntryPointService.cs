@@ -48,20 +48,18 @@ namespace QueueReceiver.Core.Services
 
         private async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
-            using var scope = _serviceLocator.CreateScope();
-            var accessService =
-                scope.ServiceProvider
-                    .GetRequiredService<IAccessService>();
+            using (_serviceLocator)
+            {
+                var accessService = _serviceLocator.GetService<IAccessService>();
+                var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
 
-            var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
-            _logger.LogInformation($"Processing message : { accessInfo }");
+                await accessService.HandleRequestAsync(accessInfo);
 
-            await accessService.HandleRequestAsync(accessInfo);
-
-            //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock
-            string lockToken = message.SystemProperties.LockToken;
-            await _queueClient.CompleteAsync(lockToken);
-            _logger.LogInformation(Resources.MessageSuccess);
+                //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock
+                string lockToken = message.SystemProperties.LockToken;
+                await _queueClient.CompleteAsync(lockToken);
+                _logger.LogInformation(Resources.MessageSuccess);
+            }
         }
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)

@@ -4,7 +4,6 @@ namespace QueueReceiver.Core.Interfaces
 {
     public interface ISyncService
     {
-        Task ExcecuteOidUpdateAsync();
         Task StartAccessSync();
     }
 }

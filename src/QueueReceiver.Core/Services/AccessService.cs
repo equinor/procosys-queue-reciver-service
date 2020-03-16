@@ -4,6 +4,8 @@ using QueueReceiver.Core.Models;
 using System.Threading.Tasks;
 using QueueReceiver.Core.Properties;
 using System.Globalization;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace QueueReceiver.Core.Services
 {
@@ -44,29 +46,34 @@ namespace QueueReceiver.Core.Services
                 return;
             }
 
-            foreach (Member member in accessInfo.Members)
-            {
-                await UpdateMemberInfo(member);
-                await UpdateMemberAccess(member, plantId);
-            }
+            _logger.LogInformation($"Updating access for {accessInfo.Members.Count} members to plant {plantId}");
+
+            await UpdateMemberInfo(accessInfo.Members);
+
+            await UpdateMemberAccess(accessInfo.Members, plantId);
         }
 
-        public async Task UpdateMemberInfo(Member member)
+        public async Task UpdateMemberInfo(List<Member> members)
         {
+            var tasks = members.Select(async member =>
+            {
                 if (member.ShouldVoid)
                 {
-                    await _personService.UpdateWithOidIfNotFound(member.UserOid);
+                   await _personService.UpdateWithOidIfNotFound(member.UserOid);
                 }
                 else
                 {
                     await _personService.CreateIfNotExist(member.UserOid);
                 }
-
+            });
+            await Task.WhenAll(tasks);
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task UpdateMemberAccess(Member member, string plantId)
+        public async Task UpdateMemberAccess(List<Member> members, string plantId)
         {
+            var tasks = members.Select(async member =>
+            {
                 if (member.ShouldVoid)
                 {
                     await RemoveAccess(member.UserOid, plantId);
@@ -75,7 +82,8 @@ namespace QueueReceiver.Core.Services
                 {
                     await GiveAccess(member.UserOid, plantId);
                 }
-           
+            });
+            await Task.WhenAll(tasks);
             await _unitOfWork.SaveChangesAsync();
         }
 
@@ -85,6 +93,8 @@ namespace QueueReceiver.Core.Services
 
             if (person == null)
             {
+               // _personService.HandleUserIfDeleted(userOid);
+                //TODO Check if deleted, then erase oid if not found
                 _logger.LogInformation(Resources.PersonDoesNotExist);
                 return;
             }
