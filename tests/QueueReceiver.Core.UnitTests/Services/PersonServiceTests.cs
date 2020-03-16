@@ -24,8 +24,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             _personProjectRepository = new Mock<IPersonProjectRepository>();
             _service = new PersonService(_personRepository.Object,
                                          _graphService.Object,
-                                         _projectRepository.Object,
-                                         _personProjectRepository.Object);
+                                         _projectRepository.Object);
         }
 
         [TestMethod]

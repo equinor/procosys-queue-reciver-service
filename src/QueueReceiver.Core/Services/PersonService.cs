@@ -13,7 +13,9 @@ namespace QueueReceiver.Core.Services
         private readonly IGraphService _graphService;
         private readonly IProjectRepository _projectRepository;
 
-        public PersonService(IPersonRepository personRepository, IGraphService graphService, IProjectRepository projectRepository)
+        public PersonService(IPersonRepository personRepository, 
+            IGraphService graphService, 
+            IProjectRepository projectRepository)
         {
             _personRepository = personRepository;
             _graphService = graphService;
