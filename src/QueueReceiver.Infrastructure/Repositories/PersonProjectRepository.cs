@@ -49,7 +49,8 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<bool> PersonHasNoAccess(long personId)
         {
-            return !await _personProjects.AnyAsync(pp => pp.PersonId == personId);
+            return !await _personProjects.AnyAsync(pp => pp.PersonId == personId 
+                        && pp.IsVoided == false);
         }
 
     }
