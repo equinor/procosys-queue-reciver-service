@@ -46,5 +46,11 @@ namespace QueueReceiver.Infrastructure.Repositories
         {
             return _personProjects.Where(pp => pp.ProjectId == projectId);
         }
+
+        public async Task<bool> PersonHasNoAccess(long personId)
+        {
+            return !await _personProjects.AnyAsync(pp => pp.PersonId == personId);
+        }
+
     }
 }

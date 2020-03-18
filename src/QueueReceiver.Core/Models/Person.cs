@@ -28,6 +28,8 @@ namespace QueueReceiver.Core.Models
 
         public string? MobilePhoneNumber { get; set; }
 
+        public bool IsVoided { get; set; }
+
         public virtual IEnumerable<PersonProject> PersonProjects { get; set; }
     }
 }

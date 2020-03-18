@@ -25,6 +25,11 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
                 .HasConversion(
                     b => b ? 'Y' : 'N',
                     c => c.Equals('Y'));
+
+            builder.Property(p => p.IsVoided).HasColumnName("ISVOIDED")
+                .HasConversion(
+                    b => b ? 'Y' : 'N',
+                    c => c.Equals('Y'));
         }
     }
 }

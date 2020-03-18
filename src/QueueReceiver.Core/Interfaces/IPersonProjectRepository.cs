@@ -10,5 +10,6 @@ namespace QueueReceiver.Core.Interfaces
         Task AddAsync(long projectId, long personId);
         Task<PersonProject> GetAsync(long personId, long projectId);
         IEnumerable<PersonProject> GetByProject(long projectId);
+        Task<bool> PersonHasNoAccess(long personId);
     }
 }

@@ -22,6 +22,18 @@ namespace QueueReceiver.Core.Services
             _projectRepository = projectRepository;
         }
 
+        public async Task VoidPersonAsync(long personId)
+        {
+            var person = await _personRepository.FindAsync(personId);
+            person.IsVoided = true;
+        }
+
+        public async Task UnVoidPersonAsync(long personId)
+        {
+            var person = await _personRepository.FindAsync(personId);
+            person.IsVoided = false;
+        }
+
         public async Task<Person?> UpdateWithOidIfNotFound(string userOid)
         {
             var person = await _personRepository.FindByUserOidAsync(userOid);
