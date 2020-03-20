@@ -79,11 +79,11 @@ namespace QueueReceiver.Infrastructure.Repositories
                 userEmail.Equals(person.Email, OrdinalIgnoreCase));
         }
 
-        public async Task<bool> SomePersonBasedOnUserNameExists(string userName)
+        public async Task<Person?> SomePersonBasedOnUserNameExists(string userName)
         {
             var shortName = userName?.Substring(0, userName.IndexOf('@', OrdinalIgnoreCase));
 
-            return await _persons.AnyAsync(person =>  
+            return await _persons.FirstOrDefaultAsync(person => 
                      string.Equals(shortName, person.UserName, OrdinalIgnoreCase)
                      || string.Equals(userName, person.UserName, OrdinalIgnoreCase));
         }

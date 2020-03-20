@@ -61,10 +61,11 @@ namespace QueueReceiver.Core.Services
                                                             adPerson.Surname);
             }
 
-            if (person?.Oid != null && await _graphService.AdPersonFoundInDeletedDirectory(person.Oid))
-            {
-                return await CreatePerson(adPerson, shouldReconcile: true);
-            }
+            //if (person?.Oid != null && await _graphService.AdPersonFoundInDeletedDirectory(person.Oid))
+            //{
+            //    person.Oid = adPerson.Oid;
+            //    return person;
+            //}
 
             if (person != null)
             {
@@ -72,8 +73,13 @@ namespace QueueReceiver.Core.Services
                 return person;
             }
 
-            var shouldReconcile = await ShouldReconcile(adPerson);
-            return await CreatePerson(adPerson,shouldReconcile);
+            if (await ShouldReconcile(adPerson) is Person reconcilePerson)
+            {
+                reconcilePerson.Reconcile = adPerson.Oid;
+                return reconcilePerson;
+            }
+
+            return await CreatePerson(adPerson);
         }
 
         #region SyncServiceMethods
@@ -107,21 +113,19 @@ namespace QueueReceiver.Core.Services
             return person;
         }
 
-        private async Task<bool> ShouldReconcile(AdPerson adPerson)
+        private async Task<Person?> ShouldReconcile(AdPerson adPerson)
         {
-            return await _personRepository.FindByFullNameAsync(adPerson.GivenName, adPerson.Surname) != null
-                || await _personRepository.FindByMobileNumberAsync(adPerson.MobileNumber) != null
-                || await _personRepository.SomePersonBasedOnUserNameExists(adPerson.Username);
+            return await _personRepository.FindByFullNameAsync(adPerson.GivenName, adPerson.Surname)??
+                   await _personRepository.FindByMobileNumberAsync(adPerson.MobileNumber)?? 
+                   await _personRepository.SomePersonBasedOnUserNameExists(adPerson.Username);
         }
 
-        private async Task<Person> CreatePerson(AdPerson adPerson, bool shouldReconcile)
+        private async Task<Person> CreatePerson(AdPerson adPerson)
         {
             if(adPerson.Username == null )
             {
-                
                 return null; //TODO
             }
-
 
             // TODO: What to do if username exists
 
@@ -129,14 +133,12 @@ namespace QueueReceiver.Core.Services
 
            // _personRepository.FindByUserName()
 
-
             return await _personRepository.AddPersonAsync(
                     new Person(userName, adPerson.Email)
                     {
                         Oid = adPerson.Oid,
                         FirstName = adPerson.GivenName,
                         LastName = adPerson.Surname,
-                        Reconcile = shouldReconcile
                     });
         }
     }
