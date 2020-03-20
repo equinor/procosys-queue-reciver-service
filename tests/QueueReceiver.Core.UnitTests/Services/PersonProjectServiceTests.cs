@@ -18,7 +18,8 @@ namespace QueueReceiver.Core.UnitTests.Services
             Mock<IUserGroupRepository>,
             Mock<IPersonRestrictionRoleRepository>,
             Mock<IRestrictionRoleRepository>,
-            Mock<IPersonProjectHistoryRepository>
+            Mock<IPersonProjectHistoryRepository>,
+            Mock<IPersonService>
             )
 
             Factory()
@@ -31,15 +32,17 @@ namespace QueueReceiver.Core.UnitTests.Services
             var restrictionRoleRepository = new Mock<IRestrictionRoleRepository>();
             var personProjectHistoryRepository = new Mock<IPersonProjectHistoryRepository>();
             var privilegeService = new Mock<IPrivilegeService>();
+            var personService = new Mock<IPersonService>();
 
             var service = new PersonProjectService(
                 personProjectRepository.Object,
                 projectRepository.Object,
                 privilegeService.Object,
-                personProjectHistoryRepository.Object);
+                personProjectHistoryRepository.Object,
+                personService.Object);
 
             return (service, personProjectRepository, projectRepository, personUserGroupRepository, userGroupRepository,
-                personRestrictionRoleRepository, restrictionRoleRepository, personProjectHistoryRepository);
+                personRestrictionRoleRepository, restrictionRoleRepository, personProjectHistoryRepository, personService);
         }
 
         [TestMethod]
@@ -50,7 +53,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const long personId = 2;
             const long projectId = 15;
 
-            var (service, personProjectRepository, projectRepository, _, _, _, _, _) = Factory();
+            var (service, personProjectRepository, projectRepository, _, _, _, _, _,personService) = Factory();
 
             projectRepository.Setup(pr => pr.GetParentProjectsByPlant(plantId))
                 .Returns(Task.FromResult(new List<Project> { new Project { PlantId = plantId, ProjectId = projectId } }));
@@ -60,17 +63,19 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             //Assert
             personProjectRepository.Verify(ppr => ppr.AddAsync(projectId, personId), Times.Once);
+            personService.Verify(ps => ps.UnVoidPersonAsync(personId), Times.Once);
+
         }
 
         [TestMethod]
-        public void RemoveAccessToPlant_CallsCorrectMethods()
+        public async Task RemoveAccessToPlant_CallsCorrectMethods()
         {
             //Arrange
             const string plantId = "somePlantId";
             const long personId = 2;
             const long projectId = 4;
 
-            var (service, personProjectRepository, projectRepository, _, _, _, _, _) = Factory();
+            var (service, personProjectRepository, projectRepository, _, _, _, _, _,personService) = Factory();
 
             personProjectRepository.Setup(ppr => ppr.VoidPersonProjects(plantId, personId))
                 .Returns(new List<PersonProject>
@@ -80,12 +85,15 @@ namespace QueueReceiver.Core.UnitTests.Services
                                 }
                              }
                 );
+            personProjectRepository.Setup(ppr => ppr.PersonHasNoAccess(personId))
+                .Returns(Task.FromResult(true));
 
             //Act
-            service.RemoveAccessToPlant(personId, plantId);
+            await  service.RemoveAccessToPlant(personId, plantId);
 
             //Assert
             personProjectRepository.Verify(ppr => ppr.VoidPersonProjects(plantId, personId), Times.Once);
+            personService.Verify(ps => ps.VoidPersonAsync(personId), Times.Once);
         }
     }
 }
