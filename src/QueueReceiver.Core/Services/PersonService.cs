@@ -61,11 +61,11 @@ namespace QueueReceiver.Core.Services
                                                             adPerson.Surname);
             }
 
-            //if (person?.Oid != null && await _graphService.AdPersonFoundInDeletedDirectory(person.Oid))
-            //{
-            //    person.Oid = adPerson.Oid;
-            //    return person;
-            //}
+            if (person?.Oid != null && await _graphService.AdPersonFoundInDeletedDirectory(person.Oid))
+            {
+                person.Oid = adPerson.Oid;
+                return person;
+            }
 
             if (person != null)
             {
@@ -73,10 +73,10 @@ namespace QueueReceiver.Core.Services
                 return person;
             }
 
-            if (await ShouldReconcile(adPerson) is Person reconcilePerson)
+            if (await ShouldReconcile(adPerson) is IEnumerable<Person> reconcilePersons)
             {
-                reconcilePerson.Reconcile = adPerson.Oid;
-                return reconcilePerson;
+                reconcilePersons.ToList().ForEach(rp=> rp.Reconcile = adPerson.Oid);
+                return null;
             }
 
             return await CreatePerson(adPerson);
@@ -113,11 +113,12 @@ namespace QueueReceiver.Core.Services
             return person;
         }
 
-        private async Task<Person?> ShouldReconcile(AdPerson adPerson)
+        private async Task<IEnumerable<Person>?> ShouldReconcile(AdPerson adPerson)
         {
-            return await _personRepository.FindByFullNameAsync(adPerson.GivenName, adPerson.Surname)??
-                   await _personRepository.FindByMobileNumberAsync(adPerson.MobileNumber)?? 
-                   await _personRepository.SomePersonBasedOnUserNameExists(adPerson.Username);
+            var possibleMatches = await _personRepository.FindPossibleMatches(adPerson.MobileNumber,adPerson.GivenName,
+                adPerson.Surname,adPerson.Username);
+
+            return possibleMatches.Any() ? possibleMatches : null;
         }
 
         private async Task<Person> CreatePerson(AdPerson adPerson)
@@ -127,11 +128,7 @@ namespace QueueReceiver.Core.Services
                 return null; //TODO
             }
 
-            // TODO: What to do if username exists
-
             var userName = adPerson.Username.ToUpperInvariant();
-
-           // _personRepository.FindByUserName()
 
             return await _personRepository.AddPersonAsync(
                     new Person(userName, adPerson.Email)
