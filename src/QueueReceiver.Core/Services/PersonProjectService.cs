@@ -10,19 +10,21 @@ namespace QueueReceiver.Core.Services
         private readonly IProjectRepository _projectRepository;
         private readonly IPrivilegeService _privilegeService;
         private readonly IPersonProjectHistoryRepository _personProjectHistoryRepository;
-        
+        private readonly IPersonService _personService;
 
         public PersonProjectService(
             IPersonProjectRepository personProjectRepository,
             IProjectRepository projectRepository,
             IPrivilegeService privilegeService,
-            IPersonProjectHistoryRepository personProjectHistoryRepository
+            IPersonProjectHistoryRepository personProjectHistoryRepository,
+            IPersonService personService
         )
         {
             _personProjectRepository = personProjectRepository;
             _projectRepository = projectRepository;
             _privilegeService = privilegeService;
             _personProjectHistoryRepository = personProjectHistoryRepository;
+            _personService = personService;
         }
 
         public async Task GiveProjectAccessToPlantAsync(long personId, string plantId)
@@ -74,14 +76,20 @@ namespace QueueReceiver.Core.Services
             if (unvoided || updated)
             {
                 await _personProjectHistoryRepository.AddAsync(personProjectHistory);
+
+               await _personService.UnVoidPersonAsync(personId);
             }
         }
 
-        public void RemoveAccessToPlant(long personId, string plantId)
+        public async Task RemoveAccessToPlant(long personId, string plantId)
         {
             var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory(personId);
             var projects = _personProjectRepository.VoidPersonProjects(plantId, personId).Select(pp => pp.Project!).ToList();
             projects.ForEach(p => PersonProjectHistoryHelper.LogVoidProjects(personId, personProjectHistory, p.ProjectId));
+            if (await _personProjectRepository.PersonHasNoAccess(personId))
+            {
+               await _personService.VoidPersonAsync(personId);
+            }
         }
     }
 }

@@ -22,6 +22,11 @@ namespace QueueReceiver.Infrastructure.Repositories
             _context = context;
         }
 
+        public Task<Person> FindAsync(long personId)
+        {
+            return _persons.FindAsync(personId);
+        }
+
         public async Task<Person> AddPersonAsync(Person person)
         {
             await _persons.AddAsync(person);

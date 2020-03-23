@@ -22,7 +22,11 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
 
             builder.HasMany(p => p.PersonProjects);
 
-        
+
+            builder.Property(p => p.IsVoided).HasColumnName("ISVOIDED")
+                .HasConversion(
+                    b => b ? 'Y' : 'N',
+                    c => c.Equals('Y'));
         }
     }
 }

@@ -37,7 +37,7 @@ namespace QueueReceiver.IntegrationTests
             var plantService = new PlantService(plantRepository);
             var loggerMock = new Mock<ILogger<AccessService>>();
 
-            var personProjectService = new PersonProjectService(personProjectRepository, projectRepository, privilegeService, personProjectHistoryRepository);
+            var personProjectService = new PersonProjectService(personProjectRepository, projectRepository, privilegeService, personProjectHistoryRepository, personService);
             var service = new AccessService(personService, personProjectService, plantService, loggerMock.Object,context);
 
             return (service, graphServiceMock);
