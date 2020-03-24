@@ -77,11 +77,11 @@ namespace QueueReceiver.Core.Services
                                                             adPerson.Surname);
             }
 
-            if (person?.Oid != null && await _graphService.AdPersonFoundInDeletedDirectory(person.Oid))
-            {
-                person.Oid = userOid;
-                return;
-            }
+            //if (person?.Oid != null && await _graphService.AdPersonFoundInDeletedDirectory(person.Oid))
+            //{
+            //    person.Oid = userOid;
+            //    return;
+            //}
 
             if (person != null)
             {
