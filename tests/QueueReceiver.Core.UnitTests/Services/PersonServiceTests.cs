@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
@@ -15,6 +16,7 @@ namespace QueueReceiver.Core.UnitTests.Services
         private readonly IPersonService _service;
         private readonly Mock<IProjectRepository> _projectRepository;
         private readonly Mock<IPersonProjectRepository> _personProjectRepository;
+        private readonly Mock<ILogger<PersonService>> _personServiceLogger;
 
         public PersonServiceTests()
         {
@@ -22,9 +24,12 @@ namespace QueueReceiver.Core.UnitTests.Services
             _graphService = new Mock<IGraphService>();
             _projectRepository = new Mock<IProjectRepository>();
             _personProjectRepository = new Mock<IPersonProjectRepository>();
+            _personServiceLogger = new Mock<ILogger<PersonService>>();
             _service = new PersonService(_personRepository.Object,
                                          _graphService.Object,
-                                         _projectRepository.Object);
+                                         _projectRepository.Object,
+                                         _personServiceLogger.Object
+                                         );
         }
 
         [TestMethod]
@@ -64,12 +69,15 @@ namespace QueueReceiver.Core.UnitTests.Services
                 }));
             _personRepository.Setup(repo => repo.FindByMobileNumberAndNameAsync(MobileNo, GivenName, Surname))
                 .Returns(Task.FromResult<Person?>(new Person("tull", "tøys") { Id = SomeId }));
+            _personRepository.Setup(repo => repo.FindByUserOidAsync(SomeOid))
+                .Returns(Task.FromResult<Person?>(new Person("tull", "tøys") { Id = SomeId }));
 
             //Act
-            var person = await _service.CreateIfNotExist(SomeOid);
+            await _service.CreateIfNotExist(SomeOid);
 
             //Assert
-            Assert.AreEqual(SomeId, person.Id);
+            var person = await _service.FindPersonByOidAsync(SomeOid);
+            Assert.AreEqual(SomeId, person?.Id);
         }
 
         [TestMethod]

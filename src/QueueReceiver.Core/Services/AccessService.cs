@@ -101,7 +101,7 @@ namespace QueueReceiver.Core.Services
             _logger.LogInformation(string.Format(
                 CultureInfo.InvariantCulture,
                 Resources.RemoveAccess, person.Id, plantId));
-            _personProjectService.RemoveAccessToPlant(person.Id, plantId);
+            await _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
         private async Task GiveAccess(string userOid, string plantId)

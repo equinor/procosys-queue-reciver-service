@@ -74,13 +74,6 @@ namespace QueueReceiver.Infrastructure.Repositories
             ).ToListAsync();
         }
 
-        public async Task<Person?> FindByEmailAsync(string userEmail)
-        {
-            if (userEmail == null) return null;
-            return await _persons.FirstOrDefaultAsync(person =>
-                userEmail.Equals(person.Email, OrdinalIgnoreCase));
-        }
-
         public IEnumerable<string> GetOidsBasedOnProject(long projectId)
         {
             var persons = _persons.Include(p => p.PersonProjects)
