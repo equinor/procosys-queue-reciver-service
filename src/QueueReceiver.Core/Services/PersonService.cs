@@ -79,7 +79,7 @@ namespace QueueReceiver.Core.Services
 
             if (person?.Oid != null && await _graphService.AdPersonFoundInDeletedDirectory(person.Oid))
             {
-                person.Oid = adPerson.Oid;
+                person.Oid = userOid;
                 return;
             }
 
@@ -93,7 +93,7 @@ namespace QueueReceiver.Core.Services
             var reconcilePersons = await GetReconcilePersons(adPerson);
             if (reconcilePersons.Count > 0)
             {
-                reconcilePersons.ForEach(rp=> rp.Reconcile = adPerson.Oid);
+                reconcilePersons.ForEach(rp=> rp.Reconcile = userOid);
                 return;
             }
 
