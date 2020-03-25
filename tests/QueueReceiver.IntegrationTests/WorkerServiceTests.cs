@@ -66,7 +66,7 @@ namespace QueueReceiver.IntegrationTests
              * Using secrets.json when running localy, never push connectionstrings to repo. 
              * **/
             string connectionString = Configuration["ServiceBusConnectionString"];
-            var queueClient = new QueueClient(connectionString, "intergrationtest");
+            var queueClient = new QueueClient(connectionString, "pcs-auth-access-dev-queue");
             queueClient.ServiceBusConnection.TransportType = TransportType.AmqpWebSockets;
             return queueClient;
         }
