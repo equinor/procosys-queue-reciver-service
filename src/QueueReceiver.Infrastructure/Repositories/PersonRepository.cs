@@ -60,37 +60,18 @@ namespace QueueReceiver.Infrastructure.Repositories
             .Select(person => person.Id)
             .SingleOrDefaultAsync();
 
-        public async Task<Person?> FindByMobileNumberAsync(string mobileNumber)
-        {
-            if (mobileNumber == null) return null;
-
-            return await _persons.FirstOrDefaultAsync(p =>
-                p.MobilePhoneNumber != null
-                && MobileNumberIsEqal(mobileNumber, p.MobilePhoneNumber));
-        }
-
-        public async Task<Person?> FindByFullNameAsync(string firstName, string lastName)
-        {
-            if (firstName == null || lastName == null) return null;
-            return await _persons.FirstOrDefaultAsync(person =>
-                firstName.Equals(person.FirstName, OrdinalIgnoreCase)
-                && lastName.Equals(person.LastName, OrdinalIgnoreCase));
-        }
-
-        public async Task<Person?> FindByEmailAsync(string userEmail)
-        {
-            if (userEmail == null) return null;
-            return await _persons.FirstOrDefaultAsync(person =>
-                userEmail.Equals(person.Email, OrdinalIgnoreCase));
-        }
-
-        public async Task<bool> SomePersonBasedOnUserNameExists(string userName)
+        public async Task<IEnumerable<Person>> FindPossibleMatches(string mobileNumber, 
+            string firstName, string lastName, string userName)
         {
             var shortName = userName?.Substring(0, userName.IndexOf('@', OrdinalIgnoreCase));
-
-            return await _persons.AnyAsync(person =>  
-                     string.Equals(shortName, person.UserName, OrdinalIgnoreCase)
-                     || string.Equals(userName, person.UserName, OrdinalIgnoreCase));
+            return await _persons.Where(person =>
+             (person.MobilePhoneNumber != null 
+                && MobileNumberIsEqal(mobileNumber, person.MobilePhoneNumber))
+             || (firstName.Equals(person.FirstName, OrdinalIgnoreCase)
+                && lastName.Equals(person.LastName, OrdinalIgnoreCase))
+             || string.Equals(shortName, person.UserName, OrdinalIgnoreCase)
+             || string.Equals(userName, person.UserName, OrdinalIgnoreCase)
+            ).ToListAsync();
         }
 
         public IEnumerable<string> GetOidsBasedOnProject(long projectId)

@@ -18,13 +18,10 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
             builder.Property(p => p.FirstName).HasColumnName("FIRSTNAME");
             builder.Property(p => p.LastName).HasColumnName("LASTNAME");
             builder.Property(p => p.MobilePhoneNumber).HasColumnName("MOBILEPHONENO");
+            builder.Property(p => p.Reconcile).HasColumnName("RECONCILE");
 
             builder.HasMany(p => p.PersonProjects);
 
-            builder.Property(p => p.Reconcile).HasColumnName("RECONCILE")
-                .HasConversion(
-                    b => b ? 'Y' : 'N',
-                    c => c.Equals('Y'));
 
             builder.Property(p => p.IsVoided).HasColumnName("ISVOIDED")
                 .HasConversion(

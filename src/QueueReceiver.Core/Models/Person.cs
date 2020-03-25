@@ -18,7 +18,7 @@ namespace QueueReceiver.Core.Models
 
         public string Email { get; }
 
-        public bool Reconcile { get; set; }
+        public string? Reconcile { get; set; }
 
         public string? Oid { get; set; }
 
