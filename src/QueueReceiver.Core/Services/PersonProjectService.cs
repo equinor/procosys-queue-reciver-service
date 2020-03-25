@@ -75,7 +75,7 @@ namespace QueueReceiver.Core.Services
 
             if (unvoided || updated)
             {
-                await _personProjectHistoryRepository.AddAsync(personProjectHistory);
+               await _personProjectHistoryRepository.AddAsync(personProjectHistory);
 
                await _personService.UnVoidPersonAsync(personId);
             }
@@ -86,6 +86,12 @@ namespace QueueReceiver.Core.Services
             var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory(personId);
             var projects = _personProjectRepository.VoidPersonProjects(plantId, personId).Select(pp => pp.Project!).ToList();
             projects.ForEach(p => PersonProjectHistoryHelper.LogVoidProjects(personId, personProjectHistory, p.ProjectId));
+
+            if(projects.Count > 0)
+            {
+                await _personProjectHistoryRepository.AddAsync(personProjectHistory);
+            }
+
             if (await _personProjectRepository.PersonHasNoAccess(personId))
             {
                await _personService.VoidPersonAsync(personId);
