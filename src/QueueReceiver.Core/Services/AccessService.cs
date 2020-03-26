@@ -66,6 +66,7 @@ namespace QueueReceiver.Core.Services
                     await _personService.CreateIfNotExist(member.UserOid);
                 }
             });
+
             await Task.WhenAll(tasks);
             await _unitOfWork.SaveChangesAsync();
         }
@@ -83,6 +84,7 @@ namespace QueueReceiver.Core.Services
                     await GiveAccess(member.UserOid, plantId);
                 }
             });
+
             await Task.WhenAll(tasks);
             await _unitOfWork.SaveChangesAsync();
         }
@@ -98,9 +100,11 @@ namespace QueueReceiver.Core.Services
                 _logger.LogInformation(Resources.PersonDoesNotExist);
                 return;
             }
+
             _logger.LogInformation(string.Format(
                 CultureInfo.InvariantCulture,
                 Resources.RemoveAccess, person.Id, plantId));
+            
             await _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
@@ -113,6 +117,7 @@ namespace QueueReceiver.Core.Services
                 _logger.LogError(Resources.PersonWasNotFoundOrCreated, userOid);
                 return;
             }
+
             _logger.LogInformation(Resources.AddAccess, personId, plantId);
             await _personProjectService.GiveProjectAccessToPlantAsync(personId, plantId);
         }

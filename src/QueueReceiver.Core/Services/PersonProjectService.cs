@@ -17,8 +17,7 @@ namespace QueueReceiver.Core.Services
             IProjectRepository projectRepository,
             IPrivilegeService privilegeService,
             IPersonProjectHistoryRepository personProjectHistoryRepository,
-            IPersonService personService
-        )
+            IPersonService personService)
         {
             _personProjectRepository = personProjectRepository;
             _projectRepository = projectRepository;
@@ -55,7 +54,7 @@ namespace QueueReceiver.Core.Services
 
             if (updated)
             {
-               await _privilegeService.GivePrivilegesAsync(plantId, personId);
+                await _privilegeService.GivePrivilegesAsync(plantId, personId);
 
                 projects.ForEach(p =>
                 {
@@ -75,9 +74,9 @@ namespace QueueReceiver.Core.Services
 
             if (unvoided || updated)
             {
-               await _personProjectHistoryRepository.AddAsync(personProjectHistory);
+                await _personProjectHistoryRepository.AddAsync(personProjectHistory);
 
-               await _personService.UnVoidPersonAsync(personId);
+                await _personService.UnVoidPersonAsync(personId);
             }
         }
 
@@ -87,14 +86,14 @@ namespace QueueReceiver.Core.Services
             var projects = _personProjectRepository.VoidPersonProjects(plantId, personId).Select(pp => pp.Project!).ToList();
             projects.ForEach(p => PersonProjectHistoryHelper.LogVoidProjects(personId, personProjectHistory, p.ProjectId));
 
-            if(projects.Count > 0)
+            if (projects.Count > 0)
             {
                 await _personProjectHistoryRepository.AddAsync(personProjectHistory);
             }
 
             if (await _personProjectRepository.PersonHasNoAccess(personId))
             {
-               await _personService.VoidPersonAsync(personId);
+                await _personService.VoidPersonAsync(personId);
             }
         }
     }
