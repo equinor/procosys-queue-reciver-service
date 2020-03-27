@@ -4,7 +4,6 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Settings;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -30,6 +29,7 @@ namespace QueueReceiver.Core.Services
             var members = await graphClient.Groups[groupOid].Members
                 .Request()
                 .GetAsync();
+
             var result = members.Select(m => m.Id).ToList();
 
             while (members.NextPageRequest != null)
@@ -45,16 +45,19 @@ namespace QueueReceiver.Core.Services
         {
              var graphClient = await CreateClient();
 
-            _log.LogInformation($"Queuering microsoft graph for user with oid {userOid}");
+            _log.LogInformation($"Querying microsoft graph for user with oid {userOid}");
+
             try
             {
                 var user = await graphClient.Users[userOid].Request().GetAsync();
+
                 var adPerson = new AdPerson(user.Id, user.UserPrincipalName, user.Mail)
                 {
                     GivenName = user.GivenName,
                     Surname = user.Surname,
                     MobileNumber = user.MobilePhone
                 };
+
                 return adPerson;
             }
             catch (ServiceException)
