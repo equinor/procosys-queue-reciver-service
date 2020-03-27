@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
@@ -33,13 +34,15 @@ namespace QueueReceiver.Core.UnitTests.Services
             var personProjectHistoryRepository = new Mock<IPersonProjectHistoryRepository>();
             var privilegeService = new Mock<IPrivilegeService>();
             var personService = new Mock<IPersonService>();
+            var logger = new Mock<ILogger<PersonProjectService>>();
 
             var service = new PersonProjectService(
                 personProjectRepository.Object,
                 projectRepository.Object,
                 privilegeService.Object,
                 personProjectHistoryRepository.Object,
-                personService.Object);
+                personService.Object,
+                logger.Object);
 
             return (service, personProjectRepository, projectRepository, personUserGroupRepository, userGroupRepository,
                 personRestrictionRoleRepository, restrictionRoleRepository, personProjectHistoryRepository, personService);

@@ -36,10 +36,17 @@ namespace QueueReceiver.IntegrationTests
             var personProjectHistoryRepository = new PersonProjectHistoryRepository(context);
             var plantRepository = new PlantRepository(context);
             var plantService = new PlantService(plantRepository);
-            var loggerMock = new Mock<ILogger<AccessService>>();
+            var AccessServiceloggerMock = new Mock<ILogger<AccessService>>();
+            var personProjectServiceLoggerMock = new Mock<ILogger<PersonProjectService>>();
 
-            var personProjectService = new PersonProjectService(personProjectRepository, projectRepository, privilegeService, personProjectHistoryRepository, personService);
-            var service = new AccessService(personService, personProjectService, plantService, loggerMock.Object,context);
+            var personProjectService = new PersonProjectService(
+                personProjectRepository, 
+                projectRepository, 
+                privilegeService, 
+                personProjectHistoryRepository, 
+                personService,
+                personProjectServiceLoggerMock.Object);
+            var service = new AccessService(personService, personProjectService, plantService, AccessServiceloggerMock.Object,context);
 
             return (service, graphServiceMock);
         }
