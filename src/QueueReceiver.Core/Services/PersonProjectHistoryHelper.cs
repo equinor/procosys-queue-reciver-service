@@ -6,13 +6,11 @@ namespace QueueReceiver.Core.Services
 {
     public static class PersonProjectHistoryHelper
     {
-        public static PersonProjectHistory CreatePersonProjectHistory(long personId)
+        public static PersonProjectHistory CreatePersonProjectHistory()
         {
-            var personProjectHistory = new PersonProjectHistory()
+            var personProjectHistory = new PersonProjectHistory
             {
-                UpdatedAt = DateTime.Now,
-                UpdatedBy = personId,
-                UpdatedByUserName = PersonProjectHistoryConstants.UpdatedBy
+                UpdatedAt = DateTime.Now
             };
 
             return personProjectHistory;
@@ -36,7 +34,6 @@ namespace QueueReceiver.Core.Services
                 operationType,
                 projectId,
                 personId,
-                PersonProjectHistoryConstants.UpdatedBy,
                 personProjectHistory);
 
             personProjectHistory.PersonProjectHistoryOperations.Add(ppho);
@@ -49,7 +46,6 @@ namespace QueueReceiver.Core.Services
                 operationType,
                 projectId,
                 personId,
-                PersonProjectHistoryConstants.UpdatedBy,
                 personProjectHistory)
             {
                 OldValue = oldValue,

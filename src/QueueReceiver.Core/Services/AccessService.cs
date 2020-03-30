@@ -46,6 +46,9 @@ namespace QueueReceiver.Core.Services
                 return;
             }
 
+            // Set person related DbContextSettings
+            await _personService.UpdateDbContextPersonSettings();
+
             _logger.LogInformation($"Updating access for {accessInfo.Members.Count} members to plant {plantId}");
 
             await UpdateMemberInfo(accessInfo.Members);

@@ -23,7 +23,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             var personProjectHistoryOperation = personProjectHistory.PersonProjectHistoryOperations.FirstOrDefault();
 
             Assert.IsTrue(personProjectHistory.PersonProjectHistoryOperations.Count == 1);
-            Assert.IsTrue(personProjectHistoryOperation.UpdatedByUser == PersonProjectHistoryConstants.UpdatedBy);
+            Assert.IsTrue(personProjectHistoryOperation.UpdatedByUser == "ACCESS_SYNC");
             Assert.IsTrue(personProjectHistoryOperation.OperationType == "INSERT");
             Assert.IsTrue(personProjectHistoryOperation.FieldName == null);
             Assert.IsTrue(personProjectHistoryOperation.NewValue == null);
@@ -43,7 +43,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             var personProjectHistoryOperation = personProjectHistory.PersonProjectHistoryOperations.FirstOrDefault();
 
             Assert.IsTrue(personProjectHistory.PersonProjectHistoryOperations.Count == 1);
-            Assert.IsTrue(personProjectHistoryOperation.UpdatedByUser == PersonProjectHistoryConstants.UpdatedBy);
+            Assert.IsTrue(personProjectHistoryOperation.UpdatedByUser == "ACCESS_SYNC");
             Assert.IsTrue(personProjectHistoryOperation.OperationType == "User role");
             Assert.IsTrue(personProjectHistoryOperation.FieldName == "Read");
             Assert.IsTrue(personProjectHistoryOperation.NewValue == "Y");
@@ -63,7 +63,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             var personProjectHistoryOperation = personProjectHistory.PersonProjectHistoryOperations.FirstOrDefault();
 
             Assert.IsTrue(personProjectHistory.PersonProjectHistoryOperations.Count == 1);
-            Assert.IsTrue(personProjectHistoryOperation.UpdatedByUser == PersonProjectHistoryConstants.UpdatedBy);
+            Assert.IsTrue(personProjectHistoryOperation.UpdatedByUser == "ACCESS_SYNC");
             Assert.IsTrue(personProjectHistoryOperation.OperationType == "UPDATE");
             Assert.IsTrue(personProjectHistoryOperation.FieldName == "ISVOIDED");
             Assert.IsTrue(personProjectHistoryOperation.NewValue == "Y");
@@ -83,7 +83,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             var personProjectHistoryOperations = personProjectHistory.PersonProjectHistoryOperations.FirstOrDefault();
 
             Assert.IsTrue(personProjectHistory.PersonProjectHistoryOperations.Count == 1);
-            Assert.IsTrue(personProjectHistoryOperations.UpdatedByUser == PersonProjectHistoryConstants.UpdatedBy);
+            Assert.IsTrue(personProjectHistoryOperations.UpdatedByUser == "ACCESS_SYNC");
             Assert.IsTrue(personProjectHistoryOperations.OperationType == "UPDATE");
             Assert.IsTrue(personProjectHistoryOperations.FieldName == "ISVOIDED");
             Assert.IsTrue(personProjectHistoryOperations.OldValue == "Y");

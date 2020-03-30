@@ -34,7 +34,7 @@ namespace QueueReceiver.Core.Services
 
         public async Task GiveProjectAccessToPlantAsync(long personId, string plantId)
         {
-            var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory(personId);
+            var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory();
             var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
 
             await _personService.UnVoidPersonAsync(personId);
@@ -59,7 +59,7 @@ namespace QueueReceiver.Core.Services
 
         public async Task RemoveAccessToPlant(long personId, string plantId)
         {
-            var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory(personId);
+            var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory();
             var projects = _personProjectRepository.VoidPersonProjects(plantId, personId).Select(pp => pp.Project!).ToList();
             projects.ForEach(p => PersonProjectHistoryHelper.LogVoidProjects(personId, personProjectHistory, p.ProjectId));
 

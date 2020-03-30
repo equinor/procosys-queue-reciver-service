@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -29,6 +30,12 @@ namespace QueueReceiver.Core.Models
         public string? MobilePhoneNumber { get; set; }
 
         public bool IsVoided { get; set; }
+
+        public long? CreatedById { get; set; }
+
+        public long? UpdatedById { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual IEnumerable<PersonProject> PersonProjects { get; set; }
     }

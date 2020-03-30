@@ -19,13 +19,13 @@ namespace QueueReceiver.IntegrationTests
         #region Setup Service
         public static (AccessService,Mock<IGraphService>) Factory(QueueReceiverServiceContext context)
         {
-            var personRepository = new PersonRepository(context);
+            var settings = new DbContextSettings { PersonProjectCreatedId = 111, PersonProjectCreatedUsername = "ACCESS_SYNC"};
+            var personRepository = new PersonRepository(context, settings);
             var graphServiceMock = new Mock<IGraphService>();
             var projectRepositoryMock = new Mock<IProjectRepository>();
             var personProjectRepositoryMock = new Mock<IPersonProjectRepository>();
             var personServiceLoggerMock = new Mock<ILogger<PersonService>>();
             var personService = new PersonService(personRepository, graphServiceMock.Object, projectRepositoryMock.Object, personServiceLoggerMock.Object);
-            var settings = new DbContextSettings { PersonProjectCreatedId = 111 };
             var personProjectRepository = new PersonProjectRepository(context, settings);
             var projectRepository = new ProjectRepository(context);
             var personUserGroupRepository = new PersonUserGroupRepository(context,settings);
@@ -33,7 +33,7 @@ namespace QueueReceiver.IntegrationTests
             var personRestrictionRoleRepository = new PersonRestrictionRoleRepository(context);
             var restrictionRoleRepository = new RestrictionRoleRepository(context);
             var privilegeService = new PrivilegeService(restrictionRoleRepository, personRestrictionRoleRepository, userGroupRepository, personUserGroupRepository);
-            var personProjectHistoryRepository = new PersonProjectHistoryRepository(context);
+            var personProjectHistoryRepository = new PersonProjectHistoryRepository(context, settings);
             var plantRepository = new PlantRepository(context);
             var plantService = new PlantService(plantRepository);
             var AccessServiceloggerMock = new Mock<ILogger<AccessService>>();

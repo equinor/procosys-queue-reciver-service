@@ -27,6 +27,11 @@ namespace QueueReceiver.Core.Services
             _logger = logger;
         }
 
+        public async Task UpdateDbContextPersonSettings()
+        {
+            await _personRepository.UpdatePersonSettings();
+        }
+
         public async Task VoidPersonAsync(long personId)
         {
             var person = await _personRepository.FindAsync(personId);
@@ -152,11 +157,13 @@ namespace QueueReceiver.Core.Services
         {
             if(adPerson.Username == null )
             {
-                _logger.LogError($"ad person with email: {adPerson.Email}, or name {adPerson.GivenName} {adPerson.Surname} does not contain a username");
+                _logger.LogError($"AD person with email: {adPerson.Email}, or name {adPerson.GivenName} {adPerson.Surname} does not contain a username");
                 return;
             }
 
             var userName = adPerson.Username.ToUpperInvariant();
+
+            _logger.LogInformation($"Creating person with OID: {adPerson.Oid}");
 
             await _personRepository.AddPersonAsync(
                 new Person(userName, adPerson.Email)
@@ -164,6 +171,7 @@ namespace QueueReceiver.Core.Services
                     Oid = adPerson.Oid,
                     FirstName = adPerson.GivenName,
                     LastName = adPerson.Surname,
+                    UpdatedAt = DateTime.Now
                 });
         }
     }
