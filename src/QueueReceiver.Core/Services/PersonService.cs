@@ -171,6 +171,7 @@ namespace QueueReceiver.Core.Services
                     Oid = adPerson.Oid,
                     FirstName = adPerson.GivenName,
                     LastName = adPerson.Surname,
+                    MobilePhoneNumber = adPerson.MobileNumber,
                     UpdatedAt = DateTime.Now
                 });
         }
