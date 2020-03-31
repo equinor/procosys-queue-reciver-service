@@ -28,6 +28,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             _service = new PersonService(_personRepository.Object,
                                          _graphService.Object,
                                          _projectRepository.Object,
+                                         _personProjectRepository.Object,
                                          _personServiceLogger.Object
                                          );
         }

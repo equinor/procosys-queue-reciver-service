@@ -43,6 +43,7 @@ namespace QueueReceiver.Core.Services
 
                     await _accessService.UpdateMemberInfo(members);
                     await _accessService.UpdateMemberAccess(members, plant.PlantId);
+                    await _accessService.UpdateMemberVoidedStatus(members);
                 }
                 //if (membersInDbNotInAd.Any()) //TODO: Not for production without check
                 //{

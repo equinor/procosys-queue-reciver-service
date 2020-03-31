@@ -17,19 +17,23 @@ namespace QueueReceiver.IntegrationTests
     public class AccessServiceTests
     {
         #region Setup Service
-        public static (AccessService,Mock<IGraphService>) Factory(QueueReceiverServiceContext context)
+        public static (AccessService, Mock<IGraphService>) Factory(QueueReceiverServiceContext context)
         {
             var personRepository = new PersonRepository(context);
             var graphServiceMock = new Mock<IGraphService>();
             var projectRepositoryMock = new Mock<IProjectRepository>();
             var personProjectRepositoryMock = new Mock<IPersonProjectRepository>();
             var personServiceLoggerMock = new Mock<ILogger<PersonService>>();
-            var personService = new PersonService(personRepository, graphServiceMock.Object, projectRepositoryMock.Object, personServiceLoggerMock.Object);
+            var personService = new PersonService(personRepository,
+                graphServiceMock.Object,
+                projectRepositoryMock.Object,
+                personProjectRepositoryMock.Object,
+                personServiceLoggerMock.Object);
             var settings = new DbContextSettings { PersonProjectCreatedId = 111 };
             var personProjectRepository = new PersonProjectRepository(context, settings);
             var projectRepository = new ProjectRepository(context);
-            var personUserGroupRepository = new PersonUserGroupRepository(context,settings);
-            var userGroupRepository = new  UserGroupRepository(context);
+            var personUserGroupRepository = new PersonUserGroupRepository(context, settings);
+            var userGroupRepository = new UserGroupRepository(context);
             var personRestrictionRoleRepository = new PersonRestrictionRoleRepository(context);
             var restrictionRoleRepository = new RestrictionRoleRepository(context);
             var privilegeService = new PrivilegeService(restrictionRoleRepository, personRestrictionRoleRepository, userGroupRepository, personUserGroupRepository);
@@ -40,13 +44,13 @@ namespace QueueReceiver.IntegrationTests
             var personProjectServiceLoggerMock = new Mock<ILogger<PersonProjectService>>();
 
             var personProjectService = new PersonProjectService(
-                personProjectRepository, 
-                projectRepository, 
-                privilegeService, 
-                personProjectHistoryRepository, 
+                personProjectRepository,
+                projectRepository,
+                privilegeService,
+                personProjectHistoryRepository,
                 personService,
                 personProjectServiceLoggerMock.Object);
-            var service = new AccessService(personService, personProjectService, plantService, AccessServiceloggerMock.Object,context);
+            var service = new AccessService(personService, personProjectService, plantService, AccessServiceloggerMock.Object, context);
 
             return (service, graphServiceMock);
         }
@@ -82,7 +86,7 @@ namespace QueueReceiver.IntegrationTests
 
             using (var context = new QueueReceiverServiceContext(options))
             {
-              Assert.IsTrue(await context.PersonProjects.CountAsync() == 1);
+                Assert.IsTrue(await context.PersonProjects.CountAsync() == 1);
             }
         }
     }

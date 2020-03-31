@@ -14,26 +14,44 @@ namespace QueueReceiver.Core.Services
         private readonly IGraphService _graphService;
         private readonly IProjectRepository _projectRepository;
         private readonly ILogger<PersonService> _logger;
+        private readonly IPersonProjectRepository _personProjectRepository;
 
         public PersonService(
-            IPersonRepository personRepository, 
-            IGraphService graphService, 
+            IPersonRepository personRepository,
+            IGraphService graphService,
             IProjectRepository projectRepository,
+            IPersonProjectRepository personProjectRepository,
             ILogger<PersonService> logger)
         {
             _personRepository = personRepository;
             _graphService = graphService;
             _projectRepository = projectRepository;
+            _personProjectRepository = personProjectRepository;
             _logger = logger;
         }
 
-        public async Task VoidPersonAsync(long personId)
+
+        public async Task UpdateVoidedStatus(string personOid)
+        {
+            var personId = await _personRepository.FindPersonIdByUserOidAsync(personOid);
+
+            if (await _personProjectRepository.PersonHasNoAccess(personId))
+            {
+                await VoidPersonAsync(personId);
+            }
+            else
+            {
+                await UnVoidPersonAsync(personId);
+            }
+        }
+
+        private async Task VoidPersonAsync(long personId)
         {
             var person = await _personRepository.FindAsync(personId);
             person.IsVoided = true;
         }
 
-        public async Task UnVoidPersonAsync(long personId)
+        private async Task UnVoidPersonAsync(long personId)
         {
             var person = await _personRepository.FindAsync(personId);
             person.IsVoided = false;
@@ -94,10 +112,10 @@ namespace QueueReceiver.Core.Services
             }
 
             var reconcilePersons = await GetReconcilePersons(adPerson);
-            
+
             if (reconcilePersons.Count > 0)
             {
-                reconcilePersons.ForEach(rp=> rp.Reconcile = userOid);
+                reconcilePersons.ForEach(rp => rp.Reconcile = userOid);
                 return;
             }
 
@@ -150,7 +168,7 @@ namespace QueueReceiver.Core.Services
 
         private async Task CreatePerson(AdPerson adPerson)
         {
-            if(adPerson.Username == null )
+            if (adPerson.Username == null)
             {
                 _logger.LogError($"ad person with email: {adPerson.Email}, or name {adPerson.GivenName} {adPerson.Surname} does not contain a username");
                 return;

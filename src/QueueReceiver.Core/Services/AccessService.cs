@@ -6,6 +6,7 @@ using QueueReceiver.Core.Properties;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace QueueReceiver.Core.Services
 {
@@ -51,6 +52,8 @@ namespace QueueReceiver.Core.Services
             await UpdateMemberInfo(accessInfo.Members);
 
             await UpdateMemberAccess(accessInfo.Members, plantId);
+
+            await UpdateMemberVoidedStatus(accessInfo.Members);
         }
 
         public async Task UpdateMemberInfo(List<Member> members)
@@ -59,7 +62,7 @@ namespace QueueReceiver.Core.Services
             {
                 if (member.ShouldVoid)
                 {
-                   await _personService.UpdateWithOidIfNotFound(member.UserOid);
+                    await _personService.UpdateWithOidIfNotFound(member.UserOid);
                 }
                 else
                 {
@@ -89,14 +92,23 @@ namespace QueueReceiver.Core.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
+        public async Task UpdateMemberVoidedStatus(List<Member> members)
+        {
+            var tasks = members.Select(async member =>
+            {
+                await _personService.UpdateVoidedStatus(member.UserOid);
+            });
+
+            await Task.WhenAll(tasks);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
         private async Task RemoveAccess(string userOid, string plantId)
         {
             Person? person = await _personService.FindPersonByOidAsync(userOid);
 
             if (person == null)
             {
-               // _personService.HandleUserIfDeleted(userOid);
-                //TODO Check if deleted, then erase oid if not found
                 _logger.LogInformation(Resources.PersonDoesNotExist);
                 return;
             }
@@ -104,7 +116,7 @@ namespace QueueReceiver.Core.Services
             _logger.LogInformation(string.Format(
                 CultureInfo.InvariantCulture,
                 Resources.RemoveAccess, person.Id, plantId));
-            
+
             await _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
