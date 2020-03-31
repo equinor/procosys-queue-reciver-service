@@ -1,12 +1,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using QueueReceiver.Core.Settings;
-using QueueReceiver.Infrastructure;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
+using QueueReceiver.Core.Services;
+using QueueReceiver.Core.Settings;
+using QueueReceiver.Infrastructure;
 using QueueReceiver.Infrastructure.Data;
 
 namespace QueueReceiver.Worker
@@ -43,9 +45,9 @@ namespace QueueReceiver.Worker
                 services.AddRepositories();
                 services.AddServices();
 
-                var dbContextSettings = new DbContextSettings();
-                hostContext.Configuration.Bind(nameof(DbContextSettings), dbContextSettings);
-                services.AddSingleton(dbContextSettings);
+                var personCreatedById = long.Parse(hostContext.Configuration["PersonCreatedById"], CultureInfo.InvariantCulture);
+                var personCreatedByCache = new PersonCreatedByCache(personCreatedById);
+                services.AddSingleton(personCreatedByCache);
 
                 var graphSettings = new GraphSettings();
                 hostContext.Configuration.Bind(nameof(GraphSettings), graphSettings);

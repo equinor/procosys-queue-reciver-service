@@ -12,7 +12,6 @@ namespace QueueReceiver.Core.Interfaces
         Task<Person?> FindByMobileNumberAndNameAsync(string mobileNumber, string givenName, string surname);
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
         IEnumerable<string> GetOidsBasedOnProject(long projectId);
-        Task UpdatePersonSettings();
         Task<Person> FindAsync(long personId);
         Task<IEnumerable<Person>> FindPossibleMatches(string mobileNumber, string firstName, string lastName, string userName);
     }

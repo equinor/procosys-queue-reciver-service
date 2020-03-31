@@ -4,9 +4,8 @@ using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
-using QueueReceiver.Infrastructure.Data;
 using System;
-using System.IO;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace GroupSyncer
@@ -16,12 +15,13 @@ namespace GroupSyncer
         static async Task Main(string[] args)
         {
             var config = new ConfigurationBuilder()
-            .AddJsonFile("hosting.json", false, true)
-            .AddUserSecrets<Program>()
-            .Build();
+                .AddJsonFile("hosting.json", false, true)
+                .AddUserSecrets<Program>()
+                .Build();
 
-            var dbContextSettings = new DbContextSettings();
-            config.Bind(nameof(DbContextSettings), dbContextSettings);
+            var personCreatedById = long.Parse(config["PersonCreatedById"], CultureInfo.InvariantCulture);
+            var personCreatedByCache = new PersonCreatedByCache(personCreatedById);
+
             var graphSettings = new GraphSettings();
             config.Bind(nameof(GraphSettings), graphSettings);
 
@@ -29,7 +29,7 @@ namespace GroupSyncer
             var services = new ServiceCollection()
                 .AddLogging()
                 .AddSingleton<ISyncService, SyncService>()
-                .AddSingleton(dbContextSettings)
+                .AddSingleton(personCreatedByCache)
                 .AddSingleton(graphSettings)
                 .AddServices()
                 .AddRepositories()
@@ -37,7 +37,7 @@ namespace GroupSyncer
                 .BuildServiceProvider();
 
             var syncService = services.GetService<ISyncService>();
-            Console.WriteLine("starting sync");
+            Console.WriteLine("Starting sync");
             await syncService.StartAccessSync();
             Console.WriteLine("Sync Done!");
 

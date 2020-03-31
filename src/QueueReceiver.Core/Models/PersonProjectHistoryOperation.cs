@@ -6,11 +6,13 @@
             string operationType,
             long projectId,
             long personId,
+            string? updatedByUser,
             PersonProjectHistory personProjectHistory)
         {
             OperationType = operationType;
             ProjectId = projectId;
             PersonId = personId;
+            UpdatedByUser = updatedByUser;
             PersonProjectHistory = personProjectHistory;
         }
 
@@ -28,7 +30,7 @@
 
         public long PersonId { get; internal set; }
 
-        public string? UpdatedByUser { get; set; }
+        public string? UpdatedByUser { get; internal set; }
 
         public long PersonProjectHistoryId { get; set; }
 

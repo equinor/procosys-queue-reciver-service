@@ -12,21 +12,10 @@ namespace QueueReceiver.Infrastructure.Repositories
     public class PersonRepository : IPersonRepository
     {
         private readonly DbSet<Person> _persons;
-        private readonly DbContextSettings _settings;
 
-        public PersonRepository(QueueReceiverServiceContext context, DbContextSettings settings)
+        public PersonRepository(QueueReceiverServiceContext context)
         {
             _persons = context.Persons;
-            _settings = settings;
-        }
-
-        public async Task UpdatePersonSettings()
-        {
-            if (_settings.PersonProjectCreatedUsername == null && _settings.PersonProjectCreatedId > 0)
-            {
-                var createdByPerson = await FindAsync(_settings.PersonProjectCreatedId);
-                _settings.PersonProjectCreatedUsername = createdByPerson.UserName;
-            }
         }
 
         public Task<Person> FindAsync(long personId)
@@ -36,9 +25,6 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<Person> AddPersonAsync(Person person)
         {
-            person.CreatedById = _settings.PersonProjectCreatedId;
-            person.UpdatedById = _settings.PersonProjectCreatedId;
-
             await _persons.AddAsync(person);
             return person;
         }

@@ -17,6 +17,7 @@ namespace QueueReceiver.Core.UnitTests.Services
         private readonly Mock<IProjectRepository> _projectRepository;
         private readonly Mock<IPersonProjectRepository> _personProjectRepository;
         private readonly Mock<ILogger<PersonService>> _personServiceLogger;
+        private readonly PersonCreatedByCache _personCreatedByCache;
 
         public PersonServiceTests()
         {
@@ -25,11 +26,13 @@ namespace QueueReceiver.Core.UnitTests.Services
             _projectRepository = new Mock<IProjectRepository>();
             _personProjectRepository = new Mock<IPersonProjectRepository>();
             _personServiceLogger = new Mock<ILogger<PersonService>>();
-            _service = new PersonService(_personRepository.Object,
-                                         _graphService.Object,
-                                         _projectRepository.Object,
-                                         _personServiceLogger.Object
-                                         );
+            _personCreatedByCache = new PersonCreatedByCache(111);
+            _service = new PersonService(
+                _personRepository.Object,
+                _graphService.Object,
+                _projectRepository.Object,
+                _personCreatedByCache,
+                _personServiceLogger.Object);
         }
 
         [TestMethod]
