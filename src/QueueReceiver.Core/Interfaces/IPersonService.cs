@@ -14,5 +14,6 @@ namespace QueueReceiver.Core.Interfaces
         Task<IEnumerable<string>> GetMembersWithOidAndAccessToPlant(string plantId);
         Task UnVoidPersonAsync(long personId);
         Task VoidPersonAsync(long personId);
+        Task SetPersonCreatedByCache();
     }
 }

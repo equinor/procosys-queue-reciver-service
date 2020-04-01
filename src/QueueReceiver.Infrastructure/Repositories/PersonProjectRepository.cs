@@ -1,28 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
+using QueueReceiver.Infrastructure.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
-using QueueReceiver.Infrastructure.Data;
 
 namespace QueueReceiver.Infrastructure.Repositories
 {
     public class PersonProjectRepository : IPersonProjectRepository
     {
         private readonly DbSet<PersonProject> _personProjects;
-        private readonly DbContextSettings _settings;
 
-        public PersonProjectRepository(QueueReceiverServiceContext context, DbContextSettings settings)
+        public PersonProjectRepository(QueueReceiverServiceContext context)
         {
             _personProjects = context.PersonProjects;
-            _settings = settings;
         }
 
-        public async Task AddAsync(long projectId, long personId)
+        public async Task AddAsync(long projectId, long personId, long createdById)
         {
-            var createdById = _settings.PersonProjectCreatedId;
             var personProject = new PersonProject(projectId, personId, createdById);
             await _personProjects.AddAsync(personProject);
         }
@@ -49,9 +46,8 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<bool> PersonHasNoAccess(long personId)
         {
-            return !await _personProjects.AnyAsync(pp => pp.PersonId == personId 
-                        && pp.IsVoided == false);
+            return !await _personProjects.AnyAsync(pp => pp.PersonId == personId
+                                                         && pp.IsVoided == false);
         }
-
     }
 }

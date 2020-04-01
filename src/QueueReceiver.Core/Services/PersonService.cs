@@ -13,18 +13,31 @@ namespace QueueReceiver.Core.Services
         private readonly IPersonRepository _personRepository;
         private readonly IGraphService _graphService;
         private readonly IProjectRepository _projectRepository;
+        private readonly PersonCreatedByCache _personCreatedByCache;
         private readonly ILogger<PersonService> _logger;
 
         public PersonService(
             IPersonRepository personRepository, 
             IGraphService graphService, 
             IProjectRepository projectRepository,
+            PersonCreatedByCache personCreatedByCache,
             ILogger<PersonService> logger)
         {
             _personRepository = personRepository;
             _graphService = graphService;
             _projectRepository = projectRepository;
+            _personCreatedByCache = personCreatedByCache;
             _logger = logger;
+        }
+
+        public async Task SetPersonCreatedByCache()
+        {
+            // Set Username from DB (Id is set from AppSettings at startup)
+            if (_personCreatedByCache.Username == null && _personCreatedByCache.Id > 0)
+            {
+                var createdByPerson = await _personRepository.FindAsync(_personCreatedByCache.Id);
+                _personCreatedByCache.Username = createdByPerson.UserName;
+            }
         }
 
         public async Task VoidPersonAsync(long personId)
@@ -97,6 +110,8 @@ namespace QueueReceiver.Core.Services
             
             if (reconcilePersons.Count > 0)
             {
+                _logger.LogInformation($"Reconcile: setting OID {userOid} on {reconcilePersons.Count} possible matches.");
+
                 reconcilePersons.ForEach(rp=> rp.Reconcile = userOid);
                 return;
             }
@@ -152,11 +167,13 @@ namespace QueueReceiver.Core.Services
         {
             if(adPerson.Username == null )
             {
-                _logger.LogError($"ad person with email: {adPerson.Email}, or name {adPerson.GivenName} {adPerson.Surname} does not contain a username");
+                _logger.LogError($"AD person with email: {adPerson.Email}, or name {adPerson.GivenName} {adPerson.Surname} does not contain a username");
                 return;
             }
 
             var userName = adPerson.Username.ToUpperInvariant();
+
+            _logger.LogInformation($"Creating person with OID: {adPerson.Oid}");
 
             await _personRepository.AddPersonAsync(
                 new Person(userName, adPerson.Email)
@@ -164,6 +181,10 @@ namespace QueueReceiver.Core.Services
                     Oid = adPerson.Oid,
                     FirstName = adPerson.GivenName,
                     LastName = adPerson.Surname,
+                    MobilePhoneNumber = adPerson.MobileNumber?.Replace(" ", string.Empty),
+                    UpdatedAt = DateTime.Now,
+                    CreatedById = _personCreatedByCache.Id,
+                    UpdatedById = _personCreatedByCache.Id
                 });
         }
     }

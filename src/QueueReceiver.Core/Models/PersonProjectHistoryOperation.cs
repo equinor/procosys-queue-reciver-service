@@ -6,7 +6,7 @@
             string operationType,
             long projectId,
             long personId,
-            string updatedByUser,
+            string? updatedByUser,
             PersonProjectHistory personProjectHistory)
         {
             OperationType = operationType;
@@ -30,7 +30,7 @@
 
         public long PersonId { get; internal set; }
 
-        public string UpdatedByUser { get; internal set; }
+        public string? UpdatedByUser { get; internal set; }
 
         public long PersonProjectHistoryId { get; set; }
 
