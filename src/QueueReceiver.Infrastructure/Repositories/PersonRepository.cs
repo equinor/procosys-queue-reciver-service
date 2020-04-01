@@ -92,6 +92,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         }
 
         private static bool MobileNumberIsEqual(string a, string b)
-             => a.Equals(b.Replace(" ", "")) || a.Equals("+47" + b.Replace(" ", ""));
+            => a.Replace(" ", "").Equals(b.Replace(" ", "")) ||
+               a.Replace(" ", "").Equals("+47" + b.Replace(" ", ""));
     }
 }
