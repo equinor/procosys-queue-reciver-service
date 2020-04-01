@@ -70,7 +70,6 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             //Assert
             personProjectRepository.Verify(ppr => ppr.AddAsync(projectId, personId, personCreatedByCache.Id), Times.Once);
-            personService.Verify(ps => ps.UnVoidPersonAsync(personId), Times.Once);
 
         }
 
@@ -100,7 +99,6 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             //Assert
             personProjectRepository.Verify(ppr => ppr.VoidPersonProjects(plantId, personId), Times.Once);
-            personService.Verify(ps => ps.VoidPersonAsync(personId), Times.Once);
         }
     }
 }

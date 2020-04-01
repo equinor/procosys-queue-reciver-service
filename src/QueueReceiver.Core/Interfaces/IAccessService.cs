@@ -9,5 +9,6 @@ namespace QueueReceiver.Core.Interfaces
         Task HandleRequestAsync(AccessInfo accessInfo);
         Task UpdateMemberInfo(List<Member> members);
         Task UpdateMemberAccess(List<Member> members, string plantId);
+        Task UpdateMemberVoidedStatus(List<Member> members);
     }
 }

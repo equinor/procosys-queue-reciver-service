@@ -15,18 +15,21 @@ namespace QueueReceiver.Core.Services
         private readonly IProjectRepository _projectRepository;
         private readonly PersonCreatedByCache _personCreatedByCache;
         private readonly ILogger<PersonService> _logger;
+        private readonly IPersonProjectRepository _personProjectRepository;
 
         public PersonService(
-            IPersonRepository personRepository, 
-            IGraphService graphService, 
+            IPersonRepository personRepository,
+            IGraphService graphService,
             IProjectRepository projectRepository,
             PersonCreatedByCache personCreatedByCache,
+            IPersonProjectRepository personProjectRepository,
             ILogger<PersonService> logger)
         {
             _personRepository = personRepository;
             _graphService = graphService;
             _projectRepository = projectRepository;
             _personCreatedByCache = personCreatedByCache;
+            _personProjectRepository = personProjectRepository;
             _logger = logger;
         }
 
@@ -40,13 +43,32 @@ namespace QueueReceiver.Core.Services
             }
         }
 
-        public async Task VoidPersonAsync(long personId)
+        public async Task UpdateVoidedStatus(string personOid)
+        {
+            var personId = await _personRepository.FindPersonIdByUserOidAsync(personOid);
+
+            if(personId == 0)
+            {
+                return;
+            }
+
+            if (await _personProjectRepository.PersonHasNoAccess(personId))
+            {
+                await VoidPersonAsync(personId);
+            }
+            else
+            {
+                await UnVoidPersonAsync(personId);
+            }
+        }
+
+        private async Task VoidPersonAsync(long personId)
         {
             var person = await _personRepository.FindAsync(personId);
             person.IsVoided = true;
         }
 
-        public async Task UnVoidPersonAsync(long personId)
+        private async Task UnVoidPersonAsync(long personId)
         {
             var person = await _personRepository.FindAsync(personId);
             person.IsVoided = false;
@@ -107,7 +129,7 @@ namespace QueueReceiver.Core.Services
             }
 
             var reconcilePersons = await GetReconcilePersons(adPerson);
-            
+
             if (reconcilePersons.Count > 0)
             {
                 _logger.LogInformation($"Reconcile: setting OID {userOid} on {reconcilePersons.Count} possible matches.");
@@ -165,7 +187,7 @@ namespace QueueReceiver.Core.Services
 
         private async Task CreatePerson(AdPerson adPerson)
         {
-            if(adPerson.Username == null )
+            if (adPerson.Username == null)
             {
                 _logger.LogError($"AD person with email: {adPerson.Email}, or name {adPerson.GivenName} {adPerson.Surname} does not contain a username");
                 return;

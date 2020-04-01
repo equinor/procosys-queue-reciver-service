@@ -32,6 +32,7 @@ namespace QueueReceiver.Core.UnitTests.Services
                 _graphService.Object,
                 _projectRepository.Object,
                 _personCreatedByCache,
+                _personProjectRepository.Object,
                 _personServiceLogger.Object);
         }
 

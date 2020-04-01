@@ -44,8 +44,6 @@ namespace QueueReceiver.Core.Services
 
             var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
 
-            await _personService.UnVoidPersonAsync(personId);
-
             var (updated, unvoided) = await UpdatePersonProjectsAsync(personId, projects);
 
             if (updated)
@@ -86,11 +84,6 @@ namespace QueueReceiver.Core.Services
             if (projects.Count > 0)
             {
                 await _personProjectHistoryRepository.AddAsync(personProjectHistory);
-            }
-
-            if (await _personProjectRepository.PersonHasNoAccess(personId))
-            {
-                await _personService.VoidPersonAsync(personId);
             }
         }
 

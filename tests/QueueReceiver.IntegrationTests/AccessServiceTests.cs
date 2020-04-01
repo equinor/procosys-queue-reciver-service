@@ -17,7 +17,7 @@ namespace QueueReceiver.IntegrationTests
     public class AccessServiceTests
     {
         #region Setup Service
-        public static (AccessService,Mock<IGraphService>) Factory(QueueReceiverServiceContext context)
+        public static (AccessService, Mock<IGraphService>) Factory(QueueReceiverServiceContext context)
         {
             var personCreatedByCache = new PersonCreatedByCache(111)
             {
@@ -29,7 +29,12 @@ namespace QueueReceiver.IntegrationTests
             var projectRepositoryMock = new Mock<IProjectRepository>();
             var personProjectRepositoryMock = new Mock<IPersonProjectRepository>();
             var personServiceLoggerMock = new Mock<ILogger<PersonService>>();
-            var personService = new PersonService(personRepository, graphServiceMock.Object, projectRepositoryMock.Object, personCreatedByCache, personServiceLoggerMock.Object);
+            var personService = new PersonService(personRepository,
+                graphServiceMock.Object,
+                projectRepositoryMock.Object,
+                personCreatedByCache,
+                personProjectRepositoryMock.Object,
+                personServiceLoggerMock.Object);
             var personProjectRepository = new PersonProjectRepository(context);
             var projectRepository = new ProjectRepository(context);
             var personUserGroupRepository = new PersonUserGroupRepository(context);
@@ -44,10 +49,10 @@ namespace QueueReceiver.IntegrationTests
             var personProjectServiceLoggerMock = new Mock<ILogger<PersonProjectService>>();
 
             var personProjectService = new PersonProjectService(
-                personProjectRepository, 
-                projectRepository, 
-                privilegeService, 
-                personProjectHistoryRepository, 
+                personProjectRepository,
+                projectRepository,
+                privilegeService,
+                personProjectHistoryRepository,
                 personService,
                 personProjectServiceLoggerMock.Object,
                 personCreatedByCache);
