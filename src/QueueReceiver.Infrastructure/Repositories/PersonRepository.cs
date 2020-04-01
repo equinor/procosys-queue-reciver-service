@@ -12,12 +12,10 @@ namespace QueueReceiver.Infrastructure.Repositories
     public class PersonRepository : IPersonRepository
     {
         private readonly DbSet<Person> _persons;
-        private readonly QueueReceiverServiceContext _context;
 
         public PersonRepository(QueueReceiverServiceContext context)
         {
             _persons = context.Persons;
-            _context = context;
         }
 
         public Task<Person> FindAsync(long personId)
@@ -94,6 +92,7 @@ namespace QueueReceiver.Infrastructure.Repositories
         }
 
         private static bool MobileNumberIsEqual(string a, string b)
-             => a.Equals(b.Replace(" ", "")) || a.Equals("+47" + b.Replace(" ", ""));
+            => a.Replace(" ", "").Equals(b.Replace(" ", "")) ||
+               a.Replace(" ", "").Equals("+47" + b.Replace(" ", ""));
     }
 }

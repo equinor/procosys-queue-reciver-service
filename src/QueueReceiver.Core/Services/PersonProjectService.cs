@@ -15,6 +15,7 @@ namespace QueueReceiver.Core.Services
         private readonly IPersonProjectHistoryRepository _personProjectHistoryRepository;
         private readonly IPersonService _personService;
         private readonly ILogger<PersonProjectService> _logger;
+        private readonly PersonCreatedByCache _personCreatedByCache;
 
         public PersonProjectService(
             IPersonProjectRepository personProjectRepository,
@@ -22,7 +23,8 @@ namespace QueueReceiver.Core.Services
             IPrivilegeService privilegeService,
             IPersonProjectHistoryRepository personProjectHistoryRepository,
             IPersonService personService,
-            ILogger<PersonProjectService> logger)
+            ILogger<PersonProjectService> logger, 
+            PersonCreatedByCache personCreatedByCache)
         {
             _personProjectRepository = personProjectRepository;
             _projectRepository = projectRepository;
@@ -30,11 +32,16 @@ namespace QueueReceiver.Core.Services
             _personProjectHistoryRepository = personProjectHistoryRepository;
             _personService = personService;
             _logger = logger;
+            _personCreatedByCache = personCreatedByCache;
         }
 
         public async Task GiveProjectAccessToPlantAsync(long personId, string plantId)
         {
-            var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory(personId);
+            var personProjectHistory =
+                PersonProjectHistoryHelper.CreatePersonProjectHistory(
+                    _personCreatedByCache.Id,
+                    _personCreatedByCache.Username);
+
             var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
 
             var (updated, unvoided) = await UpdatePersonProjectsAsync(personId, projects);
@@ -46,7 +53,11 @@ namespace QueueReceiver.Core.Services
 
             if (unvoided)
             {
-                projects.ForEach(p => PersonProjectHistoryHelper.LogUnvoidProjects(personId, personProjectHistory, p.ProjectId));
+                projects.ForEach(p => PersonProjectHistoryHelper.LogUnvoidProjects(
+                    personId,
+                    personProjectHistory,
+                    p.ProjectId,
+                    _personCreatedByCache.Username));
             }
 
             if (unvoided || updated)
@@ -57,9 +68,18 @@ namespace QueueReceiver.Core.Services
 
         public async Task RemoveAccessToPlant(long personId, string plantId)
         {
-            var personProjectHistory = PersonProjectHistoryHelper.CreatePersonProjectHistory(personId);
+            var personProjectHistory =
+                PersonProjectHistoryHelper.CreatePersonProjectHistory(
+                    _personCreatedByCache.Id,
+                    _personCreatedByCache.Username);
+
             var projects = _personProjectRepository.VoidPersonProjects(plantId, personId).Select(pp => pp.Project!).ToList();
-            projects.ForEach(p => PersonProjectHistoryHelper.LogVoidProjects(personId, personProjectHistory, p.ProjectId));
+            
+            projects.ForEach(p => PersonProjectHistoryHelper.LogVoidProjects(
+                personId,
+                personProjectHistory,
+                p.ProjectId,
+                _personCreatedByCache.Username));
 
             if (projects.Count > 0)
             {
@@ -79,7 +99,7 @@ namespace QueueReceiver.Core.Services
 
                 if (personProject == null)
                 {
-                    await _personProjectRepository.AddAsync(projectId, personId);
+                    await _personProjectRepository.AddAsync(projectId, personId, _personCreatedByCache.Id);
                     updated = true;
                 }
                 else if (personProject.IsVoided)
@@ -102,11 +122,11 @@ namespace QueueReceiver.Core.Services
 
             projects.ForEach(p =>
             {
-                PersonProjectHistoryHelper.LogAddAccess(personId, personProjectHistory, p.ProjectId);
+                PersonProjectHistoryHelper.LogAddAccess(personId, personProjectHistory, p.ProjectId, _personCreatedByCache.Username);
 
                 if (p.IsMainProject)
                 {
-                    PersonProjectHistoryHelper.LogDefaultUserGroup(personId, personProjectHistory, p.ProjectId);
+                    PersonProjectHistoryHelper.LogDefaultUserGroup(personId, personProjectHistory, p.ProjectId, _personCreatedByCache.Username);
                 }
             });
         }

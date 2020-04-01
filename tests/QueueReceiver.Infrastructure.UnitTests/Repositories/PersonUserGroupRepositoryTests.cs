@@ -31,15 +31,10 @@ namespace QueueReceiver.Infrastructure.UnitTests.Repositories
                     .AddAsync(It.IsAny<PersonUserGroup>(), default))
                     .Returns(Task.FromResult(new EntityEntry<PersonUserGroup>(new MockInternal())));
 
-            var settings = new DbContextSettings
-            {
-                PersonProjectCreatedId = createdById
-            };
-
-            var repository = new PersonUserGroupRepository(mockContext.Object, settings);
+            var repository = new PersonUserGroupRepository(mockContext.Object);
 
             //Act
-            await repository.AddIfNotExistAsync(userGroupId, plantId, personId);
+            await repository.AddIfNotExistAsync(userGroupId, plantId, personId, createdById);
 
             //Assert
             mockContext.Verify(cxt => cxt.PersonUserGroups

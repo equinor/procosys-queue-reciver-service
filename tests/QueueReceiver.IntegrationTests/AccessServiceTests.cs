@@ -19,6 +19,11 @@ namespace QueueReceiver.IntegrationTests
         #region Setup Service
         public static (AccessService, Mock<IGraphService>) Factory(QueueReceiverServiceContext context)
         {
+            var personCreatedByCache = new PersonCreatedByCache(111)
+            {
+                Username = "PERSON_CREATED_BY"
+            };
+
             var personRepository = new PersonRepository(context);
             var graphServiceMock = new Mock<IGraphService>();
             var projectRepositoryMock = new Mock<IProjectRepository>();
@@ -27,16 +32,16 @@ namespace QueueReceiver.IntegrationTests
             var personService = new PersonService(personRepository,
                 graphServiceMock.Object,
                 projectRepositoryMock.Object,
+                personCreatedByCache,
                 personProjectRepositoryMock.Object,
                 personServiceLoggerMock.Object);
-            var settings = new DbContextSettings { PersonProjectCreatedId = 111 };
-            var personProjectRepository = new PersonProjectRepository(context, settings);
+            var personProjectRepository = new PersonProjectRepository(context);
             var projectRepository = new ProjectRepository(context);
-            var personUserGroupRepository = new PersonUserGroupRepository(context, settings);
-            var userGroupRepository = new UserGroupRepository(context);
+            var personUserGroupRepository = new PersonUserGroupRepository(context);
+            var userGroupRepository = new  UserGroupRepository(context);
             var personRestrictionRoleRepository = new PersonRestrictionRoleRepository(context);
             var restrictionRoleRepository = new RestrictionRoleRepository(context);
-            var privilegeService = new PrivilegeService(restrictionRoleRepository, personRestrictionRoleRepository, userGroupRepository, personUserGroupRepository);
+            var privilegeService = new PrivilegeService(restrictionRoleRepository, personRestrictionRoleRepository, userGroupRepository, personUserGroupRepository, personCreatedByCache);
             var personProjectHistoryRepository = new PersonProjectHistoryRepository(context);
             var plantRepository = new PlantRepository(context);
             var plantService = new PlantService(plantRepository);
@@ -49,8 +54,10 @@ namespace QueueReceiver.IntegrationTests
                 privilegeService,
                 personProjectHistoryRepository,
                 personService,
-                personProjectServiceLoggerMock.Object);
-            var service = new AccessService(personService, personProjectService, plantService, AccessServiceloggerMock.Object, context);
+                personProjectServiceLoggerMock.Object,
+                personCreatedByCache);
+
+            var service = new AccessService(personService, personProjectService, plantService, AccessServiceloggerMock.Object,context);
 
             return (service, graphServiceMock);
         }

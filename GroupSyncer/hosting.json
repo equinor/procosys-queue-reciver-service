@@ -11,9 +11,7 @@
     "ClientId": "de4feb23-3944-436f-b1aa-c79a9b893ced",
     "GraphUrl": "https://graph.microsoft.com"
   },
-  "DbContextSettings": {
-    "PersonProjectCreatedId": 45990
-  }
+  "PersonCreatedById": 45990
 }
 
 

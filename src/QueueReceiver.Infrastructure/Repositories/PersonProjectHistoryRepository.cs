@@ -25,7 +25,9 @@ namespace QueueReceiver.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task AddAsync(PersonProjectHistory personProjHistory)
-            => await _personProjectHistories.AddAsync(personProjHistory);
+        public async Task AddAsync(PersonProjectHistory personProjectHistory)
+        {
+            await _personProjectHistories.AddAsync(personProjectHistory);
+        }
     }
 }

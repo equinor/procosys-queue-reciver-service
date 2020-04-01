@@ -1,8 +1,8 @@
-﻿using QueueReceiver.Core.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 
 namespace QueueReceiver.Core.Services
@@ -14,8 +14,11 @@ namespace QueueReceiver.Core.Services
         private readonly IPersonService _personService;
         private readonly IAccessService _accessService;
 
-        public SyncService(IPlantService plantService, IGraphService graphService,
-            IPersonService personService, IAccessService accessService)
+        public SyncService(
+            IPlantService plantService, 
+            IGraphService graphService,
+            IPersonService personService, 
+            IAccessService accessService)
         {
             _plantService = plantService;
             _graphService = graphService;
@@ -26,6 +29,9 @@ namespace QueueReceiver.Core.Services
         public async Task StartAccessSync()
         {
             var plants = _plantService.GetAllPlants();
+
+            // Set person CreatedBy cache
+            await _personService.SetPersonCreatedByCache();
 
             foreach (var plant in plants)
             {
@@ -59,11 +65,11 @@ namespace QueueReceiver.Core.Services
             var allMembers = new HashSet<string>();
             foreach (var oid in groupOids)
             {
-                Console.WriteLine($"finding members in {oid}");
+                Console.WriteLine($"Finding members in {oid}");
                 var newMembers = await _graphService.GetMemberOidsAsync(oid);
-                var newmemberList = newMembers.ToList();
-                Console.WriteLine($" found: {newmemberList.Count}, adding new memebers to set");
-                allMembers.UnionWith(newmemberList);
+                var newMemberList = newMembers.ToList();
+                Console.WriteLine($"Found: {newMemberList.Count}, adding new members to set");
+                allMembers.UnionWith(newMemberList);
             }
             return allMembers;
         }
