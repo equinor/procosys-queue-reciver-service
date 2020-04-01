@@ -35,6 +35,11 @@ namespace QueueReceiver.Core.Services
         {
             var personId = await _personRepository.FindPersonIdByUserOidAsync(personOid);
 
+            if(personId == 0)
+            {
+                return;
+            }
+
             if (await _personProjectRepository.PersonHasNoAccess(personId))
             {
                 await VoidPersonAsync(personId);
