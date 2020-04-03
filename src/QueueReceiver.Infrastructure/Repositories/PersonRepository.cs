@@ -31,11 +31,8 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<Person?> FindByMobileNumberAndNameAsync(string mobileNumber, string givenName, string surname)
         {
-            mobileNumber = mobileNumber.Replace(" ", "");
-
             return await _persons.FirstOrDefaultAsync(p =>
-                p.MobilePhoneNumber != null
-                && MobileNumberIsEqual(mobileNumber, p.MobilePhoneNumber)
+                MobileNumberIsEqual(mobileNumber, p.MobilePhoneNumber)
                 && givenName.Equals(p.FirstName)
                 && surname.Equals(p.LastName));
         }
@@ -70,8 +67,7 @@ namespace QueueReceiver.Infrastructure.Repositories
             var shortName = userName?.Substring(0, userName.IndexOf('@', OrdinalIgnoreCase));
 
             return await _persons.Where(person =>
-                (person.MobilePhoneNumber != null
-                 && MobileNumberIsEqual(mobileNumber, person.MobilePhoneNumber))
+                MobileNumberIsEqual(mobileNumber, person.MobilePhoneNumber)
                 || (firstName.Equals(person.FirstName, OrdinalIgnoreCase)
                     && lastName.Equals(person.LastName, OrdinalIgnoreCase))
                 || string.Equals(shortName, person.UserName, OrdinalIgnoreCase)
@@ -91,8 +87,15 @@ namespace QueueReceiver.Infrastructure.Repositories
             return persons.Where(p => p.Oid != null).Select(p => p.Oid!);
         }
 
-        private static bool MobileNumberIsEqual(string a, string b)
-            => a.Replace(" ", "").Equals(b.Replace(" ", "")) ||
-               a.Replace(" ", "").Equals("+47" + b.Replace(" ", ""));
+        private static bool MobileNumberIsEqual(string? a, string? b)
+        {
+            if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b))
+            {
+                return false;
+            }
+
+            return a.Replace(" ", "").Equals(b.Replace(" ", "")) ||
+                   a.Replace(" ", "").Equals("+47" + b.Replace(" ", ""));
+        }
     }
 }
