@@ -150,7 +150,7 @@ namespace QueueReceiver.Core.Services
             var projects = await _projectRepository.GetParentProjectsByPlant(plantId);
             var personOids = projects.SelectMany(p => _personRepository.GetOidsBasedOnProject(p.ProjectId)).Distinct();
 
-            return personOids ?? new List<string?>();
+            return personOids;
         }
         #endregion
 
