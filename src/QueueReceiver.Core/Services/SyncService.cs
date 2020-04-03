@@ -40,16 +40,16 @@ namespace QueueReceiver.Core.Services
                 LogProgress($"Current plant: {plant.PlantId}");
 
                 // Get PCS user OIDs
-                var dbPersonOidList = await GetPcsUserOidList(plant.PlantId);
+                var pcsPersonOidList = await GetPcsUserOidList(plant.PlantId);
 
                 // Get AD member OIDs
                 var adMemberOidList = await GetAdMemberOidList(new[] {plant.AffiliateGroupId, plant.InternalGroupId});
 
                 // Get AD members that are not existing or mapped by OID in PCS
-                var membersInAdNotInPcs = adMemberOidList.Except(dbPersonOidList).ToList();
+                var membersInAdNotInPcs = adMemberOidList.Except(pcsPersonOidList).ToList();
                 
                 // Get PCS users that are no longer a member of the AD group(s)
-                var usersInPcsNotInAd = dbPersonOidList.Except(adMemberOidList).ToList();
+                var usersInPcsNotInAd = pcsPersonOidList.Except(adMemberOidList).ToList();
 
                 if (membersInAdNotInPcs.Any())
                 {
