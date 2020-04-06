@@ -29,7 +29,7 @@ namespace QueueReceiver.Core.Services
 
         public async Task StartAccessSync()
         {
-            LogProgress("Getting plants.");
+            LogStatus("Getting plants.");
             var plants = _plantService.GetAllPlants();
 
             // Set person CreatedBy cache
@@ -37,7 +37,7 @@ namespace QueueReceiver.Core.Services
 
             foreach (var plant in plants)
             {
-                LogProgress($"Current plant: {plant.PlantId}");
+                LogStatus($"Current plant: {plant.PlantId}");
 
                 // Get PCS user OIDs
                 var pcsPersonOidList = await GetPcsUserOidList(plant.PlantId);
@@ -53,50 +53,51 @@ namespace QueueReceiver.Core.Services
 
                 if (membersInAdNotInPcs.Any())
                 {
-                    LogProgress($"Found {membersInAdNotInPcs.Count} members to update from AD.");
-                    LogProgress("Starting AD members update.");
+                    LogStatus($"Found {membersInAdNotInPcs.Count} members to update from AD.");
+                    LogStatus("Starting AD members update.");
 
                     var members = membersInAdNotInPcs.Select(oid => new Member(oid, shouldRemove: false)).ToList();
+                    await ProcessMembers(members, plant.PlantId);
 
-                    await _accessService.UpdateMemberInfo(members);
-                    await _accessService.UpdateMemberAccess(members, plant.PlantId);
-                    await _accessService.UpdateMemberVoidedStatus(members);
-
-                    LogProgress("Finished AD members update.");
+                    LogStatus("Finished AD members update.");
                 }
                 else
                 {
-                    LogProgress("No AD members to update.");
+                    LogStatus("No AD members to update.");
                 }
 
                 if (usersInPcsNotInAd.Any())
                 {
-                    LogProgress($"Found {usersInPcsNotInAd.Count} users in PCS to remove access from AD group.");
-                    LogProgress("Starting PCS users update.");
+                    LogStatus($"Found {usersInPcsNotInAd.Count} users in PCS (remove access from AD group).");
+                    LogStatus("Starting PCS users update.");
 
                     var members = usersInPcsNotInAd.Select(oid => new Member(oid, shouldRemove: true)).ToList();
+                    await ProcessMembers(members, plant.PlantId);
 
-                    await _accessService.UpdateMemberInfo(members);
-                    await _accessService.UpdateMemberAccess(members, plant.PlantId);
-                    await _accessService.UpdateMemberVoidedStatus(members);
-
-                    LogProgress("Finished PCS users update.");
+                    LogStatus("Finished PCS users update.");
                 }
                 else
                 {
-                    LogProgress("No PCS users to update.");
+                    LogStatus("No PCS users to update.");
                 }
             }
         }
 
+        private async Task ProcessMembers(List<Member> members, string plantId)
+        {
+            await _accessService.UpdateMemberInfo(members);
+            await _accessService.UpdateMemberAccess(members, plantId);
+            await _accessService.UpdateMemberVoidedStatus(members);
+        }
+
         private async Task<List<string>> GetPcsUserOidList(string plantId)
         {
-            LogProgress("Finding users in PCS (having OID and access to plant).");
+            LogStatus("Finding users in PCS (having OID and access to plant).");
 
             var oids = await _personService.GetMembersWithOidAndAccessToPlant(plantId);
             var oidList = oids.ToList();
 
-            LogProgress($"Found: {oidList.Count} users.");
+            LogStatus($"Found: {oidList.Count} users.");
 
             return oidList;
         }
@@ -107,17 +108,17 @@ namespace QueueReceiver.Core.Services
 
             foreach (var oid in groupOids)
             {
-                LogProgress($"Finding members in AD group {oid}");
+                LogStatus($"Finding members in AD group {oid}");
 
                 var newMembers = await _graphService.GetMemberOidsAsync(oid);
                 var newMemberList = newMembers.ToList();
 
-                LogProgress($"Found: {newMemberList.Count} members.");
+                LogStatus($"Found: {newMemberList.Count} members.");
                 
                 allMembers.UnionWith(newMemberList);
             }
 
-            LogProgress($"Total AD members: {allMembers.Count}.");
+            LogStatus($"Total AD members: {allMembers.Count}.");
 
             return allMembers.ToList();
         }
@@ -125,13 +126,13 @@ namespace QueueReceiver.Core.Services
         private static string Timestamp =>
             $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}";
 
-        private void LogProgress(string message)
+        private void LogStatus(string message)
         {
-            message = $"{Timestamp}: {message}";
+            message = $"[GroupSync] {Timestamp} :: {message}";
 
             Console.WriteLine(message);
 
-            // TODO: log to AI
+            // TODO: log to AI ?
         }
     }
 }
