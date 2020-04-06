@@ -77,14 +77,12 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public IEnumerable<string> GetOidsBasedOnProject(long projectId)
         {
-            var persons = _persons.Include(p => p.PersonProjects)
-                .Where(p => p.PersonProjects != null
-                            && p.PersonProjects.Select(pp => pp.ProjectId).Contains(projectId)
-                            && p.PersonProjects.Any(pp => !pp.IsVoided))
-                .Distinct()
-                .ToList();
-
-            return persons.Where(p => p.Oid != null).Select(p => p.Oid!);
+            return _persons
+                .Include(p => p.PersonProjects)
+                .Where(p => p.Oid != null &&
+                            p.PersonProjects.Any(pp => pp.ProjectId == projectId && !pp.IsVoided))
+                .Select(p => p.Oid!)
+                .Distinct();
         }
 
         private static bool MobileNumberIsEqual(string? a, string? b)
