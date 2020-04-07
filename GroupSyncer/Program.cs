@@ -5,6 +5,7 @@ using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 
@@ -14,6 +15,30 @@ namespace GroupSyncer
     {
         static async Task Main(string[] args)
         {
+            var plants = new List<string>();
+
+            if (args.Length > 1)
+            {
+                Console.WriteLine("Error: Invalid number of arguments.");
+                return;
+            }
+
+            if (args.Length == 1)
+            {
+                var argPlants = args[0].Split(',');
+
+                foreach (var plant in argPlants)
+                {
+                    if (!plant.StartsWith("PCS$"))
+                    {
+                        Console.WriteLine("Error: Plant names must start with 'PCS$'");
+                        return;
+                    }
+
+                    plants.Add(plant);
+                }
+            }
+
             var config = new ConfigurationBuilder()
                 .AddJsonFile("hosting.json", false, true)
                 .AddUserSecrets<Program>()
@@ -37,10 +62,18 @@ namespace GroupSyncer
                 .BuildServiceProvider();
 
             var syncService = services.GetService<ISyncService>();
-            Console.WriteLine("Starting sync");
-            await syncService.StartAccessSync();
-            Console.WriteLine("Sync Done!");
 
+            try
+            {
+                Console.WriteLine("Starting Sync.");
+                await syncService.StartAccessSync(plants);
+                Console.WriteLine("Sync Done!");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
         }
     }
 }

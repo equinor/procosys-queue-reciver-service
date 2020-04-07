@@ -5,10 +5,10 @@ using QueueReceiver.Infrastructure.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.StringComparison;
 
 namespace QueueReceiver.Infrastructure.Repositories
 {
+    #pragma warning disable CA1304 // Specify CultureInfo (we don't use ToUpperInvariant or specify culture, as EF cannot translate this to SQL)
     public class PersonRepository : IPersonRepository
     {
         private readonly DbSet<Person> _persons;
@@ -31,10 +31,16 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<Person?> FindByMobileNumberAndNameAsync(string mobileNumber, string givenName, string surname)
         {
+            mobileNumber = string.IsNullOrEmpty(mobileNumber) ? string.Empty : mobileNumber.Replace(" ", string.Empty);
+
             return await _persons.FirstOrDefaultAsync(p =>
-                MobileNumberIsEqual(mobileNumber, p.MobilePhoneNumber)
-                && givenName.Equals(p.FirstName)
-                && surname.Equals(p.LastName));
+                p.FirstName != null &&
+                p.LastName != null &&
+                p.MobilePhoneNumber != null &&
+                p.FirstName.ToUpper().Equals(givenName.ToUpper()) &&
+                p.LastName.ToUpper().Equals(surname.ToUpper()) &&
+                (mobileNumber.Equals(p.MobilePhoneNumber) ||
+                 mobileNumber.Equals("+47" + p.MobilePhoneNumber)));
         }
 
         public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids)
@@ -50,7 +56,7 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<Person?> FindByUserOidAsync(string userOid)
             => await _persons.FirstOrDefaultAsync(person =>
-                userOid.Equals(person.Oid, OrdinalIgnoreCase));
+                userOid.Equals(person.Oid));
 
         public async Task<long> FindPersonIdByUserOidAsync(string userOid)
             => await _persons
@@ -64,38 +70,36 @@ namespace QueueReceiver.Infrastructure.Repositories
             string lastName, 
             string userName)
         {
-            var shortName = userName?.Substring(0, userName.IndexOf('@', OrdinalIgnoreCase));
+            var shortName = string.IsNullOrEmpty(userName) || !userName.Contains("@")
+                ? string.Empty
+                : userName.Substring(0, userName.IndexOf('@')).ToUpper();
+
+            mobileNumber = string.IsNullOrEmpty(mobileNumber) ? string.Empty : mobileNumber.Replace(" ", string.Empty);
+            firstName = string.IsNullOrEmpty(firstName) ? string.Empty : firstName.ToUpper();
+            lastName = string.IsNullOrEmpty(lastName) ? string.Empty : lastName.ToUpper();
 
             return await _persons.Where(person =>
-                MobileNumberIsEqual(mobileNumber, person.MobilePhoneNumber)
-                || (firstName.Equals(person.FirstName, OrdinalIgnoreCase)
-                    && lastName.Equals(person.LastName, OrdinalIgnoreCase))
-                || string.Equals(shortName, person.UserName, OrdinalIgnoreCase)
-                || string.Equals(userName, person.UserName, OrdinalIgnoreCase)
-            ).ToListAsync();
+                    (person.MobilePhoneNumber != null &&
+                     mobileNumber.Equals(person.MobilePhoneNumber))
+                    || (person.MobilePhoneNumber != null &&
+                        mobileNumber.Equals("+47" + person.MobilePhoneNumber))
+                    || (person.FirstName != null &&
+                        person.LastName != null &&
+                        firstName.Equals(person.FirstName.ToUpper()) &&
+                        lastName.Equals(person.LastName.ToUpper()))
+                    || string.Equals(shortName, person.UserName.ToUpper())
+                    || string.Equals(userName, person.UserName.ToUpper()))
+                .ToListAsync();
         }
 
         public IEnumerable<string> GetOidsBasedOnProject(long projectId)
         {
-            var persons = _persons.Include(p => p.PersonProjects)
-                .Where(p => p.PersonProjects != null
-                            && p.PersonProjects.Select(pp => pp.ProjectId).Contains(projectId)
-                            && p.PersonProjects.Any(pp => !pp.IsVoided))
-                .Distinct()
-                .ToList();
-
-            return persons.Where(p => p.Oid != null).Select(p => p.Oid!);
-        }
-
-        private static bool MobileNumberIsEqual(string? a, string? b)
-        {
-            if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b))
-            {
-                return false;
-            }
-
-            return a.Replace(" ", "").Equals(b.Replace(" ", "")) ||
-                   a.Replace(" ", "").Equals("+47" + b.Replace(" ", ""));
+            return _persons
+                .Include(p => p.PersonProjects)
+                .Where(p => p.Oid != null &&
+                            p.PersonProjects.Any(pp => pp.ProjectId == projectId && !pp.IsVoided))
+                .Select(p => p.Oid!)
+                .Distinct();
         }
     }
 }
