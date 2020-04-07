@@ -80,15 +80,15 @@ namespace QueueReceiver.Infrastructure.Repositories
 
             return await _persons.Where(person =>
                     (person.MobilePhoneNumber != null &&
-                     mobileNumber.Equals(person.MobilePhoneNumber)) ||
-                    (person.MobilePhoneNumber != null &&
-                     mobileNumber.Equals("+47" + person.MobilePhoneNumber)) ||
-                    (person.FirstName != null &&
-                     person.LastName != null &&
-                     firstName.Equals(person.FirstName.ToUpper()) &&
-                     lastName.Equals(person.LastName.ToUpper())) ||
-                    string.Equals(shortName, person.UserName.ToUpper()) ||
-                    string.Equals(userName, person.UserName.ToUpper()))
+                     mobileNumber.Equals(person.MobilePhoneNumber))
+                    || (person.MobilePhoneNumber != null &&
+                        mobileNumber.Equals("+47" + person.MobilePhoneNumber))
+                    || (person.FirstName != null &&
+                        person.LastName != null &&
+                        firstName.Equals(person.FirstName.ToUpper()) &&
+                        lastName.Equals(person.LastName.ToUpper()))
+                    || string.Equals(shortName, person.UserName.ToUpper())
+                    || string.Equals(userName, person.UserName.ToUpper()))
                 .ToListAsync();
         }
 
