@@ -4,7 +4,6 @@ using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 
 namespace QueueReceiver.Infrastructure.Repositories
@@ -29,7 +28,7 @@ namespace QueueReceiver.Infrastructure.Repositories
             var personProjects = _personProjects
                 .Include(pp => pp.Project!)
                 .ThenInclude(project => project.Plant)
-                .Where(pp => plantId.Equals(pp.Project!.PlantId, StringComparison.Ordinal)
+                .Where(pp => plantId.Equals(pp.Project!.PlantId)
                              && personId == pp.PersonId);
             personProjects.ForEachAsync(pp => pp.IsVoided = true);
 
