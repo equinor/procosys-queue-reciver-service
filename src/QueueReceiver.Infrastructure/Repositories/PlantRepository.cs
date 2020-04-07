@@ -30,6 +30,9 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public List<Plant> GetAllPlants() => _plants.ToList(); //where clause aff and int group ids
 
+        public Plant GetPlant(string plantId)
+            => _plants.SingleOrDefault(plant => plant.PlantId == plantId);
+
         public List<string> GetMemberOidsByPlant(string plantId)
         {
             var affiliates = _plants.Where(plant => plant.AffiliateGroupId != null && plant.PlantId == plantId)

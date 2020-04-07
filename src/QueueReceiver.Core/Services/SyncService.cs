@@ -27,10 +27,19 @@ namespace QueueReceiver.Core.Services
             _accessService = accessService;
         }
 
-        public async Task StartAccessSync()
+        public async Task StartAccessSync(List<string> plantList)
         {
             LogStatus("Getting plants.");
-            var plants = _plantService.GetAllPlants();
+            var plants = new List<Plant>();
+
+            if (plantList.Any())
+            {
+                plants.AddRange(plantList.Select(plant => _plantService.GetPlant(plant)));
+            }
+            else
+            {
+                plants = _plantService.GetAllPlants();
+            }
 
             // Set person CreatedBy cache
             await _personService.SetPersonCreatedByCache();

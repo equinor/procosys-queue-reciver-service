@@ -10,5 +10,6 @@ namespace QueueReceiver.Core.Interfaces
         IEnumerable<string> GetAllInternalAndAffiliateOids();
         List<Plant> GetAllPlants();
         List<string> GetMemberOidsByPlant(string plantId);
+        Plant GetPlant(string plantId);
     }
 }

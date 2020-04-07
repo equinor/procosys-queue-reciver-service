@@ -23,6 +23,9 @@ namespace QueueReceiver.Core.Services
         public List<Plant> GetAllPlants()
             => _plantRepository.GetAllPlants();
 
+        public Plant GetPlant(string plantId)
+            => _plantRepository.GetPlant(plantId);
+
         public List<string> GetAllMemberOidsByPlant(string plantId)
             => _plantRepository.GetMemberOidsByPlant(plantId);
     }
