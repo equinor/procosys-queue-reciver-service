@@ -71,8 +71,10 @@ namespace QueueReceiver.Core.Services
                     LogStatus($"Found {usersInPcsNotInAd.Count} users in PCS (remove access from AD group).");
                     LogStatus("Starting PCS users update.");
 
-                    var members = usersInPcsNotInAd.Select(oid => new Member(oid, shouldRemove: true)).ToList();
-                    await ProcessMembers(members, plant.PlantId);
+                    // TODO: uncomment when testing completed
+                    LogStatus("This step is currently disabled.");
+                    //var members = usersInPcsNotInAd.Select(oid => new Member(oid, shouldRemove: true)).ToList();
+                    //await ProcessMembers(members, plant.PlantId);
 
                     LogStatus("Finished PCS users update.");
                 }
