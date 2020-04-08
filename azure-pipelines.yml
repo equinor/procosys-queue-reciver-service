@@ -94,7 +94,7 @@ stages:
       displayName: 'Create NuGet Package - Prerelease Version'
 
     - task: PowerShell@2
-      name: getVersion # Name of the pipeline variable used as prefix in referenace. Example $(getVersion.packageVersion)
+      name: getVersion2 # Name of the pipeline variable used as prefix in referenace. Example $(getVersion.packageVersion)
       displayName: 'get version from QueueReceiver.GroupSyncer.csproj'
       inputs:
         targetType: inline
