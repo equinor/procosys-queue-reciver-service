@@ -37,8 +37,8 @@ stages:
         projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
  
-- stage: "PublishAndPackWorker"
-  displayName: 'Publish and Pack WorkerService'
+- stage: "PublishAndPack"
+  displayName: 'Publish and Pack'
   dependsOn: 'Build'
   condition:  |
    and
@@ -47,7 +47,7 @@ stages:
      or
      ( 
        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-       eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+       eq(variables['Build.SourceBranch'], 'refs/heads/GroupSyncer_Deploy')
      )
     )
   jobs:
@@ -96,20 +96,6 @@ stages:
     - publish: '$(Build.ArtifactStagingDirectory)/packages'
       artifact: 'packages'
 
-- stage: "PublishAndPackSyncer"
-  displayName: 'Publish and Pack SyncService'
-  dependsOn: 'Build'
-  condition:  |
-    and
-    (
-      succeeded(),
-      or
-      ( 
-        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-        eq(variables['Build.SourceBranch'], 'refs/heads/GroupSyncer_Deploy')
-      )
-    )
-  jobs:
   - job:
     displayName: 
     pool:
