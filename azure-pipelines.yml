@@ -37,7 +37,7 @@ stages:
         projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
  
-- stage: "PublishAndPack Worker"
+- stage: "PublishAndPackWorker"
   displayName: 'Publish and Pack WorkerService'
   dependsOn: 'Build'
   condition:  |
@@ -96,7 +96,7 @@ stages:
     - publish: '$(Build.ArtifactStagingDirectory)/packages'
       artifact: 'packages'
 
-- stage: "PublishAndPack Syncer"
+- stage: "PublishAndPackSyncer"
   displayName: 'Publish and Pack SyncService'
   dependsOn: 'Build'
   condition:  |
