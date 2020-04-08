@@ -51,8 +51,8 @@ stages:
      )
     )
   jobs:
-  - job: PackWorker
-    displayName: Pack WorkerService
+  - job: PackAndPublish
+    displayName: Pack Worker and SyncService, then publish both
     pool:
       vmImage: $(vmImageName)
     steps:
@@ -92,16 +92,7 @@ stages:
       displayName: 'Create NuGet Package - Release Version'
     - script: dotnet pack src/QueueReceiver.Worker/QueueReceiver.Worker.csproj -p:NuspecFile=worker.nuspec -p:NuspecProperties=version=$(getVersion.packageVersion)-"$(Build.BuildNumber)" -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\prereleases
       displayName: 'Create NuGet Package - Prerelease Version'
-    
-    #- publish: '$(Build.ArtifactStagingDirectory)/packages'
-     # artifact: 'packages'
 
-  - job: PackGroupSyncer
-    displayName: Pack GroupSyncer
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - checkout: self  
     - task: PowerShell@2
       name: getVersion # Name of the pipeline variable used as prefix in referenace. Example $(getVersion.packageVersion)
       displayName: 'get version from QueueReceiver.GroupSyncer.csproj'
@@ -138,15 +129,6 @@ stages:
     - script: dotnet pack GroupSyncer/GroupSyncer.csproj -p:NuspecFile=GroupSyncer.nuspec -p:NuspecProperties=version=$(getVersion.packageVersion)-"$(Build.BuildNumber)" -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\prereleases
       displayName: 'Create NuGet Package - Prerelease Version'
 
-  - job: Publish
-    displayName: Publish Both Packages
-    dependsOn: 
-    - PackWorker
-    - PackGroupSyncer
-    condition: succeeded()
-    pool:
-      vmImage: $(vmImageName)
-    steps:
     - publish: '$(Build.ArtifactStagingDirectory)/packages'
       artifact: 'packages'      
       
