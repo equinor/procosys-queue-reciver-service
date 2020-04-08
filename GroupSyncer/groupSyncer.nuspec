@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <!-- Required elements-->
-    <id>QueueReceiver.Worker</id>
+    <id>GroupSyncer</id>
     <version>$version$</version>
     <description>Excecutable for quereceiver service</description>
     <authors>Equinor ASA</authors>
