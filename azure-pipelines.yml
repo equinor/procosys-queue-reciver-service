@@ -51,7 +51,7 @@ stages:
      )
     )
   jobs:
-  - job:
+  - job: PackWorker
     displayName: Pack WorkerService
     pool:
       vmImage: $(vmImageName)
@@ -96,7 +96,7 @@ stages:
     #- publish: '$(Build.ArtifactStagingDirectory)/packages'
      # artifact: 'packages'
 
-  - job:
+  - job: PackGroupSyncer
     displayName: Pack GroupSyncer
     pool:
       vmImage: $(vmImageName)
@@ -138,8 +138,11 @@ stages:
     - script: dotnet pack GroupSyncer/GroupSyncer.csproj -p:NuspecFile=GroupSyncer.nuspec -p:NuspecProperties=version=$(getVersion.packageVersion)-"$(Build.BuildNumber)" -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)\packages\prereleases
       displayName: 'Create NuGet Package - Prerelease Version'
 
-  - job:
-    displayName: 
+  - job: Publish
+    displayName: Publish Both Packages
+    dependsOn: 
+    - PackWorker
+    - PackGroupSync
     condition: succeeded()
     pool:
       vmImage: $(vmImageName)
