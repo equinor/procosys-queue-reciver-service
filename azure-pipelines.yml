@@ -142,7 +142,7 @@ stages:
     displayName: Publish Both Packages
     dependsOn: 
     - PackWorker
-    - PackGroupSync
+    - PackGroupSyncer
     condition: succeeded()
     pool:
       vmImage: $(vmImageName)
