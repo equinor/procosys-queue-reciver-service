@@ -21,6 +21,8 @@ stages:
 - stage: "Build"
   jobs:
   - job:
+    workspace:
+      clean: all
     pool:
       vmImage: $(vmImageName)
 
