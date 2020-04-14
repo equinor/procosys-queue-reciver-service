@@ -54,6 +54,8 @@ stages:
     )
   jobs:
   - job:
+    workspace:
+      clean: all
     displayName: 
     pool:
       vmImage: $(vmImageName)
