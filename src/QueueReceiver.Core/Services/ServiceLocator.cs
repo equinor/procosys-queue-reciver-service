@@ -1,42 +1,30 @@
-﻿namespace QueueReceiver.Core.Services
+﻿using Microsoft.Extensions.DependencyInjection;
+using QueueReceiver.Core.Interfaces;
+
+namespace QueueReceiver.Core.Services
 {
-    using Microsoft.Extensions.DependencyInjection;
-    using QueueReceiver.Core.Interfaces;
-
-    namespace CleanArchitecture.Core.Services
+    public sealed class ServiceLocator : IServiceLocator
     {
-        /// <summary>
-        /// A wrapper around ServiceScopeFactory to make it easier to fake out with MOQ.
-        /// </summary>
-        /// <see cref="https://stackoverflow.com/a/53509491/54288"/>
-        public sealed class ServiceLocator : IServiceLocator
+        private readonly IServiceScopeFactory _factory;
+        private IServiceScope? _scope;
+
+        public ServiceLocator(IServiceScopeFactory factory)
         {
-            private readonly IServiceScopeFactory _factory;
-            private IServiceScope? _scope;
+            _factory = factory;
+        }
 
-            public ServiceLocator(IServiceScopeFactory factory)
-            {
-                _factory = factory;
-            }
+        public T GetService<T>()
+        {
+            _scope ??= _factory.CreateScope();
+            return _scope.ServiceProvider.GetService<T>();
+        }
 
-            public T Get<T>()
-            {
-                CreateScope();
+        public IServiceScope CreateScope() => _factory.CreateScope();
 
-                return _scope!.ServiceProvider.GetService<T>();
-            }
-
-            public IServiceScope CreateScope()
-            {
-                return  _factory.CreateScope();
-            }
-
-            public void Dispose()
-            {
-                _scope?.Dispose();
-                _scope = null;
-            }
+        public void Dispose()
+        {
+            _scope?.Dispose();
+            _scope = null;
         }
     }
-
 }

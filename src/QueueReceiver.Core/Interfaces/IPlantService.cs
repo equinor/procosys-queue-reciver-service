@@ -1,10 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using QueueReceiver.Core.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Interfaces
 {
     public interface IPlantService
     {
-        Task<bool> Exists(string accessInfoPlantOid);
-        Task<string> GetPlantId(string plantOid);
+        Task<string?> GetPlantIdAsync(string plantOid);
+        IEnumerable<string> GetAllGroupOids();
+        List<Plant> GetAllPlants();
+        Plant GetPlant(string plantId);
+        List<string> GetAllMemberOidsByPlant(string plantId);
     }
 }

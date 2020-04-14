@@ -4,54 +4,49 @@ using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace QueueReceiver.Infrastructure.Repositories
 {
     public class PersonProjectRepository : IPersonProjectRepository
     {
         private readonly DbSet<PersonProject> _personProjects;
-        private readonly ApplicationDbContext _context;
-        private readonly DbContextSettings _settings;
 
-        public PersonProjectRepository(ApplicationDbContext context, DbContextSettings settings)
+        public PersonProjectRepository(QueueReceiverServiceContext context)
         {
-            _personProjects = context.Personprojects;
-            _context = context;
-            _settings = settings;
+            _personProjects = context.PersonProjects;
         }
 
-        public async Task AddAsync(long projectId, long personId)
+        public async Task AddAsync(long projectId, long personId, long createdById)
         {
-            var createdById = _settings.PersonProjectCreatedId;
             var personProject = new PersonProject(projectId, personId, createdById);
             await _personProjects.AddAsync(personProject);
         }
 
-        public void VoidPersonProjects(string plantId, long personId)
+        public List<PersonProject> VoidPersonProjects(string plantId, long personId)
         {
             var personProjects = _personProjects
                 .Include(pp => pp.Project!)
                 .ThenInclude(project => project.Plant)
                 .Where(pp => plantId.Equals(pp.Project!.PlantId)
-                    && personId == pp.PersonId);
-
+                             && personId == pp.PersonId);
             personProjects.ForEachAsync(pp => pp.IsVoided = true);
-            _personProjects.UpdateRange(personProjects);
-        }
 
-        public async Task<int> SaveChangesAsync()
-        {
-            return await _context.SaveChangesAsync();
+            return personProjects.ToList();
         }
 
         public async Task<PersonProject> GetAsync(long projectId, long personId)
+            => await _personProjects.FindAsync(projectId, personId);
+
+        public IEnumerable<PersonProject> GetByProject(long projectId)
         {
-            return await _personProjects.FindAsync(projectId, personId);
+            return _personProjects.Where(pp => pp.ProjectId == projectId);
         }
 
-        public void Update(PersonProject personProject)
+        public async Task<bool> PersonHasNoAccess(long personId)
         {
-            _personProjects.Update(personProject);
+            return !await _personProjects.AnyAsync(pp => pp.PersonId == personId
+                                                         && pp.IsVoided == false);
         }
     }
 }

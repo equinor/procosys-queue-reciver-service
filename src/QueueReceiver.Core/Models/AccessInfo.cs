@@ -12,10 +12,10 @@ namespace QueueReceiver.Core.Models
         }
 
         [JsonProperty("groupId")]
-        public string PlantOid { get; set; }
+        public string PlantOid { get; }
 
         [JsonProperty("members")]
-        public List<Member> Members { get; set; }
+        public List<Member> Members { get; }
     }
 
     public class Member
@@ -23,13 +23,13 @@ namespace QueueReceiver.Core.Models
         public Member(string userOid, bool shouldRemove)
         {
             UserOid = userOid;
-            ShouldRemove = shouldRemove;
+            ShouldVoid = shouldRemove;
         }
 
         [JsonProperty("id")]
         public string UserOid { get; set; }
 
         [JsonProperty("remove")]
-        public bool ShouldRemove { get; set; }
+        public bool ShouldVoid { get; set; }
     }
 }

@@ -7,34 +7,34 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
+using QueueReceiver.Core.Properties;
 
 namespace QueueReceiver.Core.Services
 {
     public class EntryPointService : IEntryPointService
     {
         private readonly IQueueClient _queueClient;
-        private readonly IServiceLocator _scopeFactory;
+        private readonly IServiceLocator _serviceLocator;
         private readonly ILogger<EntryPointService> _logger;
+
 
         public EntryPointService(IQueueClient queueClient,
             IServiceLocator serviceLocator,
             ILogger<EntryPointService> logger)
         {
             _queueClient = queueClient;
-            _scopeFactory = serviceLocator;
+            _serviceLocator = serviceLocator;
             _logger = logger;
         }
 
-        public Task InitializeQueue()
+        public Task InitializeQueueAsync()
         {
             RegisterOnMessageHandlerAndReceiveMessages();
             return Task.CompletedTask;
         }
 
-        public async Task DisposeQueue()
-        {
-            await _queueClient.CloseAsync();
-        }
+        public async Task DisposeQueueAsync()
+            => await _queueClient.CloseAsync();
 
         private void RegisterOnMessageHandlerAndReceiveMessages()
         {
@@ -48,30 +48,23 @@ namespace QueueReceiver.Core.Services
 
         private async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
-            var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
-            _logger.LogInformation($"Processing message : { accessInfo }");
+            using (_serviceLocator)
+            {
+                var accessService = _serviceLocator.GetService<IAccessService>();
+                var accessInfo = JsonConvert.DeserializeObject<AccessInfo>(Encoding.UTF8.GetString(message.Body));
 
-            /**
-             * Injecting here because class is singleton.
-             * It not possible inject scoped dependiences from a constructor of a singleton  
-            **/
-            using var scope = _scopeFactory.CreateScope();
-            var accessService =
-                scope.ServiceProvider
-                    .GetRequiredService<IAccessService>();
+                await accessService.HandleRequestAsync(accessInfo);
 
-            await accessService.HandleRequest(accessInfo);
-
-            //TODO consider moving to its own class, to be able to test, 
-            //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock
-            string lockToken = message.SystemProperties.LockToken;
-            await _queueClient.CompleteAsync(lockToken);
-            _logger.LogInformation($"Message completed successfully");
+                //Locktoken now throws exception in tests as it's internal set (and sealed), and not possible to mock
+                string lockToken = message.SystemProperties.LockToken;
+                await _queueClient.CompleteAsync(lockToken);
+                _logger.LogInformation(Resources.MessageSuccess);
+            }
         }
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
-            _logger.LogError(exceptionReceivedEventArgs.Exception, "Message handler encountered an exception");
+            _logger.LogError(exceptionReceivedEventArgs.Exception, Resources.MessageHandlerException);
             var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
 
             _logger.LogDebug($"- Endpoint: {context.Endpoint}");

@@ -9,10 +9,13 @@
             Email = email;
         }
 
-        public string Oid { get; set; }
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string? GivenName { get; set; }
-        public string? Surname { get; set; }
+        public string Oid { get; }
+        public string Username { get; }
+        public string Email { get; }
+        public string GivenName { get; set; } = null!;
+        public string Surname { get; set; } = null!;
+        public string MobileNumber { get; set; } = null!;
+        public bool IsDeleted { get; set; }
+
     }
 }

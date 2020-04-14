@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QueueReceiver.Core.Models
 {
-    [Table("PERSON")]
     public class Person
     {
         public Person(string userName, string email)
@@ -11,18 +13,30 @@ namespace QueueReceiver.Core.Models
             Email = email;
         }
 
-        [Column("PERSON_ID")]
         public long Id { get; set; }
-        [Column("AZURE_OID")]
+
+        public string UserName { get; }
+
+        public string Email { get; }
+
+        public string? Reconcile { get; set; }
+
         public string? Oid { get; set; }
-        [Column("USERNAME")]
-        public string UserName { get; set; }
-        [Column("EMAILADDRESS")]
-        public string Email { get; set; }
-        [Column("FIRSTNAME")]
+
         public string? FirstName { get; set; }
-        [Column("LASTNAME")]
+
         public string? LastName { get; set; }
 
+        public string? MobilePhoneNumber { get; set; }
+
+        public bool IsVoided { get; set; }
+
+        public long? CreatedById { get; set; }
+
+        public long? UpdatedById { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
+
+        public virtual IEnumerable<PersonProject> PersonProjects { get; set; }
     }
 }

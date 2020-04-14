@@ -1,4 +1,7 @@
-﻿using QueueReceiver.Core.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using QueueReceiver.Core.Interfaces;
+using QueueReceiver.Core.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Core.Services
@@ -8,18 +11,22 @@ namespace QueueReceiver.Core.Services
         private readonly IPlantRepository _plantRepository;
 
         public PlantService(IPlantRepository plantRepository)
-        {
-            _plantRepository = plantRepository;
-        }
+            => _plantRepository = plantRepository;
 
-        public async Task<bool> Exists(string plantOid)
-        {
-            return await _plantRepository.Exists(plantOid);
-        }
+        public IEnumerable<string> GetAllGroupOids()
+            => _plantRepository.GetAllInternalAndAffiliateOids();
 
-        public async Task<string> GetPlantId(string plantOid)
-        {
-            return await _plantRepository.GetPlantIdByOid(plantOid);
-        }
+
+        public async Task<string?> GetPlantIdAsync(string plantOid)
+            => await _plantRepository.GetPlantIdByOidAsync(plantOid);
+
+        public List<Plant> GetAllPlants()
+            => _plantRepository.GetAllPlants();
+
+        public Plant GetPlant(string plantId)
+            => _plantRepository.GetPlant(plantId);
+
+        public List<string> GetAllMemberOidsByPlant(string plantId)
+            => _plantRepository.GetMemberOidsByPlant(plantId);
     }
 }

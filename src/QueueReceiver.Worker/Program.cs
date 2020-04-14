@@ -1,59 +1,60 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using QueueReceiver.Core.Interfaces;
+using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Net;
 using QueueReceiver.Core.Services;
-using QueueReceiver.Core.Services.CleanArchitecture.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
 using QueueReceiver.Infrastructure.Data;
-using System.IO;
-using System.Net;
 
-namespace QueueReceiverService
+namespace QueueReceiver.Worker
 {
     public class Program
     {
         public Program(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+            => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
 
         public static void Main(string[] args)
         {
-            WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80"); //TODO move this to infrastructure and add as variable
-            CreateHostBuilder(args).Build().Run();
+            WebRequest.DefaultWebProxy = new WebProxy("http://www-proxy.statoil.no:80"); //TODO move this to infrastructure and add as variable.
+            CreateHostBuilder(args).Build().Run(); //TODO: Split this between Build() and Run() and get configuration in between and use that to set the proxy.
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((hostingContext, config) =>
+            .UseWindowsService()
+            .ConfigureAppConfiguration((_, config) =>
             {
                 config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             })
+            .UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddSingleton<IEntryPointService, EntryPointService>();
-                services.AddSingleton<IServiceLocator, ServiceLocator>();
-
-                services.AddDbContext(hostContext.Configuration);
-                services.AddQueueClient(hostContext.Configuration);
+                services.AddDbContext(hostContext.Configuration["ConnectionString"]);
+                services.AddQueueClient(
+                    hostContext.Configuration["ServiceBusConnectionString"],
+                    hostContext.Configuration["ServiceBusQueueName"]);
                 services.AddRepositories();
                 services.AddServices();
 
-                var dbContextSettings = new DbContextSettings();
-                hostContext.Configuration.Bind(nameof(DbContextSettings), dbContextSettings);
-                services.AddSingleton(dbContextSettings);
+                var personCreatedById = long.Parse(hostContext.Configuration["PersonCreatedById"], CultureInfo.InvariantCulture);
+                var personCreatedByCache = new PersonCreatedByCache(personCreatedById);
+                services.AddSingleton(personCreatedByCache);
 
                 var graphSettings = new GraphSettings();
                 hostContext.Configuration.Bind(nameof(GraphSettings), graphSettings);
                 services.AddSingleton(graphSettings);
 
-                services.AddHostedService<Worker>();
+                services.AddHostedService<WorkerService>();
+                services.AddApplicationInsightsTelemetryWorkerService();
             });
     }
 }

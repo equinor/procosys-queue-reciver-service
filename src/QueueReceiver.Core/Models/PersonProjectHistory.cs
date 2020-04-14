@@ -1,11 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
 namespace QueueReceiver.Core.Models
 {
-    [Table("PERSONPROJECTHISTORY")]
     public class PersonProjectHistory
     {
-        [Column("PERSONPROJECT_HISTORY_ID")]
-        public long PersonProjectHistoryId { get; set; }
+        public PersonProjectHistory()
+        {
+            PersonProjectHistoryOperations = new List<PersonProjectHistoryOperation>();
+        }
+
+        public List<PersonProjectHistoryOperation> PersonProjectHistoryOperations { get; }
+
+        public long Id { get; set; }
+
+        public long UpdatedBy { get; set; }
+
+        public DateTime UpdatedAt { get; set; }
+
+        public string? UpdatedByUserName { get; set; }
     }
 }

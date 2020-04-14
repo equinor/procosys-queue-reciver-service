@@ -1,37 +1,44 @@
 ﻿using Microsoft.Extensions.Logging;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
-using System.Linq;
 using System.Threading.Tasks;
+using QueueReceiver.Core.Properties;
+using System.Globalization;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace QueueReceiver.Core.Services
 {
     public class AccessService : IAccessService
     {
         private readonly IPersonService _personService;
-        private readonly IProjectService _projectService;
+        private readonly IPersonProjectService _personProjectService;
         private readonly IPlantService _plantService;
         private readonly ILogger<AccessService> _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
         public AccessService(
             IPersonService personService,
-            IProjectService projectService,
+            IPersonProjectService personProjectService,
             IPlantService plantService,
-            ILogger<AccessService> logger)
+            ILogger<AccessService> logger,
+            IUnitOfWork unitOfWork)
         {
             _personService = personService;
-            _projectService = projectService;
+            _personProjectService = personProjectService;
             _plantService = plantService;
             _logger = logger;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task HandleRequest(AccessInfo accessInfo)
+        public async Task HandleRequestAsync(AccessInfo accessInfo)
         {
-            string plantId = await _plantService.GetPlantId(accessInfo.PlantOid);
+            string? plantId = await _plantService.GetPlantIdAsync(accessInfo.PlantOid);
 
             if (plantId == null)
             {
-                _logger.LogInformation($"Group not relevant, removing message from queue");
+                _logger.LogInformation(Resources.GroupDoesNotExist);
                 return;
             }
 
@@ -40,47 +47,97 @@ namespace QueueReceiver.Core.Services
                 return;
             }
 
-           var runningJobs = accessInfo.Members.AsParallel().Select(async member =>
+            // Set person CreatedBy cache
+            await _personService.SetPersonCreatedByCache();
+
+            _logger.LogInformation($"Updating access for {accessInfo.Members.Count} members to plant {plantId}");
+
+            await UpdateMemberInfo(accessInfo.Members);
+
+            await UpdateMemberAccess(accessInfo.Members, plantId);
+
+            await UpdateMemberVoidedStatus(accessInfo.Members);
+        }
+
+        public async Task UpdateMemberInfo(List<Member> members)
+        {
+            var tasks = members.Select(async member =>
             {
-                if (member.ShouldRemove)
+                if (member.ShouldVoid)
                 {
-                    await RemoveAccess(member, plantId);
+                    await _personService.UpdateWithOidIfNotFound(member.UserOid);
                 }
                 else
                 {
-                    await GiveAccess(member, plantId);
+                    await _personService.CreateIfNotExist(member.UserOid);
                 }
             });
 
-            await Task.WhenAll(runningJobs);
+            await Task.WhenAll(tasks);
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        private async Task RemoveAccess(Member member, string plantId)
+        public async Task UpdateMemberAccess(List<Member> members, string plantId)
         {
-            Person? person = await _personService.FindByOid(member.UserOid);
+            var tasks = members.Select(async member =>
+            {
+                if (member.ShouldVoid)
+                {
+                    await RemoveAccess(member.UserOid, plantId);
+                }
+                else
+                {
+                    await GiveAccess(member.UserOid, plantId);
+                }
+            });
+
+            await Task.WhenAll(tasks);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task UpdateMemberVoidedStatus(List<Member> members)
+        {
+            var tasks = members.Select(async member =>
+            {
+                await _personService.UpdateVoidedStatus(member.UserOid);
+            });
+
+            await Task.WhenAll(tasks);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        private async Task RemoveAccess(string userOid, string plantId)
+        {
+            Person? person = await _personService.FindPersonByOidAsync(userOid);
 
             if (person == null)
             {
-                _logger.LogInformation($"Person doesn't exist in db so there is no reson to remove access," +
-                    " removing message from queue");
+                _logger.LogInformation(Resources.PersonDoesNotExist);
                 return;
             }
-            _logger.LogInformation($"Removing access for person with id: {person.Id}, to plant {plantId}");
-            await _projectService.RemoveAccessToPlant(person.Id, plantId);
+
+            _logger.LogInformation(string.Format(
+                CultureInfo.InvariantCulture,
+                Resources.RemoveAccess, person.Id, plantId));
+
+            await _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
 
-        private async Task GiveAccess(Member member, string plantId)
+        private async Task GiveAccess(string userOid, string plantId)
         {
-            Person person = await _personService.FindOrCreate(member.UserOid);
+            long personId = await _personService.GetPersonIdByOidAsync(userOid);
 
-            _logger.LogInformation($"Adding access for person with id: {person.Id}, to plant {plantId}");
-            await _projectService.GiveProjectAccessToPlant(person.Id, plantId);
+            if (personId == 0)
+            {
+                _logger.LogError(Resources.PersonWasNotFoundOrCreated, userOid);
+                return;
+            }
+
+            _logger.LogInformation(Resources.AddAccess, personId, plantId);
+            await _personProjectService.GiveProjectAccessToPlantAsync(personId, plantId);
         }
 
         private static bool MessageHasNoRelevantData(AccessInfo accessInfo)
-        {
-            return accessInfo.Members == null;
-        }
+            => accessInfo.Members == null;
     }
 }
-
