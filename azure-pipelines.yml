@@ -11,7 +11,7 @@ trigger:
 
 variables:
   System.Debug: 'true'
-  vmImageName: 'windows-latest'
+  vmImageName: 'ubuntu-latest'
   buildConfiguration: 'Release'
   ServiceBusConnectionString: $(pipelineServiceBusConnnectionString)
   WithoutProxyForTest: 'true'
