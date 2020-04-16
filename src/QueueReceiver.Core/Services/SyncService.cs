@@ -27,7 +27,7 @@ namespace QueueReceiver.Core.Services
             _accessService = accessService;
         }
 
-        public async Task StartAccessSync(List<string> plantList)
+        public async Task StartAccessSync(List<string> plantList, bool removeUserAccess)
         {
             LogStatus("Getting plants.");
             var plants = new List<Plant>();
@@ -57,9 +57,6 @@ namespace QueueReceiver.Core.Services
                 // Get AD members that are not existing or mapped by OID in PCS
                 var membersInAdNotInPcs = adMemberOidList.Except(pcsPersonOidList).ToList();
                 
-                // Get PCS users that are no longer a member of the AD group(s)
-                var usersInPcsNotInAd = pcsPersonOidList.Except(adMemberOidList).ToList();
-
                 if (membersInAdNotInPcs.Any())
                 {
                     LogStatus($"Found {membersInAdNotInPcs.Count} members to update from AD.");
@@ -75,21 +72,29 @@ namespace QueueReceiver.Core.Services
                     LogStatus("No AD members to update.");
                 }
 
-                if (usersInPcsNotInAd.Any())
+                if (removeUserAccess)
                 {
-                    LogStatus($"Found {usersInPcsNotInAd.Count} users in PCS (remove access from AD group).");
-                    LogStatus("Starting PCS users update.");
+                    // Get PCS users that are no longer a member of the AD group(s)
+                    var usersInPcsNotInAd = pcsPersonOidList.Except(adMemberOidList).ToList();
 
-                    // TODO: uncomment when testing completed
-                    LogStatus("This step is currently disabled.");
-                    //var members = usersInPcsNotInAd.Select(oid => new Member(oid, shouldRemove: true)).ToList();
-                    //await ProcessMembers(members, plant.PlantId);
+                    if (usersInPcsNotInAd.Any())
+                    {
+                        LogStatus($"Found {usersInPcsNotInAd.Count} users in PCS (remove access from AD group).");
+                        LogStatus("Starting PCS users update.");
 
-                    LogStatus("Finished PCS users update.");
+                        var members = usersInPcsNotInAd.Select(oid => new Member(oid, shouldRemove: true)).ToList();
+                        await ProcessMembers(members, plant.PlantId);
+
+                        LogStatus("Finished PCS users update.");
+                    }
+                    else
+                    {
+                        LogStatus("No PCS users to update.");
+                    }
                 }
                 else
                 {
-                    LogStatus("No PCS users to update.");
+                    LogStatus("PCS users update (remove access) is disabled. This step will be skipped.");
                 }
             }
         }
