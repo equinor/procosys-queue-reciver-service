@@ -86,6 +86,11 @@ namespace QueueReceiver.Core.Services
             {
                 await _personProjectHistoryRepository.AddAsync(personProjectHistory);
             }
+            else
+            {
+                _logger.LogInformation(
+                    $"Access to all projects are already voided for person {personId} and plant {plantId}. No action taken.");
+            }
         }
 
         private async Task<(List<long> updated, List<long> unvoided)> UpdatePersonProjectsAsync(long personId, List<Project> projects)
