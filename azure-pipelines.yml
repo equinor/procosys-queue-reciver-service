@@ -27,10 +27,12 @@ stages:
       vmImage: $(vmImageName)
 
     steps:
-    - script: dotnet build -v d --configuration $(buildConfiguration)
-      displayName: 'dotnet build $(buildConfiguration)'
-
-   # - script: SET ServiceBusConnectionString=$(pipelineServiceBusConnnectionString)
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: build
+        projects: '**/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
     
     - task: DotNetCoreCLI@2
       displayName: 'dotnet test $(buildConfiguration)'
