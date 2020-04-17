@@ -5,6 +5,6 @@ namespace QueueReceiver.Core.Interfaces
 {
     public interface ISyncService
     {
-        Task StartAccessSync(List<string> plantList);
+        Task StartAccessSync(List<string> plantList, bool removeUserAccess);
     }
 }
