@@ -6,7 +6,9 @@ using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace GroupSyncer
@@ -39,8 +41,11 @@ namespace GroupSyncer
                 }
             }
 
+            var path = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+
             var config = new ConfigurationBuilder()
-                .AddJsonFile("hosting.json", false, true)
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile($"{path}\\hosting.json", false, true)
                 .AddUserSecrets<Program>()
                 .Build();
 
@@ -51,17 +56,19 @@ namespace GroupSyncer
             config.Bind(nameof(GraphSettings), graphSettings);
 
             //setup our DI
-            var services = new ServiceCollection()
+            var serviceCollection = new ServiceCollection()
                 .AddLogging()
                 .AddSingleton<ISyncService, SyncService>()
                 .AddSingleton(personCreatedByCache)
                 .AddSingleton(graphSettings)
                 .AddServices()
                 .AddRepositories()
-                .AddDbContext(config["ConnectionString"])
-                .BuildServiceProvider();
+                .AddDbContext(config["ConnectionString"]);
+            var services = serviceCollection.BuildServiceProvider();
 
+            serviceCollection.AddApplicationInsightsTelemetryWorkerService();
             var syncService = services.GetService<ISyncService>();
+
 
             try
             {
