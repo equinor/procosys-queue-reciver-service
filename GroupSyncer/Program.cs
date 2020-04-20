@@ -49,6 +49,8 @@ namespace GroupSyncer
                 .AddUserSecrets<Program>()
                 .Build();
 
+            var removeUserAccess = bool.Parse(config["RemoveUserAccessEnabled"]);
+
             var personCreatedById = long.Parse(config["PersonCreatedById"], CultureInfo.InvariantCulture);
             var personCreatedByCache = new PersonCreatedByCache(personCreatedById);
 
@@ -73,7 +75,7 @@ namespace GroupSyncer
             try
             {
                 Console.WriteLine("Starting Sync.");
-                await syncService.StartAccessSync(plants);
+                await syncService.StartAccessSync(plants, removeUserAccess);
                 Console.WriteLine("Sync Done!");
             }
             catch (Exception e)

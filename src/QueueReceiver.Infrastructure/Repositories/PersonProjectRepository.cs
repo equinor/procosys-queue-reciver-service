@@ -28,8 +28,11 @@ namespace QueueReceiver.Infrastructure.Repositories
             var personProjects = _personProjects
                 .Include(pp => pp.Project!)
                 .ThenInclude(project => project.Plant)
-                .Where(pp => plantId.Equals(pp.Project!.PlantId)
-                             && personId == pp.PersonId);
+                .Where(pp =>
+                    plantId.Equals(pp.Project!.PlantId)
+                    && !pp.IsVoided
+                    && personId == pp.PersonId);
+
             personProjects.ForEachAsync(pp => pp.IsVoided = true);
 
             return personProjects.ToList();

@@ -116,9 +116,7 @@ namespace QueueReceiver.Core.Services
                 return;
             }
 
-            _logger.LogInformation(string.Format(
-                CultureInfo.InvariantCulture,
-                Resources.RemoveAccess, person.Id, plantId));
+            _logger.LogInformation(Resources.RemoveAccess, person.Id, plantId);
 
             await _personProjectService.RemoveAccessToPlant(person.Id, plantId);
         }
