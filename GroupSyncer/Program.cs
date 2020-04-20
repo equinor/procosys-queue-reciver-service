@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
@@ -21,7 +22,7 @@ namespace GroupSyncer
 
             if (args.Length > 1)
             {
-                Console.WriteLine("Error: Invalid number of arguments.");
+                Console.WriteLine(@"Error: Invalid number of arguments.");
                 return;
             }
 
@@ -33,7 +34,7 @@ namespace GroupSyncer
                 {
                     if (!plant.StartsWith("PCS$"))
                     {
-                        Console.WriteLine("Error: Plant names must start with 'PCS$'");
+                        Console.WriteLine(@"Error: Plant names must start with 'PCS$'");
                         return;
                     }
 
@@ -59,30 +60,23 @@ namespace GroupSyncer
 
             //setup our DI
             var serviceCollection = new ServiceCollection()
-                .AddLogging()
+                .AddLogging(loggingBuilder =>
+                {
+                    loggingBuilder.AddConfiguration(config.GetSection("Logging"));
+                    loggingBuilder.AddConsole();
+                })
+                .AddApplicationInsightsTelemetryWorkerService(config["ApplicationInsights:InstrumentationKey"])
                 .AddSingleton<ISyncService, SyncService>()
                 .AddSingleton(personCreatedByCache)
                 .AddSingleton(graphSettings)
                 .AddServices()
                 .AddRepositories()
                 .AddDbContext(config["ConnectionString"]);
+
             var services = serviceCollection.BuildServiceProvider();
 
-            serviceCollection.AddApplicationInsightsTelemetryWorkerService();
             var syncService = services.GetService<ISyncService>();
-
-
-            try
-            {
-                Console.WriteLine("Starting Sync.");
-                await syncService.StartAccessSync(plants, removeUserAccess);
-                Console.WriteLine("Sync Done!");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
-            }
+            await syncService.StartAccessSync(plants, removeUserAccess);
         }
     }
 }
