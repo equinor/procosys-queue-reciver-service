@@ -8,6 +8,7 @@ trigger:
     include:
       - master
       - dev
+      - GroupSyncer_Deploy
 
 variables:
   System.Debug: 'true'
@@ -57,7 +58,8 @@ stages:
      or
      ( 
        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-       eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+       eq(variables['Build.SourceBranch'], 'refs/heads/dev'),
+       eq(variables['Build.SourceBranch'], 'refs/heads/GroupSyncer_Deploy')
      )
     )
   jobs:
