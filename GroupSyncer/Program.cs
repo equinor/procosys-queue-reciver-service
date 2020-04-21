@@ -75,8 +75,22 @@ namespace GroupSyncer
 
             var services = serviceCollection.BuildServiceProvider();
 
+            var logger = services.GetRequiredService<ILogger<Program>>();
+
             var syncService = services.GetService<ISyncService>();
-            await syncService.StartAccessSync(plants, removeUserAccess);
+
+            try
+            {
+                await syncService.StartAccessSync(plants, removeUserAccess);
+            }
+            catch (Exception e)
+            {
+                logger.LogError($"[GroupSync Error] : {e.Message}");
+                logger.LogError(e.StackTrace);
+            }
+
+            // Take a break to allow AI to finish logging.
+            await Task.Delay(10000);
         }
     }
 }

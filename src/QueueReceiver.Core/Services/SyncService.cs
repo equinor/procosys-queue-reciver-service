@@ -105,6 +105,9 @@ namespace QueueReceiver.Core.Services
                 }
 
                 _logger.LogInformation($"[GroupSync] : Finished handling {plant.PlantId} at {Timestamp}");
+
+                // Take a break to allow AI to finish logging.
+                await Task.Delay(10000);
             }
 
             _logger.LogInformation($"[GroupSync] : Finished at {Timestamp}");
