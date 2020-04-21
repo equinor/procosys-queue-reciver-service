@@ -9,7 +9,6 @@ using System.Net;
 using QueueReceiver.Core.Services;
 using QueueReceiver.Core.Settings;
 using QueueReceiver.Infrastructure;
-using QueueReceiver.Infrastructure.Data;
 
 namespace QueueReceiver.Worker
 {
