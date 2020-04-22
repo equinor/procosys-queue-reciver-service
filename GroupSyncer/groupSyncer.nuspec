@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <!-- Required elements-->
+    <id>GroupSyncer</id>
+    <version>$version$</version>
+    <description>Excecutable for quereceiver service</description>
+    <authors>Equinor ASA</authors>
+  </metadata>
+  <files>
+    <file src="bin\Release\netcoreapp3.1\win-x64\publish\GroupSyncer.exe" target="lib\netcoreapp3.1"></file>
+    <file src="bin\Release\netcoreapp3.1\win-x64\hosting.json"  target="lib\netcoreapp3.1"></file>
+  </files>
+</package>
