@@ -53,16 +53,16 @@ namespace QueueReceiver.Core.Services
 
                 // username is e-mail by default
                 var userName = user.Mail;
-                var email = userName;
+                var email = user.Mail;
 
                 if (string.IsNullOrEmpty(userName))
                 {
                     // set UserPrincipalName if e-mail is undefined
                     userName = user.UserPrincipalName;
 
-                    if (userName.Contains("@"))
+                    if (user.UserPrincipalName.Contains("@"))
                     {
-                        email = userName;
+                        email = user.UserPrincipalName;
                     }
                 }
 
