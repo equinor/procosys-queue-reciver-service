@@ -211,7 +211,7 @@ namespace QueueReceiver.Core.Services
                 });
         }
 
-        public (string, string) GetAdPersonFirstAndLastName(AdPerson adPerson)
+        public (string firstName, string lastName) GetAdPersonFirstAndLastName(AdPerson adPerson)
         {
             if (!string.IsNullOrEmpty(adPerson.GivenName) && !string.IsNullOrEmpty(adPerson.Surname))
             {
