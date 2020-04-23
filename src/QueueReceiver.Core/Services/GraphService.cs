@@ -51,18 +51,27 @@ namespace QueueReceiver.Core.Services
             {
                 var user = await graphClient.Users[userOid].Request().GetAsync();
 
+                // username is e-mail by default
+                var userName = user.Mail;
                 var email = user.Mail;
 
-                if (string.IsNullOrEmpty(email) && user.UserPrincipalName.Contains("@"))
+                if (string.IsNullOrEmpty(userName))
                 {
-                    email = user.UserPrincipalName;
+                    // set UserPrincipalName if e-mail is undefined
+                    userName = user.UserPrincipalName;
+
+                    if (user.UserPrincipalName.Contains("@"))
+                    {
+                        email = user.UserPrincipalName;
+                    }
                 }
 
-                var adPerson = new AdPerson(user.Id, user.UserPrincipalName, email)
+                var adPerson = new AdPerson(user.Id, userName, email)
                 {
                     GivenName = user.GivenName,
                     Surname = user.Surname,
-                    MobileNumber = user.MobilePhone
+                    MobileNumber = user.MobilePhone,
+                    DisplayName = user.DisplayName
                 };
 
                 return adPerson;
