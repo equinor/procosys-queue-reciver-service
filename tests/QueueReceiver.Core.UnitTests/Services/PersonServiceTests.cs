@@ -98,5 +98,45 @@ namespace QueueReceiver.Core.UnitTests.Services
             //Assert
             Assert.IsNull(person);
         }
+
+        [TestMethod]
+        public void GetAdPersonNameFromGivenAndSurname()
+        {
+            // Arrange
+            const string testGivenName = "TestGivenName";
+            const string testSurname = "TestSurname";
+
+            var adPerson = new AdPerson("oid", "username", "email")
+            {
+                GivenName = testGivenName,
+                Surname = testSurname
+            };
+
+            // Act
+            var (firstName, lastName) = _service.GetAdPersonFirstAndLastName(adPerson);
+
+            // Assert
+            Assert.AreEqual(testGivenName, firstName);
+            Assert.AreEqual(testSurname, lastName);
+        }
+
+        [TestMethod]
+        public void GetAdPersonNameFromDisplayName()
+        {
+            // Arrange
+            const string testDisplayName = "Jul E Nissen";
+
+            var adPerson = new AdPerson("oid", "username", "email")
+            {
+                DisplayName = testDisplayName
+            };
+
+            // Act
+            var (firstName, lastName) = _service.GetAdPersonFirstAndLastName(adPerson);
+
+            // Assert
+            Assert.AreEqual("Jul E", firstName);
+            Assert.AreEqual("Nissen", lastName);
+        }
     }
 }

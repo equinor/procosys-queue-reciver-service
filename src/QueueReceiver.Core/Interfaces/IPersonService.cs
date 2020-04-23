@@ -14,5 +14,6 @@ namespace QueueReceiver.Core.Interfaces
         Task<IEnumerable<string>> GetMembersWithOidAndAccessToPlant(string plantId);
         Task SetPersonCreatedByCache();
         Task UpdateVoidedStatus(string personOid);
+        (string, string) GetAdPersonFirstAndLastName(AdPerson adPerson);
     }
 }

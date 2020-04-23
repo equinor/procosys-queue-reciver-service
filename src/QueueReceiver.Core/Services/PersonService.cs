@@ -192,22 +192,43 @@ namespace QueueReceiver.Core.Services
                 _logger.LogError($"AD person with email: {adPerson.Email}, or name {adPerson.GivenName} {adPerson.Surname} does not contain a username");
                 return;
             }
-
-            var userName = adPerson.Username.ToUpperInvariant();
-
+            
             _logger.LogInformation($"Creating person with OID: {adPerson.Oid}");
+            
+            var userName = adPerson.Username.ToUpperInvariant();
+            var (firstName, lastName) = GetAdPersonFirstAndLastName(adPerson);
 
             await _personRepository.AddPersonAsync(
                 new Person(userName, adPerson.Email)
                 {
                     Oid = adPerson.Oid,
-                    FirstName = adPerson.GivenName,
-                    LastName = adPerson.Surname,
+                    FirstName = firstName,
+                    LastName = lastName,
                     MobilePhoneNumber = adPerson.MobileNumber?.Replace(" ", string.Empty),
                     UpdatedAt = DateTime.Now,
                     CreatedById = _personCreatedByCache.Id,
                     UpdatedById = _personCreatedByCache.Id
                 });
+        }
+
+        public (string, string) GetAdPersonFirstAndLastName(AdPerson adPerson)
+        {
+            if (!string.IsNullOrEmpty(adPerson.GivenName) && !string.IsNullOrEmpty(adPerson.Surname))
+            {
+                return (adPerson.GivenName, adPerson.Surname);
+            }
+
+            if (!string.IsNullOrEmpty(adPerson.DisplayName) && adPerson.DisplayName.Contains(" "))
+            {
+                // last name will be set to the last part of the name, regardless of any middle-name variants (best effort)
+                var indexOfLastSpace = adPerson.DisplayName.LastIndexOf(" ", StringComparison.InvariantCulture);
+                var firstName = adPerson.DisplayName.Substring(0, indexOfLastSpace);
+                var lastName = adPerson.DisplayName.Substring(indexOfLastSpace + 1);
+
+                return (firstName, lastName);
+            }
+
+            throw new Exception($"Could not determine first or last name for user with Oid: {adPerson.Oid}");
         }
     }
 }
