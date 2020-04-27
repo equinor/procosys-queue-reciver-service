@@ -108,12 +108,18 @@ namespace QueueReceiver.Core.Services
                 throw new Exception($"{userOid} not found in graph. Queue out of sync ");
             }
 
-            if (adPerson.MobileNumber != null && adPerson.GivenName != null && adPerson.Surname != null)
+            // TODO: test Sverre sin QA bruker, hvorfor slo reconcile ikke til?
+
+            if (adPerson.MobileNumber != null
+                && ((adPerson.GivenName != null && adPerson.Surname != null)
+                    || adPerson.DisplayName != null))
             {
+                var (firstName, lastName) = GetAdPersonFirstAndLastName(adPerson);
+
                 person = await _personRepository.FindByMobileNumberAndNameAsync(
                     adPerson.MobileNumber,
-                    adPerson.GivenName,
-                    adPerson.Surname);
+                    firstName,
+                    lastName);
             }
 
             //if (person?.Oid != null && await _graphService.AdPersonFoundInDeletedDirectory(person.Oid))
@@ -156,15 +162,17 @@ namespace QueueReceiver.Core.Services
 
         private async Task<Person?> FindAndUpdateAsync(AdPerson adPerson)
         {
-            if (adPerson.MobileNumber == null || adPerson.GivenName == null || adPerson.Surname == null)
+            if (adPerson.MobileNumber == null || ((adPerson.GivenName == null && adPerson.Surname == null) || adPerson.DisplayName == null))
             {
                 return null;
             }
 
+            var (firstName, lastName) = GetAdPersonFirstAndLastName(adPerson);
+
             var person = await _personRepository.FindByMobileNumberAndNameAsync(
                 adPerson.MobileNumber,
-                adPerson.GivenName,
-                adPerson.Surname);
+                firstName,
+                lastName);
 
             if (person != null)
             {
@@ -176,10 +184,12 @@ namespace QueueReceiver.Core.Services
 
         private async Task<List<Person>> GetReconcilePersons(AdPerson adPerson)
         {
+            var (firstName, lastName) = GetAdPersonFirstAndLastName(adPerson);
+
             var possibleMatches = await _personRepository.FindPossibleMatches(
                 adPerson.MobileNumber,
-                adPerson.GivenName,
-                adPerson.Surname,
+                firstName,
+                lastName,
                 adPerson.Username);
 
             return possibleMatches.ToList();
