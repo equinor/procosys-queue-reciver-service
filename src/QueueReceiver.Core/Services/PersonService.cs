@@ -108,8 +108,6 @@ namespace QueueReceiver.Core.Services
                 throw new Exception($"{userOid} not found in graph. Queue out of sync ");
             }
 
-            // TODO: test Sverre sin QA bruker, hvorfor slo reconcile ikke til?
-
             if (adPerson.MobileNumber != null
                 && ((adPerson.GivenName != null && adPerson.Surname != null)
                     || adPerson.DisplayName != null))
@@ -140,7 +138,7 @@ namespace QueueReceiver.Core.Services
             {
                 _logger.LogInformation($"Reconcile: setting OID {userOid} on {reconcilePersons.Count} possible matches.");
 
-                reconcilePersons.ForEach(rp=> rp.Reconcile = userOid);
+                reconcilePersons.ForEach(rp => rp.Reconcile = userOid);
                 return;
             }
 
