@@ -70,6 +70,8 @@ namespace QueueReceiver.Infrastructure.Repositories
             string lastName, 
             string userName)
         {
+            userName = userName.ToUpper();
+
             var shortName = string.IsNullOrEmpty(userName) || !userName.Contains("@")
                 ? string.Empty
                 : userName.Substring(0, userName.IndexOf('@')).ToUpper();
