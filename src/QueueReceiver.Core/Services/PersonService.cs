@@ -160,7 +160,8 @@ namespace QueueReceiver.Core.Services
 
         private async Task<Person?> FindAndUpdateAsync(AdPerson adPerson)
         {
-            if (adPerson.MobileNumber == null || ((adPerson.GivenName == null && adPerson.Surname == null) || adPerson.DisplayName == null))
+            if (adPerson.MobileNumber == null ||
+                ((adPerson.GivenName == null && adPerson.Surname == null) || adPerson.DisplayName == null))
             {
                 return null;
             }
