@@ -258,7 +258,7 @@ namespace QueueReceiver.Core.Services
 
         public string GetEmailAddressDomain(string email) =>
             !email.Contains("@")
-                ? AffiliateConstants.DefaultEmailDomain
+                ? ReconcileConstants.DefaultEmailDomain
                 : email.Substring(email.IndexOf('@') + 1).ToUpperInvariant();
     }
 }

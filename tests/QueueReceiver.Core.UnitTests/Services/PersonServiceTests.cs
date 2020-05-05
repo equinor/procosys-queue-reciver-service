@@ -153,7 +153,7 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             // Assert
             Assert.AreEqual("BAR.COM", emailDomainFromUsername);
-            Assert.AreEqual(AffiliateConstants.DefaultEmailDomain, emailDomainFromDefault);
+            Assert.AreEqual(ReconcileConstants.DefaultEmailDomain, emailDomainFromDefault);
         }
     }
 }
