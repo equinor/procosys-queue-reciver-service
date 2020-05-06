@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using QueueReceiver.Core.Constants;
 
 namespace QueueReceiver.Core.Services
 {
@@ -120,12 +121,6 @@ namespace QueueReceiver.Core.Services
                     lastName);
             }
 
-            //if (person?.Oid != null && await _graphService.AdPersonFoundInDeletedDirectory(person.Oid))
-            //{
-            //    person.Oid = userOid;
-            //    return;
-            //}
-
             if (person != null)
             {
                 person.Oid = userOid;
@@ -138,7 +133,12 @@ namespace QueueReceiver.Core.Services
             {
                 _logger.LogInformation($"Reconcile: setting OID {userOid} on {reconcilePersons.Count} possible matches.");
 
-                reconcilePersons.ForEach(rp => rp.Reconcile = userOid);
+                reconcilePersons.ForEach(rp =>
+                {
+                    _logger.LogInformation($"Reconcile: setting OID {userOid} on person id: {rp.Id}");
+                    rp.Reconcile = userOid;
+                });
+
                 return;
             }
 
@@ -191,14 +191,30 @@ namespace QueueReceiver.Core.Services
                 lastName,
                 adPerson.Username);
 
-            return possibleMatches.ToList();
+            var reconcilePersons = new List<Person>();
+            var adPersonEmailDomain = GetEmailAddressDomain(adPerson.Username);
+
+            // In order to set reconcile, the existing and new users e-mail domains must match.
+            // Otherwise, it is most likely a new affiliate user and should not be reconciled.
+            // Defaults to EQUINOR.COM if username is not an e-mail address ("short name").
+            foreach (var person in possibleMatches.ToList())
+            {
+                var reconcilePersonEmailDomain = GetEmailAddressDomain(person.UserName);
+
+                if (adPersonEmailDomain == reconcilePersonEmailDomain)
+                {
+                    reconcilePersons.Add(person);
+                }
+            }
+
+            return reconcilePersons;
         }
 
         private async Task CreatePerson(AdPerson adPerson)
         {
             if (adPerson.Username == null)
             {
-                _logger.LogError($"AD person with email: {adPerson.Email}, or name {adPerson.GivenName} {adPerson.Surname} does not contain a username");
+                _logger.LogError($"AD person with OID: {adPerson.Oid} does not contain a username");
                 return;
             }
             
@@ -239,5 +255,10 @@ namespace QueueReceiver.Core.Services
 
             throw new Exception($"Could not determine first or last name for user with Oid: {adPerson.Oid}");
         }
+
+        public string GetEmailAddressDomain(string email) =>
+            !email.Contains("@")
+                ? ReconcileConstants.DefaultEmailDomain
+                : email.Substring(email.IndexOf('@') + 1).ToUpperInvariant();
     }
 }

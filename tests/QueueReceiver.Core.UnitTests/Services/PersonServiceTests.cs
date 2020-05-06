@@ -5,6 +5,7 @@ using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Core.Services;
 using System.Threading.Tasks;
+using QueueReceiver.Core.Constants;
 
 namespace QueueReceiver.Core.UnitTests.Services
 {
@@ -137,6 +138,22 @@ namespace QueueReceiver.Core.UnitTests.Services
             // Assert
             Assert.AreEqual("Jul E", firstName);
             Assert.AreEqual("Nissen", lastName);
+        }
+
+        [TestMethod]
+        public void GetEmailAddressDomain()
+        {
+            // Arrange
+            const string testUserNameAsEmail = "foo@bar.com";
+            const string testUserNameWithoutEmail = "foo";
+
+            // Act
+            var emailDomainFromUsername = _service.GetEmailAddressDomain(testUserNameAsEmail);
+            var emailDomainFromDefault = _service.GetEmailAddressDomain(testUserNameWithoutEmail);
+
+            // Assert
+            Assert.AreEqual("BAR.COM", emailDomainFromUsername);
+            Assert.AreEqual(ReconcileConstants.DefaultEmailDomain, emailDomainFromDefault);
         }
     }
 }
