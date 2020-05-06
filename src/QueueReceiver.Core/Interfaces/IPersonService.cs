@@ -15,5 +15,6 @@ namespace QueueReceiver.Core.Interfaces
         Task SetPersonCreatedByCache();
         Task UpdateVoidedStatus(string personOid);
         (string firstName, string lastName) GetAdPersonFirstAndLastName(AdPerson adPerson);
+        string GetEmailAddressDomain(string email);
     }
 }
