@@ -196,10 +196,10 @@ namespace QueueReceiver.Core.Services
 
             // In order to set reconcile, the existing and new users e-mail domains must match.
             // Otherwise, it is most likely a new affiliate user and should not be reconciled.
-            // Defaults to EQUINOR.COM if username is not an e-mail address ("short name").
             foreach (var person in possibleMatches.ToList())
             {
-                var reconcilePersonEmailDomain = GetEmailAddressDomain(person.UserName);
+                var reconcilePersonEmail = person.UserName.Contains("@") ? person.UserName : person.Email;
+                var reconcilePersonEmailDomain = GetEmailAddressDomain(reconcilePersonEmail);
 
                 if (adPersonEmailDomain == reconcilePersonEmailDomain)
                 {
