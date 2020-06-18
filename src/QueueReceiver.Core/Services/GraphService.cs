@@ -55,7 +55,7 @@ namespace QueueReceiver.Core.Services
 
                 // Username is e-mail by default.
                 // Check that it does not contain the internal name (result of bad data in AD), use UPN in that case.
-                var userNameFromGraph = user.Mail.Contains(EquinorInternalAzureName)
+                var userNameFromGraph = !string.IsNullOrEmpty(user.Mail) && user.Mail.Contains(EquinorInternalAzureName)
                     ? user.UserPrincipalName
                     : user.Mail;
 
