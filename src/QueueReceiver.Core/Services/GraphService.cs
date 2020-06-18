@@ -16,6 +16,8 @@ namespace QueueReceiver.Core.Services
         private readonly GraphSettings _settings;
         private readonly ILogger<GraphService> _log;
 
+        private const string EquinorInternalAzureName = "StatoilSRM.onmicrosoft.com";
+
         public GraphService(GraphSettings graphSettings, ILogger<GraphService> logger)
         {
             _settings = graphSettings;
@@ -51,9 +53,14 @@ namespace QueueReceiver.Core.Services
             {
                 var user = await graphClient.Users[userOid].Request().GetAsync();
 
-                // username is e-mail by default
-                var userName = user.Mail;
-                var email = user.Mail;
+                // Username is e-mail by default.
+                // Check that it does not contain the internal name (result of bad data in AD), use UPN in that case.
+                var userNameFromGraph = user.Mail.Contains(EquinorInternalAzureName)
+                    ? user.UserPrincipalName
+                    : user.Mail;
+
+                var userName = userNameFromGraph;
+                var email = userNameFromGraph;
 
                 if (string.IsNullOrEmpty(userName))
                 {
