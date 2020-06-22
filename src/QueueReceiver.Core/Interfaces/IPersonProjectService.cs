@@ -4,7 +4,7 @@ namespace QueueReceiver.Core.Interfaces
 {
     public interface IPersonProjectService
     {
-        Task GiveProjectAccessToPlantAsync(long personId, string plantId);
-        Task RemoveAccessToPlant(long personId, string plantId);
+        Task<bool> GiveProjectAccessToPlantAsync(long personId, string plantId);
+        Task<bool> RemoveAccessToPlant(long personId, string plantId);
     }
 }
