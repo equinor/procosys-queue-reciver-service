@@ -3,7 +3,6 @@ using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using System.Threading.Tasks;
 using QueueReceiver.Core.Properties;
-using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -17,19 +16,22 @@ namespace QueueReceiver.Core.Services
         private readonly IPlantService _plantService;
         private readonly ILogger<AccessService> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly PersonCreatedByCache _personCreatedByCache;
 
         public AccessService(
             IPersonService personService,
             IPersonProjectService personProjectService,
             IPlantService plantService,
             ILogger<AccessService> logger,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork, 
+            PersonCreatedByCache personCreatedByCache)
         {
             _personService = personService;
             _personProjectService = personProjectService;
             _plantService = plantService;
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _personCreatedByCache = personCreatedByCache;
         }
 
         public async Task HandleRequestAsync(AccessInfo accessInfo)
@@ -118,21 +120,34 @@ namespace QueueReceiver.Core.Services
 
             _logger.LogInformation(Resources.RemoveAccess, person.Id, plantId);
 
-            await _personProjectService.RemoveAccessToPlant(person.Id, plantId);
+            var hasChanges = await _personProjectService.RemoveAccessToPlant(person.Id, plantId);
+
+            if (hasChanges)
+            {
+                person.UpdatedAt = DateTime.Now;
+                person.UpdatedById = _personCreatedByCache.Id;
+            }
         }
 
         private async Task GiveAccess(string userOid, string plantId)
         {
-            long personId = await _personService.GetPersonIdByOidAsync(userOid);
+            Person? person = await _personService.FindPersonByOidAsync(userOid);
 
-            if (personId == 0)
+            if (person == null)
             {
                 _logger.LogError(Resources.PersonWasNotFoundOrCreated, userOid);
                 return;
             }
 
-            _logger.LogInformation(Resources.AddAccess, personId, plantId);
-            await _personProjectService.GiveProjectAccessToPlantAsync(personId, plantId);
+            _logger.LogInformation(Resources.AddAccess, person.Id, plantId);
+
+            var hasChanges = await _personProjectService.GiveProjectAccessToPlantAsync(person.Id, plantId);
+
+            if (hasChanges)
+            {
+                person.UpdatedAt = DateTime.Now;
+                person.UpdatedById = _personCreatedByCache.Id;
+            }
         }
 
         private static bool MessageHasNoRelevantData(AccessInfo accessInfo)

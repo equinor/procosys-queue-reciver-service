@@ -35,8 +35,10 @@ namespace QueueReceiver.Core.Services
             _personCreatedByCache = personCreatedByCache;
         }
 
-        public async Task GiveProjectAccessToPlantAsync(long personId, string plantId)
+        public async Task<bool> GiveProjectAccessToPlantAsync(long personId, string plantId)
         {
+            var hasChanges = false;
+
             var personProjectHistory =
                 PersonProjectHistoryHelper.CreatePersonProjectHistory(
                     _personCreatedByCache.Id,
@@ -64,11 +66,17 @@ namespace QueueReceiver.Core.Services
             if (updatedProjectIds.Any() || unvoidedProjectIds.Any())
             {
                 await _personProjectHistoryRepository.AddAsync(personProjectHistory);
+
+                hasChanges = true;
             }
+
+            return hasChanges;
         }
 
-        public async Task RemoveAccessToPlant(long personId, string plantId)
+        public async Task<bool> RemoveAccessToPlant(long personId, string plantId)
         {
+            var hasChanges = false;
+
             var personProjectHistory =
                 PersonProjectHistoryHelper.CreatePersonProjectHistory(
                     _personCreatedByCache.Id,
@@ -85,12 +93,16 @@ namespace QueueReceiver.Core.Services
             if (projects.Count > 0)
             {
                 await _personProjectHistoryRepository.AddAsync(personProjectHistory);
+
+                hasChanges = true;
             }
             else
             {
                 _logger.LogInformation(
                     $"Access to all projects are already voided for person {personId} and plant {plantId}. No action taken.");
             }
+
+            return hasChanges;
         }
 
         private async Task<(List<long> updated, List<long> unvoided)> UpdatePersonProjectsAsync(long personId, List<Project> projects)

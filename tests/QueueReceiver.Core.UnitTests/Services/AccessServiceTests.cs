@@ -21,6 +21,11 @@ namespace QueueReceiver.Core.UnitTests.Services
 
         public AccessServiceTests()
         {
+            var personCreatedByCache = new PersonCreatedByCache(111)
+            {
+                Username = "PERSON_CREATED_BY"
+            };
+
             _personService = new Mock<IPersonService>();
             _personProjectService = new Mock<IPersonProjectService>();
             _plantService = new Mock<IPlantService>();
@@ -31,7 +36,8 @@ namespace QueueReceiver.Core.UnitTests.Services
                 _personProjectService.Object,
                 _plantService.Object,
                 _logger.Object,
-                _unitOfWork.Object);
+                _unitOfWork.Object,
+                personCreatedByCache);
         }
 
         [TestMethod]
@@ -63,8 +69,10 @@ namespace QueueReceiver.Core.UnitTests.Services
                 .Returns(Task.FromResult(somePlantId)!);
             _personService.Setup(personService => personService.UpdateWithOidIfNotFound(someOid))
                 .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
-            _personService.Setup(PersonService => PersonService.GetPersonIdByOidAsync(someOid))
+            _personService.Setup(personService => personService.GetPersonIdByOidAsync(someOid))
                 .Returns(Task.FromResult(somePersonId)!);
+            _personService.Setup(personService => personService.FindPersonByOidAsync(someOid))
+                .Returns(Task.FromResult(new Person("", "") { Id = somePersonId, Oid = someOid })!);
 
             var accessInfo = new AccessInfo(plantOidThatExists, new List<Member>
                 {

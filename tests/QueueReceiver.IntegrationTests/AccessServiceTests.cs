@@ -57,7 +57,7 @@ namespace QueueReceiver.IntegrationTests
                 personProjectServiceLoggerMock.Object,
                 personCreatedByCache);
 
-            var service = new AccessService(personService, personProjectService, plantService, AccessServiceloggerMock.Object,context);
+            var service = new AccessService(personService, personProjectService, plantService, AccessServiceloggerMock.Object, context, personCreatedByCache);
 
             return (service, graphServiceMock);
         }
