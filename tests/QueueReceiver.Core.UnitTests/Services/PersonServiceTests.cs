@@ -141,6 +141,25 @@ namespace QueueReceiver.Core.UnitTests.Services
         }
 
         [TestMethod]
+        public void GetAdPersonNameFromDisplayNameWithCommaError()
+        {
+            // Arrange
+            const string testDisplayName = "Lastname, Firstname Middle";
+
+            var adPerson = new AdPerson("oid", "username", "email")
+            {
+                DisplayName = testDisplayName
+            };
+
+            // Act
+            var (firstName, lastName) = _service.GetAdPersonFirstAndLastName(adPerson);
+
+            // Assert
+            Assert.AreEqual("Firstname Middle", firstName);
+            Assert.AreEqual("Lastname", lastName);
+        }
+
+        [TestMethod]
         public void GetEmailAddressDomain()
         {
             // Arrange
