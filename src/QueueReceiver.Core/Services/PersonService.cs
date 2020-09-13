@@ -245,6 +245,19 @@ namespace QueueReceiver.Core.Services
 
             if (!string.IsNullOrEmpty(adPerson.DisplayName) && adPerson.DisplayName.Contains(" "))
             {
+                if (adPerson.DisplayName.Contains(","))
+                {
+                    // A naming error in Azure sometimes cause DisplayName to be formatted "Lastname, Firstname".
+                    // The following is a best effort fix to put Lastname last and remove the comma.
+                    var nameToFix = adPerson.DisplayName;
+                    var assumedLastName = nameToFix.Substring(0, nameToFix.IndexOf(",", StringComparison.InvariantCulture));
+                    nameToFix = nameToFix.Remove(0, assumedLastName.Length);
+                    nameToFix = nameToFix.Replace(",", string.Empty);
+                    nameToFix = nameToFix.TrimStart();
+                    
+                    adPerson.DisplayName = $"{nameToFix} {assumedLastName}";
+                }
+
                 // last name will be set to the last part of the name, regardless of any middle-name variants (best effort)
                 var indexOfLastSpace = adPerson.DisplayName.LastIndexOf(" ", StringComparison.InvariantCulture);
                 var firstName = adPerson.DisplayName.Substring(0, indexOfLastSpace);
