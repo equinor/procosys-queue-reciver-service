@@ -115,7 +115,7 @@ namespace QueueReceiver.Core.Services
 
         private async Task ProcessMembers(List<Member> members, string plantId)
         {
-            await _accessService.UpdateMemberInfo(members);
+            await _accessService.UpdateMemberInfo(members, plantId);
             await _accessService.UpdateMemberAccess(members, plantId);
             await _accessService.UpdateMemberVoidedStatus(members);
         }

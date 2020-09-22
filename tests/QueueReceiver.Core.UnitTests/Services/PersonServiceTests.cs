@@ -64,6 +64,7 @@ namespace QueueReceiver.Core.UnitTests.Services
             const string Surname = "Kronglevåg";
             const string SomeOid = "someOid";
             const string MobileNo = "762982109";
+            const string SomePlantId = "somePlantId";
 
             _graphService.Setup(graphService => graphService.GetAdPersonByOidAsync(SomeOid))
                 .Returns(Task.FromResult<AdPerson?>(new AdPerson(SomeOid, "anything", "anyEmail")
@@ -78,7 +79,7 @@ namespace QueueReceiver.Core.UnitTests.Services
                 .Returns(Task.FromResult<Person?>(new Person("tull", "tøys") { Id = SomeId }));
 
             //Act
-            await _service.CreateIfNotExist(SomeOid);
+            await _service.CreateIfNotExist(SomeOid, SomePlantId);
 
             //Assert
             var person = await _service.FindPersonByOidAsync(SomeOid);

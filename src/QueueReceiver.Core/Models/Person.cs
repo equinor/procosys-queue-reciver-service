@@ -21,6 +21,8 @@ namespace QueueReceiver.Core.Models
 
         public string? Reconcile { get; set; }
 
+        public string? ReconcileProjectschema { get; set; }
+
         public string? Oid { get; set; }
 
         public string? FirstName { get; set; }
