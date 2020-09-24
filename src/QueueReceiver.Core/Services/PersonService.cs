@@ -137,7 +137,7 @@ namespace QueueReceiver.Core.Services
                 {
                     _logger.LogInformation($"Reconcile: setting OID {userOid} on person id: {rp.Id}");
                     rp.Reconcile = userOid;
-                    rp.ReconcileProjectschema = plantId;
+                    rp.ReconcilePlant = plantId;
                 });
 
                 return;
