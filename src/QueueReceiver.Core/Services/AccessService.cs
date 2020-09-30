@@ -54,14 +54,14 @@ namespace QueueReceiver.Core.Services
 
             _logger.LogInformation($"Updating access for {accessInfo.Members.Count} members to plant {plantId}");
 
-            await UpdateMemberInfo(accessInfo.Members);
+            await UpdateMemberInfo(accessInfo.Members, plantId);
 
             await UpdateMemberAccess(accessInfo.Members, plantId);
 
             await UpdateMemberVoidedStatus(accessInfo.Members);
         }
 
-        public async Task UpdateMemberInfo(List<Member> members)
+        public async Task UpdateMemberInfo(List<Member> members, string plantId)
         {
             var tasks = members.Select(async member =>
             {
@@ -71,7 +71,7 @@ namespace QueueReceiver.Core.Services
                 }
                 else
                 {
-                    await _personService.CreateIfNotExist(member.UserOid);
+                    await _personService.CreateIfNotExist(member.UserOid, plantId);
                 }
             });
 
