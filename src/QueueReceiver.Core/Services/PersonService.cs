@@ -93,7 +93,7 @@ namespace QueueReceiver.Core.Services
 
         public async Task<long> GetPersonIdByOidAsync(string userOid) => await _personRepository.FindPersonIdByUserOidAsync(userOid);
 
-        public async Task CreateIfNotExist(string userOid) //TODO refactor this method, its too big, and does too much.
+        public async Task CreateIfNotExist(string userOid, string plantId)
         {
             var person = await _personRepository.FindByUserOidAsync(userOid);
 
@@ -137,6 +137,7 @@ namespace QueueReceiver.Core.Services
                 {
                     _logger.LogInformation($"Reconcile: setting OID {userOid} on person id: {rp.Id}");
                     rp.Reconcile = userOid;
+                    rp.ReconcilePlant = plantId;
                 });
 
                 return;

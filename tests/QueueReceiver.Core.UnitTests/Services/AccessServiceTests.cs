@@ -54,7 +54,7 @@ namespace QueueReceiver.Core.UnitTests.Services
 
             //Assert
             _plantService.Verify(_ => _.GetPlantIdAsync(plantOidThatDoesntExists), Times.Once);
-            _personService.Verify(_ => _.CreateIfNotExist(It.IsAny<string>()), Times.Never);
+            _personService.Verify(_ => _.CreateIfNotExist(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
         [TestMethod]

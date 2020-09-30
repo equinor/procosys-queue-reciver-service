@@ -7,7 +7,7 @@ namespace QueueReceiver.Core.Interfaces
     public interface IPersonService
     {
         Task<Person?> UpdateWithOidIfNotFound(string userOid);
-        Task CreateIfNotExist(string userOid);
+        Task CreateIfNotExist(string userOid, string plantId);
         Task<Person?> FindPersonByOidAsync(string userOid);
         Task<long> GetPersonIdByOidAsync(string userOid);
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
