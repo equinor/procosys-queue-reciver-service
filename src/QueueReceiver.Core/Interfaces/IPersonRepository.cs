@@ -13,6 +13,12 @@ namespace QueueReceiver.Core.Interfaces
         IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids);
         IEnumerable<string> GetOidsBasedOnProject(long projectId);
         Task<Person> FindAsync(long personId);
-        Task<IEnumerable<Person>> FindPossibleMatches(string mobileNumber, string firstName, string lastName, string userName);
+
+        Task<IEnumerable<Person>> FindPossibleMatches(
+            string mobileNumber,
+            string firstName,
+            string lastName,
+            string userName,
+            string email);
     }
 }
