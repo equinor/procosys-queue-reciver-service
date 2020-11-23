@@ -109,9 +109,9 @@ namespace QueueReceiver.Core.Services
                 throw new Exception($"{userOid} not found in graph. Queue out of sync ");
             }
 
-            if (adPerson.MobileNumber != null
-                && ((adPerson.GivenName != null && adPerson.Surname != null)
-                    || adPerson.DisplayName != null))
+            if (!string.IsNullOrEmpty(adPerson.MobileNumber)
+                && ((!string.IsNullOrEmpty(adPerson.GivenName) && !string.IsNullOrEmpty(adPerson.Surname))
+                    || !string.IsNullOrEmpty(adPerson.DisplayName)))
             {
                 var (firstName, lastName) = GetAdPersonFirstAndLastName(adPerson);
 
@@ -161,8 +161,9 @@ namespace QueueReceiver.Core.Services
 
         private async Task<Person?> FindAndUpdateAsync(AdPerson adPerson)
         {
-            if (adPerson.MobileNumber == null ||
-                ((adPerson.GivenName == null && adPerson.Surname == null) || adPerson.DisplayName == null))
+            if (string.IsNullOrEmpty(adPerson.MobileNumber) ||
+                ((string.IsNullOrEmpty(adPerson.GivenName) && string.IsNullOrEmpty(adPerson.Surname)) ||
+                 string.IsNullOrEmpty(adPerson.DisplayName)))
             {
                 return null;
             }
@@ -190,7 +191,8 @@ namespace QueueReceiver.Core.Services
                 adPerson.MobileNumber,
                 firstName,
                 lastName,
-                adPerson.Username);
+                adPerson.Username,
+                adPerson.Email);
 
             var reconcilePersons = new List<Person>();
             var adPersonEmailDomain = GetEmailAddressDomain(adPerson.Username);
