@@ -68,7 +68,8 @@ namespace QueueReceiver.Infrastructure.Repositories
             string mobileNumber, 
             string firstName, 
             string lastName, 
-            string userName)
+            string userName,
+            string email)
         {
             userName = userName.ToUpper();
 
@@ -79,12 +80,14 @@ namespace QueueReceiver.Infrastructure.Repositories
             mobileNumber = string.IsNullOrEmpty(mobileNumber) ? string.Empty : mobileNumber.Replace(" ", string.Empty);
             firstName = string.IsNullOrEmpty(firstName) ? string.Empty : firstName.ToUpper();
             lastName = string.IsNullOrEmpty(lastName) ? string.Empty : lastName.ToUpper();
+            email = string.IsNullOrEmpty(email) ? string.Empty : email.ToUpper();
 
             return await _persons.Where(person =>
                     (person.MobilePhoneNumber != null &&
                      mobileNumber.Equals(person.MobilePhoneNumber))
                     || (person.MobilePhoneNumber != null &&
                         mobileNumber.Equals("+47" + person.MobilePhoneNumber))
+                    || (email.Equals(person.Email.ToUpper()))
                     || (person.FirstName != null &&
                         person.LastName != null &&
                         firstName.Equals(person.FirstName.ToUpper()) &&
