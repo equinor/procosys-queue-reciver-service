@@ -11,7 +11,7 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
         {
             builder.ToTable("PERSON");
             builder.HasKey(p => p.Id);
-            builder.Property(p => p.Id).HasColumnName("PERSON_ID").ForOracleUseSequenceHiLo(PersonConstants.Sequence);
+            builder.Property(p => p.Id).HasColumnName("PERSON_ID").UseHiLo(PersonConstants.Sequence);
             builder.Property(p => p.UserName).HasColumnName("USERNAME");
             builder.Property(p => p.Email).HasColumnName("EMAILADDRESS");
             builder.Property(p => p.Oid).HasColumnName("AZURE_OID");

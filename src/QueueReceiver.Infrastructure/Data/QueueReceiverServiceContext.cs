@@ -3,7 +3,6 @@ using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.EntityConfigurations;
-using System;
 using System.Threading.Tasks;
 
 namespace QueueReceiver.Infrastructure.Data
@@ -34,6 +33,11 @@ namespace QueueReceiver.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.HasSequence(PersonConstants.Sequence).IncrementsBy(1);
+            modelBuilder.HasSequence(PersonProjectHistoryConstants.Sequence).IncrementsBy(1);
+            modelBuilder.HasSequence(PersonProjectHistoryOperationConstants.Sequence).IncrementsBy(1);
+
             modelBuilder.ApplyConfiguration(new PersonConfiguration())
                 .ApplyConfiguration(new PersonProjectConfiguration())
                 .ApplyConfiguration(new PersonUserGroupConfiguration())
@@ -44,13 +48,6 @@ namespace QueueReceiver.Infrastructure.Data
                 .ApplyConfiguration(new PersonProjectHistoryOperationConfiguration())
                 .ApplyConfiguration(new RestrictionRoleConfiguration())
                 .ApplyConfiguration(new UserGroupConfiguration());
-
-                 modelBuilder.HasSequence(PersonConstants.Sequence).IncrementsBy(1);
-                 modelBuilder.HasSequence(PersonProjectHistoryConstants.Sequence).IncrementsBy(1);
-                 modelBuilder.HasSequence(PersonProjectHistoryOperationConstants.Sequence).IncrementsBy(1);
-                 // Er vi sikre på at disse brukes kun der de skal? 
-
-            
         }
     }
 }

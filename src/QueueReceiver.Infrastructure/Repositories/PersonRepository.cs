@@ -18,9 +18,9 @@ namespace QueueReceiver.Infrastructure.Repositories
             _persons = context.Persons;
         }
 
-        public Task<Person> FindAsync(long personId)
+        public async Task<Person> FindAsync(long personId)
         {
-            return _persons.FindAsync(personId);
+            return await _persons.FindAsync(personId);
         }
 
         public async Task<Person> AddPersonAsync(Person person)
@@ -49,14 +49,13 @@ namespace QueueReceiver.Infrastructure.Repositories
                 .Where(p => p.Oid != null)
                 .Select(p => p.Oid!)
                 .AsNoTracking()
-                .ToAsyncEnumerable();
+                .AsEnumerable();
 
-            return oids.ToAsyncEnumerable().Except(withOid).ToEnumerable();
+            return oids.Except(withOid);
         }
 
         public async Task<Person?> FindByUserOidAsync(string userOid)
-            => await _persons.FirstOrDefaultAsync(person =>
-                userOid.Equals(person.Oid));
+            => await _persons.FirstOrDefaultAsync(person => userOid.Equals(person.Oid));
 
         public async Task<long> FindPersonIdByUserOidAsync(string userOid)
             => await _persons
