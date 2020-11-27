@@ -18,9 +18,7 @@ namespace QueueReceiver.Core.UnitTests
         }
 
         public void RegisterMessageHandler(
-            Func<Message,
-            CancellationToken,
-            Task> processMessagesAsync,
+            Func<Message, CancellationToken, Task> processMessagesAsync,
             MessageHandlerOptions messageHandlerOptions)
         {
             this.processMessagesAsync = processMessagesAsync;
@@ -116,6 +114,16 @@ namespace QueueReceiver.Core.UnitTests
         {
             throw new NotImplementedException();
         }
-        #endregion 
+
+        public Task UnregisterSessionHandlerAsync(TimeSpan inflightSessionHandlerTasksWaitTimeout)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UnregisterMessageHandlerAsync(TimeSpan inflightMessageHandlerTasksWaitTimeout)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }
