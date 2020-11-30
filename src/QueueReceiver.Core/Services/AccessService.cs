@@ -63,7 +63,7 @@ namespace QueueReceiver.Core.Services
 
         public async Task UpdateMemberInfo(List<Member> members, string plantId)
         {
-            var tasks = members.Select(async member =>
+            foreach (var member in members)
             {
                 if (member.ShouldVoid)
                 {
@@ -72,16 +72,15 @@ namespace QueueReceiver.Core.Services
                 else
                 {
                     await _personService.CreateIfNotExist(member.UserOid, plantId);
-                }
-            });
+                }                
+            }
 
-            await Task.WhenAll(tasks);
             await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateMemberAccess(List<Member> members, string plantId)
         {
-            var tasks = members.Select(async member =>
+            foreach (var member in members)
             {
                 if (member.ShouldVoid)
                 {
@@ -91,20 +90,18 @@ namespace QueueReceiver.Core.Services
                 {
                     await GiveAccess(member.UserOid, plantId);
                 }
-            });
+            }
 
-            await Task.WhenAll(tasks);
             await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateMemberVoidedStatus(List<Member> members)
         {
-            var tasks = members.Select(async member =>
+            foreach (var member in members)
             {
                 await _personService.UpdateVoidedStatus(member.UserOid);
-            });
+            }
 
-            await Task.WhenAll(tasks);
             await _unitOfWork.SaveChangesAsync();
         }
 
