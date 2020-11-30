@@ -16,8 +16,10 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
             
             builder.ToTable("PERSONPROJECT_HISTORY_OP");
 
-            builder.Property(ppho => ppho.Id).HasColumnName("PERSONPROJECT_HISTORY_OP_ID")
-                .UseHiLo(PersonProjectHistoryOperationConstants.Sequence);
+            builder.Property(ppho => ppho.Id)
+                .HasColumnName("PERSONPROJECT_HISTORY_OP_ID")
+                .ValueGeneratedOnAdd()
+                .HasValueGenerator((_, __) => new SequenceValueGenerator(PersonProjectHistoryOperationConstants.Sequence));
 
             builder.Property(ppho => ppho.OperationType).HasColumnName("OPERATION_TYPE");
             builder.Property(ppho => ppho.OldValue).HasColumnName("OLD_VALUE");

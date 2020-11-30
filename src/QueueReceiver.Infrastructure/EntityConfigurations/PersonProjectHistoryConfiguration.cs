@@ -10,12 +10,16 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
         public void Configure(EntityTypeBuilder<PersonProjectHistory> builder)
         {
             builder.HasKey(pph => pph.Id);
-            builder.Property(pph => pph.Id).UseHiLo(PersonProjectHistoryConstants.Sequence);
 
             builder.HasMany(pph => pph.PersonProjectHistoryOperations);
 
             builder.ToTable("PERSONPROJECT_HISTORY");
-            builder.Property(pph => pph.Id).HasColumnName("PERSONPROJECT_HISTORY_ID");
+
+            builder.Property(pph => pph.Id)
+                .HasColumnName("PERSONPROJECT_HISTORY_ID")
+                .ValueGeneratedOnAdd()
+                .HasValueGenerator((_, __) => new SequenceValueGenerator(PersonProjectHistoryConstants.Sequence));
+
             builder.Property(pph => pph.UpdatedBy).HasColumnName("UPDATEDBY_ID");
             builder.Property(pph => pph.UpdatedAt).HasColumnName("UPDATEDAT");
             builder.Property(pph => pph.UpdatedByUserName).HasColumnName("LAST_UPDATEDBYUSER");
