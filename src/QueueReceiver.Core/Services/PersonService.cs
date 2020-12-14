@@ -201,10 +201,18 @@ namespace QueueReceiver.Core.Services
             // Otherwise, it is most likely a new affiliate user and should not be reconciled.
             foreach (var person in possibleMatches.ToList())
             {
-                var reconcilePersonEmail = person.UserName.Contains("@") ? person.UserName : person.Email;
-                var reconcilePersonEmailDomain = GetEmailAddressDomain(reconcilePersonEmail);
+                var reconcilePersonEmailDomains = new List<string>
+                {
+                    GetEmailAddressDomain(person.Email)
+                };
 
-                if (adPersonEmailDomain == reconcilePersonEmailDomain)
+                if (person.UserName.Contains("@"))
+                {
+                    // Also add domain from username as a candidate if it's an e-mail address.
+                    reconcilePersonEmailDomains.Add(GetEmailAddressDomain(person.UserName));
+                }
+
+                if (reconcilePersonEmailDomains.Contains(adPersonEmailDomain))
                 {
                     reconcilePersons.Add(person);
                 }
