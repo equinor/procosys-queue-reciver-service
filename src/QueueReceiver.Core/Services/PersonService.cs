@@ -48,7 +48,7 @@ namespace QueueReceiver.Core.Services
         {
             var personId = await _personRepository.FindPersonIdByUserOidAsync(personOid);
 
-            if(personId == 0)
+            if (personId == 0)
             {
                 return;
             }
@@ -124,6 +124,9 @@ namespace QueueReceiver.Core.Services
             if (person != null)
             {
                 person.Oid = userOid;
+                person.UpdatedAt = DateTime.Now;
+                person.UpdatedById = _personCreatedByCache.Id;
+                person.UpdatedByUser = _personCreatedByCache.Username;
                 return;
             }
 
@@ -138,6 +141,9 @@ namespace QueueReceiver.Core.Services
                     _logger.LogInformation($"Reconcile: setting OID {userOid} on person id: {rp.Id}");
                     rp.Reconcile = userOid;
                     rp.ReconcilePlant = plantId;
+                    rp.UpdatedAt = DateTime.Now;
+                    rp.UpdatedById = _personCreatedByCache.Id;
+                    rp.UpdatedByUser = _personCreatedByCache.Username;
                 });
 
                 return;
@@ -178,6 +184,9 @@ namespace QueueReceiver.Core.Services
             if (person != null)
             {
                 person.Oid = adPerson.Oid;
+                person.UpdatedAt = DateTime.Now;
+                person.UpdatedById = _personCreatedByCache.Id;
+                person.UpdatedByUser = _personCreatedByCache.Username;
             }
 
             return person;
@@ -243,7 +252,8 @@ namespace QueueReceiver.Core.Services
                     MobilePhoneNumber = adPerson.MobileNumber?.Replace(" ", string.Empty),
                     UpdatedAt = DateTime.Now,
                     CreatedById = _personCreatedByCache.Id,
-                    UpdatedById = _personCreatedByCache.Id
+                    UpdatedById = _personCreatedByCache.Id,
+                    UpdatedByUser = _personCreatedByCache.Username
                 });
         }
 
