@@ -35,6 +35,8 @@ namespace QueueReceiver.Core.Models
 
         public long? UpdatedById { get; set; }
 
+        public string? UpdatedByUser { get; set; }
+
         public DateTime? UpdatedAt { get; set; }
 
         public virtual IEnumerable<PersonProject> PersonProjects { get; set; }
