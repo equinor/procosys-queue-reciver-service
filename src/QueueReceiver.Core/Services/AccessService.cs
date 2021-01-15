@@ -123,6 +123,7 @@ namespace QueueReceiver.Core.Services
             {
                 person.UpdatedAt = DateTime.Now;
                 person.UpdatedById = _personCreatedByCache.Id;
+                person.UpdatedByUser = _personCreatedByCache.Username;
             }
         }
 
@@ -144,6 +145,7 @@ namespace QueueReceiver.Core.Services
             {
                 person.UpdatedAt = DateTime.Now;
                 person.UpdatedById = _personCreatedByCache.Id;
+                person.UpdatedByUser = _personCreatedByCache.Username;
             }
         }
 

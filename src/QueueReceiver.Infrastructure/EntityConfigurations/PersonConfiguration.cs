@@ -27,6 +27,7 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
             builder.Property(p => p.ReconcilePlant).HasColumnName("RECONCILE_PROJECTSCHEMA");
             builder.Property(p => p.CreatedById).HasColumnName("CREATEDBY_ID");
             builder.Property(p => p.UpdatedById).HasColumnName("UPDATEDBY_ID");
+            builder.Property(p => p.UpdatedByUser).HasColumnName("LAST_UPDATEDBYUSER");
             builder.Property(p => p.UpdatedAt).HasColumnName("UPDATEDAT");
 
             builder.HasMany(p => p.PersonProjects);
