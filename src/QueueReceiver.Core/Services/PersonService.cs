@@ -287,6 +287,12 @@ namespace QueueReceiver.Core.Services
                 return (firstName, lastName);
             }
 
+            if (!string.IsNullOrEmpty(adPerson.DisplayName))
+            {
+                // As a last resort we are putting the entire DisplayName into the firstname field, and the "#" character as lastname.
+                return (adPerson.DisplayName, "#");
+            }
+
             throw new Exception($"Could not determine first or last name for user with Oid: {adPerson.Oid}");
         }
 
