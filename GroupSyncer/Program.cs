@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GroupSyncer
@@ -51,6 +52,12 @@ namespace GroupSyncer
                 .Build();
 
             var removeUserAccess = bool.Parse(config["RemoveUserAccessEnabled"]);
+            
+            var pcsOidExceptionList = config.GetSection("PcsOidExceptionList")
+                .GetChildren()
+                .ToArray()
+                .Select(oid => oid.Value)
+                .ToList();
 
             var personCreatedById = long.Parse(config["PersonCreatedById"], CultureInfo.InvariantCulture);
             var personCreatedByCache = new PersonCreatedByCache(personCreatedById);
@@ -81,7 +88,7 @@ namespace GroupSyncer
 
             try
             {
-                await syncService.StartAccessSync(plants, removeUserAccess);
+                await syncService.StartAccessSync(plants, removeUserAccess, pcsOidExceptionList);
             }
             catch (Exception e)
             {
