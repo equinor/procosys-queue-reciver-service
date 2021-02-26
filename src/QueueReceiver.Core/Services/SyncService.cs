@@ -32,9 +32,11 @@ namespace QueueReceiver.Core.Services
             _logger = logger;
         }
 
-        public async Task StartAccessSync(List<string> plantList, bool removeUserAccess)
+        public async Task StartAccessSync(List<string> plantList, bool removeUserAccess, List<string> pcsOidExceptionList)
         {
             _logger.LogInformation($"[GroupSync] : Started at {Timestamp}");
+
+            _logger.LogInformation($"[GroupSync] : PCS OID exception list: {(pcsOidExceptionList.Any() ? string.Join(", ", pcsOidExceptionList) : "none")}");
 
             _logger.LogInformation("[GroupSync] : Getting plants.");
             var plants = new List<Plant>();
@@ -57,6 +59,12 @@ namespace QueueReceiver.Core.Services
 
                 // Get PCS user OIDs
                 var pcsPersonOidList = await GetPcsUserOidList(plant.PlantId);
+
+                // Remove OID exceptions (= to be excluded from processing)
+                foreach (var oidException in pcsOidExceptionList)
+                {
+                    pcsPersonOidList.Remove(oidException);
+                }
 
                 // Get AD member OIDs
                 var adMemberOidList = await GetAdMemberOidList(new[] {plant.AffiliateGroupId, plant.InternalGroupId});
