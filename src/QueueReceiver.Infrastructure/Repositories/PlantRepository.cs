@@ -28,7 +28,7 @@ namespace QueueReceiver.Infrastructure.Repositories
                 .Select(plant => plant.PlantId)
                 .SingleOrDefaultAsync<string?>();
 
-        public List<Plant> GetAllPlants() => _plants.ToList(); //where clause aff and int group ids
+        public List<Plant> GetAllPlants() => _plants.Where(p => p.IsVoided == false).ToList(); //where clause aff and int group ids
 
         public Plant GetPlant(string plantId)
             => _plants.SingleOrDefault(plant => plant.PlantId == plantId);
