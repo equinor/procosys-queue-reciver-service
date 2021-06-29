@@ -7,9 +7,7 @@ namespace QueueReceiver.Core.Interfaces
     public interface IPlantService
     {
         Task<string?> GetPlantIdAsync(string plantOid);
-        IEnumerable<string> GetAllGroupOids();
         List<Plant> GetAllPlants();
         Plant GetPlant(string plantId);
-        List<string> GetAllMemberOidsByPlant(string plantId);
     }
 }

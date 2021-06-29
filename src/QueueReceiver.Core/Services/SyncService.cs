@@ -55,6 +55,12 @@ namespace QueueReceiver.Core.Services
 
             foreach (var plant in plants)
             {
+                if (plant.IsVoided || string.IsNullOrEmpty(plant.AffiliateGroupId) || string.IsNullOrEmpty(plant.InternalGroupId))
+                {
+                    // go to next plant if above values are empty or plant is voided
+                    continue;
+                }
+
                 _logger.LogInformation($"[GroupSync] : Started handling {plant.PlantId} at {Timestamp}");
 
                 // Get PCS user OIDs
@@ -64,12 +70,6 @@ namespace QueueReceiver.Core.Services
                 foreach (var oidException in pcsOidExceptionList)
                 {
                     pcsPersonOidList.Remove(oidException);
-                }
-
-                if (plant.IsVoided == "Y" || string.IsNullOrEmpty(plant.AffiliateGroupId) || string.IsNullOrEmpty(plant.InternalGroupId))
-                {
-                    // go to next plant if above values are empty or plant is voided
-                    continue;
                 }
 
                 // Get AD member OIDs

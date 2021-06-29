@@ -8,6 +8,6 @@
 
         public string? InternalGroupId { get; set; }
         
-        public string IsVoided { get; set; } = null!;
+        public bool IsVoided { get; set; }
     }
 }
