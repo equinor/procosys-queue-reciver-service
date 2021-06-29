@@ -4,8 +4,10 @@
     {
         public string PlantId { get; set; } = null!;
 
-        public string AffiliateGroupId { get; set; } = null!;
+        public string? AffiliateGroupId { get; set; }
 
-        public string InternalGroupId { get; set; } = null!;
+        public string? InternalGroupId { get; set; }
+        
+        public string IsVoided { get; set; } = null!;
     }
 }

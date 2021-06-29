@@ -19,9 +19,9 @@ namespace QueueReceiver.Core.Services
         private readonly ILogger<SyncService> _logger;
 
         public SyncService(
-            IPlantService plantService, 
+            IPlantService plantService,
             IGraphService graphService,
-            IPersonService personService, 
+            IPersonService personService,
             IAccessService accessService,
             ILogger<SyncService> logger)
         {
@@ -66,12 +66,18 @@ namespace QueueReceiver.Core.Services
                     pcsPersonOidList.Remove(oidException);
                 }
 
+                if (plant.IsVoided == "Y" || string.IsNullOrEmpty(plant.AffiliateGroupId) || string.IsNullOrEmpty(plant.InternalGroupId))
+                {
+                    // go to next plant if above values are empty or plant is voided
+                    continue;
+                }
+
                 // Get AD member OIDs
-                var adMemberOidList = await GetAdMemberOidList(new[] {plant.AffiliateGroupId, plant.InternalGroupId});
+                var adMemberOidList = await GetAdMemberOidList(new[] { plant.AffiliateGroupId, plant.InternalGroupId });
 
                 // Get AD members that are not existing or mapped by OID in PCS
                 var membersInAdNotInPcs = adMemberOidList.Except(pcsPersonOidList).ToList();
-                
+
                 if (membersInAdNotInPcs.Any())
                 {
                     _logger.LogInformation($"[GroupSync] : Found {membersInAdNotInPcs.Count} members to update from AD.");
@@ -152,7 +158,7 @@ namespace QueueReceiver.Core.Services
                 var newMemberList = newMembers.ToList();
 
                 _logger.LogInformation($"[GroupSync] : Found {newMemberList.Count} members.");
-                
+
                 allMembers.UnionWith(newMemberList);
             }
 

@@ -12,6 +12,7 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
             builder.Property(plant => plant.PlantId).HasColumnName("PROJECTSCHEMA");
             builder.Property(plant => plant.AffiliateGroupId).HasColumnName("AFFILIATEGROUPID");
             builder.Property(plant => plant.InternalGroupId).HasColumnName("INTERNALGROUPID");
+            builder.Property(plant => plant.IsVoided).HasColumnName("ISVOIDED");
         }
     }
 }
