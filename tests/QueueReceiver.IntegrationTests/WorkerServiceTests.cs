@@ -73,6 +73,7 @@ namespace QueueReceiver.IntegrationTests
         #endregion
 
         [TestMethod]
+        [Ignore] // Need to disable ad-sync webjob for this test to pass
         public async Task EntryPointService_HandlesMessagesCorrectly_UsingRealQueue()
         {
             //Arrange

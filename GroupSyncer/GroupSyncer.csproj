@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>1.0.17</VersionPrefix>
+    <VersionPrefix>1.0.18</VersionPrefix>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>7206b070-321a-4946-8524-980b2eeb7af6</UserSecretsId>
