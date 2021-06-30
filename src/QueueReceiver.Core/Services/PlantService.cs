@@ -13,9 +13,6 @@ namespace QueueReceiver.Core.Services
         public PlantService(IPlantRepository plantRepository)
             => _plantRepository = plantRepository;
 
-        public IEnumerable<string> GetAllGroupOids()
-            => _plantRepository.GetAllInternalAndAffiliateOids();
-
 
         public async Task<string?> GetPlantIdAsync(string plantOid)
             => await _plantRepository.GetPlantIdByOidAsync(plantOid);
@@ -26,7 +23,5 @@ namespace QueueReceiver.Core.Services
         public Plant GetPlant(string plantId)
             => _plantRepository.GetPlant(plantId);
 
-        public List<string> GetAllMemberOidsByPlant(string plantId)
-            => _plantRepository.GetMemberOidsByPlant(plantId);
     }
 }

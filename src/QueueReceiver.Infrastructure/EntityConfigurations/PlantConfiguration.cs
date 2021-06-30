@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using QueueReceiver.Core.Constants;
 using QueueReceiver.Core.Models;
 
 namespace QueueReceiver.Infrastructure.EntityConfigurations
@@ -12,6 +13,11 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
             builder.Property(plant => plant.PlantId).HasColumnName("PROJECTSCHEMA");
             builder.Property(plant => plant.AffiliateGroupId).HasColumnName("AFFILIATEGROUPID");
             builder.Property(plant => plant.InternalGroupId).HasColumnName("INTERNALGROUPID");
+
+            builder.Property(p => p.IsVoided).HasColumnName("ISVOIDED")
+                .HasConversion(
+                    b => b ? 'Y' : 'N',
+                    c => c.Equals('Y'));
         }
     }
 }
