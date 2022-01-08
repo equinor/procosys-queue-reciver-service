@@ -31,6 +31,8 @@ namespace QueueReceiver.Core.Models
 
         public bool IsVoided { get; set; }
 
+        public bool IsServicePrincipal { get; set; }
+
         public long? CreatedById { get; set; }
 
         public long? UpdatedById { get; set; }
