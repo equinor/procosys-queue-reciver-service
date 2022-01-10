@@ -2,6 +2,7 @@
 using QueueReceiver.Core.Interfaces;
 using QueueReceiver.Core.Models;
 using QueueReceiver.Infrastructure.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +21,13 @@ namespace QueueReceiver.Infrastructure.Repositories
 
         public async Task<Person> FindAsync(long personId)
         {
-            return await _persons.FindAsync(personId);
+            var person = await _persons.FindAsync(personId);
+            if (person == null || person.IsServicePrincipal)
+            {
+                throw new Exception($"Person with id {personId} not found");
+            }
+
+            return person;
         }
 
         public async Task<Person> AddPersonAsync(Person person)
@@ -33,21 +40,22 @@ namespace QueueReceiver.Infrastructure.Repositories
         {
             mobileNumber = string.IsNullOrEmpty(mobileNumber) ? string.Empty : mobileNumber.Replace(" ", string.Empty);
 
-            return await _persons.FirstOrDefaultAsync(p =>
-                p.FirstName != null &&
-                p.LastName != null &&
-                p.MobilePhoneNumber != null &&
-                p.FirstName.ToUpper().Equals(givenName.ToUpper()) &&
-                p.LastName.ToUpper().Equals(surname.ToUpper()) &&
-                (mobileNumber.Equals(p.MobilePhoneNumber) ||
-                 mobileNumber.Equals("+47" + p.MobilePhoneNumber)));
+            return await _persons.FirstOrDefaultAsync(person =>
+                !person.IsServicePrincipal &&
+                person.FirstName != null &&
+                person.LastName != null &&
+                person.MobilePhoneNumber != null &&
+                person.FirstName.ToUpper().Equals(givenName.ToUpper()) &&
+                person.LastName.ToUpper().Equals(surname.ToUpper()) &&
+                (mobileNumber.Equals(person.MobilePhoneNumber) ||
+                 mobileNumber.Equals("+47" + person.MobilePhoneNumber)));
         }
 
         public IEnumerable<string> GetAllNotInDb(IEnumerable<string> oids)
         {
             var withOid = _persons
-                .Where(p => p.Oid != null)
-                .Select(p => p.Oid!)
+                .Where(person => person.Oid != null && !person.IsServicePrincipal)
+                .Select(person => person.Oid!)
                 .AsNoTracking()
                 .AsEnumerable();
 
@@ -55,11 +63,11 @@ namespace QueueReceiver.Infrastructure.Repositories
         }
 
         public async Task<Person?> FindByUserOidAsync(string userOid)
-            => await _persons.FirstOrDefaultAsync(person => userOid.Equals(person.Oid));
+            => await _persons.FirstOrDefaultAsync(person => userOid.Equals(person.Oid) && !person.IsServicePrincipal);
 
         public async Task<long> FindPersonIdByUserOidAsync(string userOid)
             => await _persons
-                .Where(person => userOid.Equals(person.Oid))
+                .Where(person => userOid.Equals(person.Oid) && !person.IsServicePrincipal)
                 .Select(person => person.Id)
                 .SingleOrDefaultAsync();
 
@@ -82,7 +90,8 @@ namespace QueueReceiver.Infrastructure.Repositories
             email = string.IsNullOrEmpty(email) ? string.Empty : email.ToUpper();
 
             return await _persons.Where(person =>
-                    (person.MobilePhoneNumber != null &&
+                    !person.IsServicePrincipal &&
+                    ((person.MobilePhoneNumber != null &&
                      mobileNumber.Equals(person.MobilePhoneNumber))
                     || (person.MobilePhoneNumber != null &&
                         mobileNumber.Equals("+47" + person.MobilePhoneNumber))
@@ -92,7 +101,7 @@ namespace QueueReceiver.Infrastructure.Repositories
                         firstName.Equals(person.FirstName.ToUpper()) &&
                         lastName.Equals(person.LastName.ToUpper()))
                     || string.Equals(shortName, person.UserName.ToUpper())
-                    || string.Equals(userName, person.UserName.ToUpper()))
+                    || string.Equals(userName, person.UserName.ToUpper())))
                 .ToListAsync();
         }
 
@@ -100,7 +109,8 @@ namespace QueueReceiver.Infrastructure.Repositories
         {
             return _persons
                 .Include(p => p.PersonProjects)
-                .Where(p => p.Oid != null &&
+                .Where(p => !p.IsServicePrincipal &&
+                            p.Oid != null &&
                             p.PersonProjects.Any(pp => pp.ProjectId == projectId && !pp.IsVoided))
                 .Select(p => p.Oid!)
                 .Distinct();

@@ -36,6 +36,11 @@ namespace QueueReceiver.Infrastructure.EntityConfigurations
                 .HasConversion(
                     b => b ? 'Y' : 'N',
                     c => c.Equals('Y'));
+
+            builder.Property(p => p.IsServicePrincipal).HasColumnName("SERVICEPRINCIPAL")
+                .HasConversion(
+                    b => b ? 'Y' : 'N',
+                    c => c.Equals('Y'));
         }
     }
 }

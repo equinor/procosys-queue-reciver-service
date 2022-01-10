@@ -22,12 +22,5 @@
   },
   "ConnectionString": "",
   "PersonCreatedById": 45990,
-  "RemoveUserAccessEnabled": "false",
-  "PcsOidExceptionList": [
-    "3c845822-e78a-4fe7-9f98-e0890be1090c",
-    "c2be8229-f026-42a8-a16c-b21477c39b7c",
-    "30e39d34-08b1-4424-919d-2b893b8e69d1",
-    "e460e386-456f-40f3-8216-5ab40f85b03a",
-    "701F56A3-9176-4E73-B63E-141F2964A898"
-  ]
+  "RemoveUserAccessEnabled": "false"
 }

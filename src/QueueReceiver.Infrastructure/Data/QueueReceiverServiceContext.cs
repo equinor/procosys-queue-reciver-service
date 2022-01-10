@@ -9,8 +9,6 @@ namespace QueueReceiver.Infrastructure.Data
 {
     public class QueueReceiverServiceContext : DbContext, IUnitOfWork
     {
-        private bool disposed;
-
         public QueueReceiverServiceContext(DbContextOptions<QueueReceiverServiceContext> options)
             : base(options) { }
 
